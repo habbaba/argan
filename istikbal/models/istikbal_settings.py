@@ -74,17 +74,17 @@ class Integration(models.TransientModel):
         response = requests.request("GET", url, headers=headers)
         if response.status_code == 200:
             products = json.loads(response.content)
+            print(products)
             self.createProducts(products)
             self.env.cr.commit()
 
     def createProducts(self, products):
         for product in products:
-            odooProduct = self.env['product.template'].search([('istikbal_product_code', '=', product['producCode'])])
+            odooProduct = self.env['product.template'].search([('default_code', '=', product['producCode'])])
             if not odooProduct:
                 new_product_template = self.env['product.template'].create({
-                    'istikbal_product_code': product['producCode'],
-                    'name': product['productRef'],
-                    'description': product['maktx'],
+                    'default_code': product['producCode'],
+                    'name': product['maktx'],
                     'type': 'product'
                 })
                 product_product = self.env['product.product'].search(
@@ -100,9 +100,8 @@ class Integration(models.TransientModel):
                 self.updateQuantity(product, product_product)
             else:
                 odooProduct.write({
-                    'istikbal_product_code': product['producCode'],
-                    'name': product['productRef'],
-                    'description': product['maktx'],
+                    'default_code': product['producCode'],
+                    'name': product['maktx'],
                     'type': 'product'
                 })
                 product_product = self.env['product.product'].search(
