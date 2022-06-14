@@ -1,4 +1,0 @@
-[submodule "argahandelsgmbh/emipro"]
-	path = argahandelsgmbh/emipro
-	url = git@github.com:argahandelsgmbh/emipro.git
-	branch = main
