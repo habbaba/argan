@@ -74,53 +74,45 @@ class Integration(models.TransientModel):
         response = requests.request("GET", url, headers=headers)
         if response.status_code == 200:
             products = json.loads(response.content)
-            print(products)
             self.createProducts(products)
             self.env.cr.commit()
 
     def createProducts(self, products):
         for product in products:
             odooProduct = self.env['product.template'].search([('default_code', '=', product['producCode'])])
-            if not odooProduct:
+            if odooProduct:
+                new_product_template = self.env['product.template'].write({
+                    'default_code': product['producCode'],
+                    'name': product['maktx'],
+                    'bdtCode': product['bdtCode'],
+                    'quantity': product['quantity'],
+                    'customerRef': product['customerRef'],
+                    'productRef': product['productRef'],
+                    'customerBarcode': product['customerBarcode'],
+                    'packageNum': product['packageNum'],
+                    'vrkme': product['vrkme'],
+                    'lgort': product['lgort'],
+                    'volum': product['volum'],
+                    'audat': product['audat'],
+                    'stawn': product['stawn'],
+                    'description': product['text'],
+                    'type': 'product'
+                })
+            else:
                 new_product_template = self.env['product.template'].create({
                     'default_code': product['producCode'],
                     'name': product['maktx'],
+                    'bdtCode': product['bdtCode'],
+                    'quantity': product['quantity'],
+                    'customerRef': product['customerRef'],
+                    'productRef': product['productRef'],
+                    'customerBarcode': product['customerBarcode'],
+                    'packageNum': product['packageNum'],
+                    'vrkme': product['vrkme'],
+                    'lgort': product['lgort'],
+                    'volum': product['volum'],
+                    'audat': product['audat'],
+                    'stawn': product['stawn'],
+                    'description': product['text'],
                     'type': 'product'
                 })
-                product_product = self.env['product.product'].search(
-                    [('product_tmpl_id', '=', new_product_template.id)])
-                if not product_product:
-                    product_product = self.env['product.product'].create({
-                        'product_tmpl_id': new_product_template.id
-                    })
-                else:
-                    product_product.write({
-                        'product_tmpl_id': new_product_template.id
-                    })
-                self.updateQuantity(product, product_product)
-            else:
-                odooProduct.write({
-                    'default_code': product['producCode'],
-                    'name': product['maktx'],
-                    'type': 'product'
-                })
-                product_product = self.env['product.product'].search(
-                    [('product_tmpl_id', '=', odooProduct.id)])
-                self.updateQuantity(product, product_product)
-
-
-    def updateQuantity(self, istikbal_product, odoo_product):
-        odooStock = self.env['stock.quant'].search([('product_id', '=', odoo_product.id)])
-        if odooStock:
-            odooStock.sudo().write({
-                'inventory_quantity': istikbal_product['quantity'],
-                'quantity': istikbal_product['quantity'],
-            })
-        else:
-            odooLocation = self.env['stock.location'].search([('name', '=', 'Stock')])
-            self.env['stock.quant'].sudo().create({
-                'inventory_quantity': istikbal_product['quantity'],
-                'quantity': istikbal_product['quantity'],
-                'product_id': odoo_product.id,
-                'location_id': odooLocation.id
-            })
