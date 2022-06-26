@@ -1,0 +1,5 @@
+odoo-test-helper
+sodapy
+num2words
+responses
+mock
