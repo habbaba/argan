@@ -1,4 +1,0 @@
-sodapy
-num2words
-responses
-mock
