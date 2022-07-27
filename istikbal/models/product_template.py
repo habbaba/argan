@@ -42,16 +42,15 @@ class InheritPT(models.Model):
         response = requests.request("GET", url, headers=headers)
         if response.status_code == 200:
             materials = json.loads(response.content)
-            print(materials)
-            if len(materials) > 0:
-                allMaterials.extend(materials)
+       
 
-        self.createMaterials(allMaterials)
+
+        self.createMaterials(materials)
         self.env.cr.commit()
 
     def createMaterials(self, materials):
         for material in materials:
-            print(material)
+   
             odooMaterials = self.env['istikbal.materials'].search([('materialNumber', '=', material['materialNumber'])])
             if not odooMaterials:
                 odooMaterials = self.env['istikbal.materials'].create({
@@ -66,10 +65,8 @@ class InheritPT(models.Model):
                     'producerCode': material['producerCode'],
                     'materialGroup': material['materialGroup'],
                 })
-#             odooProduct = self.env['product.template'].search(
-#                 [('istikbal_product_code', '=', material['materialNumber'])])
+
             odooProduct =self
-#             if odooProduct:
             odooProduct.write({
                 'material_ids': [[4, odooMaterials.id]]
             })
