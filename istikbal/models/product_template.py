@@ -4,7 +4,13 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
 import json
 from datetime import datetime
-
+from odoo import _, api, fields, models, modules, SUPERUSER_ID, tools
+from odoo.exceptions import ValidationError, UserError
+import json
+import requests
+import base64
+import time
+from datetime import datetime, timedelta
 
 class InheritPT(models.Model):
     _inherit = 'product.template'
@@ -22,7 +28,51 @@ class InheritPT(models.Model):
     bdtCode = fields.Char('bdtCode')
     productRef = fields.Char('productRef')
 
+    def get_material(self):
+        username, password = self.env['res.config.settings'].search([],limit = 1).getCredentials()
+        odooProducts = self.env['product.template'].search([('istikbal_product_code', '!=', False)])
+        allMaterials = []
+#         for odooProduct in odooProducts:
+        url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + self.istikbal_product_code
+        auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
+        headers = {
+            'Authorization': 'Basic ' + auth,
+        }
 
+        response = requests.request("GET", url, headers=headers)
+        if response.status_code == 200:
+            materials = json.loads(response.content)
+            print(materials)
+            if len(materials) > 0:
+                allMaterials.extend(materials)
+
+        self.createMaterials(allMaterials)
+        self.env.cr.commit()
+
+    def createMaterials(self, materials):
+        for material in materials:
+            print(material)
+            odooMaterials = self.env['istikbal.materials'].search([('materialNumber', '=', material['materialNumber'])])
+            if not odooMaterials:
+                odooMaterials = self.env['istikbal.materials'].create({
+                    'materialNumber': material['materialNumber'],
+                    'bdtModelName': material['bdtModelName'],
+                    'bdtMaterialDesc': material['bdtMaterialDesc'],
+                    'bdtEnglishMaterailDesc': material['bdtEnglishMaterailDesc'],
+                    'netWeight': material['netWeight'],
+                    'grossWeight': material['grossWeight'],
+                    'numberExportContainer': material['numberExportContainer'],
+                    'volum': material['volum'],
+                    'producerCode': material['producerCode'],
+                    'materialGroup': material['materialGroup'],
+                })
+#             odooProduct = self.env['product.template'].search(
+#                 [('istikbal_product_code', '=', material['materialNumber'])])
+            odooProduct =self
+#             if odooProduct:
+            odooProduct.write({
+                'material_ids': [[4, odooMaterials.id]]
+            })
 
 class Materials(models.Model):
     _name = 'istikbal.materials'
@@ -64,5 +114,12 @@ class Materials(models.Model):
     zzbolG14= fields.Char('zzbolG014')
     zzbolG15= fields.Char('zzbolG015')
     fabric= fields.Char('fabric')
-
+    
+    
+    
+    
+    
+    
+    
+  
 
