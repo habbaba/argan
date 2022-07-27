@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 from odoo import _, api, fields, models, modules, SUPERUSER_ID, tools
 from odoo.exceptions import ValidationError, UserError
+from odoo.exceptions import AccessError
 import json
 import requests
 import base64
@@ -31,8 +32,6 @@ class InheritPT(models.Model):
     def get_material(self):
         username, password = self.env['res.config.settings'].search([],limit = 1).getCredentials()
         odooProducts = self.env['product.template'].search([('istikbal_product_code', '!=', False)])
-        allMaterials = []
-#         for odooProduct in odooProducts:
         url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + self.istikbal_product_code
         auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
         headers = {
@@ -42,7 +41,8 @@ class InheritPT(models.Model):
         response = requests.request("GET", url, headers=headers)
         if response.status_code == 200:
             materials = json.loads(response.content)
-       
+            if not materials:
+                raise UserError(_("No material detail found."))
 
 
         self.createMaterials(materials)
@@ -50,7 +50,6 @@ class InheritPT(models.Model):
 
     def createMaterials(self, materials):
         for material in materials:
-   
             odooMaterials = self.env['istikbal.materials'].search([('materialNumber', '=', material['materialNumber'])])
             if not odooMaterials:
                 odooMaterials = self.env['istikbal.materials'].create({
@@ -65,9 +64,7 @@ class InheritPT(models.Model):
                     'producerCode': material['producerCode'],
                     'materialGroup': material['materialGroup'],
                 })
-
-            odooProduct =self
-            odooProduct.write({
+            self.write({
                 'material_ids': [[4, odooMaterials.id]]
             })
 
