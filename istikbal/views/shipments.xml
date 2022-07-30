@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.actions.act_window" id="istikbal_shipments_action">
+            <field name="name">Istikbal Credentials</field>
+            <field name="res_model">istikbal.shipments.header</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.ui.view" id="istikbal_shipments_tree_view">
+            <field name="name">Istikbal Shipments</field>
+            <field name="model">istikbal.shipments.header</field>
+            <field name="arch" type="xml">
+                <tree string="Istikbal Shipments">
+                    <field name="shipmentNumber" />
+                    <field name="invoiceNumber" />
+                    <field name="shipmentDate" />
+                    <field name="truckPlate" />
+                    <field name="volume" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="istikbal_shipments_form_view">
+            <field name="name">Istikbal Shipments</field>
+            <field name="model">istikbal.shipments.header</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="shipmentNumber" />
+                                <field name="invoiceNumber" />
+                            </group>
+                            <group>
+                                <field name="truckPlate" />
+                                <field name="truckPlate2" />
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="containerNumber" />
+                                <field name="volume" />
+                                <field name="company_id" />
+                            </group>
+                            <group>
+                                <field name="shipmentDate" />
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="istikbal_shipment_details" string="Details">
+                                <field name="detail_ids" mode="tree">
+                                    <tree delete="1">
+                                        <field name="packageNum" />
+                                        <field name="bdtCode" />
+                                        <field name="productCode" />
+                                        <field name="quantity" />
+                                        <field name="orderReference" />
+                                        <field name="customerOrderReference" />
+                                        <field name="productName" />
+                                        <field name="productNameEN" />
+                                        <field name="volum" />
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+
+        <menuitem id="istikbal_shipments_action_menu" parent="istikbal_root" name="Shipments" action="istikbal_shipments_action"/>
+
+    </data>
+</odoo>
