@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 # See LICENSE file for full copyright and licensing details.
-
-from odoo import models, fields, api, _
+import os
+import zipfile
+from odoo import models, fields, api, _, SUPERUSER_ID
 from odoo.exceptions import UserError
+from odoo.addons.website.tools import get_video_embed_code
 from .. import shopify
 
 
@@ -22,6 +24,24 @@ class ShopifyInstanceConfig(models.TransientModel):
                                help="Add your shopify store URL, for example, https://my-shopify-store.myshopify.com")
     shopify_company_id = fields.Many2one("res.company", string="Instance Company",
                                          help="Orders and Invoices will be generated of this company.")
+
+    shopify_instance_video_url = fields.Char('Instance Video URL',
+                                             default='https://www.youtube.com/watch?v=kWmHTIujBmQ&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=2',
+                                             help='URL of a video for showcasing by instance.')
+    shopify_instance_video_embed_code = fields.Html(compute="_compute_shopify_instance_video_embed_code",
+                                                    sanitize=False)
+
+    shopify_api_video_url = fields.Char('API Video URL',
+                                        default='https://www.youtube.com/watch?v=8QgZ4bp-7MA&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=1&t=4s',
+                                        help='URL of a video for showcasing by instance.')
+    shopify_api_video_embed_code = fields.Html(compute="_compute_shopify_instance_video_embed_code",
+                                               sanitize=False)
+
+    @api.depends('shopify_instance_video_url', 'shopify_api_video_url')
+    def _compute_shopify_instance_video_embed_code(self):
+        for image in self:
+            image.shopify_instance_video_embed_code = get_video_embed_code(image.shopify_instance_video_url)
+            image.shopify_api_video_embed_code = get_video_embed_code(image.shopify_api_video_url)
 
     def create_pricelist(self, shop_currency):
         """
@@ -285,6 +305,11 @@ class ResConfigSettings(models.TransientModel):
                                                 domain="['|', ('company_id', '=', False), ('company_id', '=', shopify_company_id)]")
     shopify_lang_id = fields.Many2one('res.lang', string='Shopify Instance Language',
                                       help="Select language for Shopify customer.")
+    # presentment currency
+    order_visible_currency = fields.Boolean(string="Import order in customer visible currency?")
+
+    # group_show_net_profit_report = fields.Boolean(string='Net Profit Report',
+    #                                               implied_group='shopify_ept.group_visible_net_profit_report')
 
     @api.onchange("shopify_instance_id")
     def onchange_shopify_instance_id(self):
@@ -329,6 +354,7 @@ class ResConfigSettings(models.TransientModel):
             self.shopify_analytic_account_id = instance.shopify_analytic_account_id.id or False
             self.shopify_analytic_tag_ids = instance.shopify_analytic_tag_ids.ids
             self.shopify_lang_id = instance.shopify_lang_id and instance.shopify_lang_id.id or False
+            self.order_visible_currency = instance.order_visible_currency or False
 
     def execute(self):
         """This method used to set value in an instance of configuration.
@@ -378,6 +404,7 @@ class ResConfigSettings(models.TransientModel):
                                                     self.shopify_analytic_account_id.id or False
             values["shopify_analytic_tag_ids"] = [(6, 0, self.shopify_analytic_tag_ids.ids)]
             values['shopify_lang_id'] = self.shopify_lang_id and self.shopify_lang_id.id or False
+            values['order_visible_currency'] = self.order_visible_currency or False
 
             product_webhook_changed = customer_webhook_changed = order_webhook_changed = False
             if instance.create_shopify_products_webhook != self.create_shopify_products_webhook:
@@ -395,6 +422,29 @@ class ResConfigSettings(models.TransientModel):
             if order_webhook_changed:
                 instance.configure_shopify_order_webhook()
 
+        return res
+
+    def install_net_profit_report_module(self):
+        """Install net profit report module if enable configuration.
+            @author: Meera Sidapara @Emipro Technologies Pvt. Ltd on date 01/07/2022.
+        """
+        path = os.path.realpath(
+            os.path.join(os.path.dirname(__file__), '../data/shopify_net_profit_report_ept.zip'))
+        extract_path = os.path.realpath(os.path.join(os.path.dirname(__file__), '../../'))
+        if not os.path.exists(extract_path + '/shopify_net_profit_report_ept'):
+            with zipfile.ZipFile(path, 'r') as zip_ref:
+                zip_ref.extractall(extract_path)
+        self.env['ir.module.module'].update_list()
+        module = self.env['ir.module.module'].search([
+            ('name', '=', 'shopify_net_profit_report_ept'),
+            ('state', '=', 'uninstalled')
+        ])
+        if module:
+            module.with_user(SUPERUSER_ID).button_immediate_install()
+        action = self.env.ref('shopify_ept.action_shopify_config', False)
+        res = action and action.read()[0] or {}
+        res['context'] = {'default_shopify_instance_id': self.shopify_instance_id.id,
+                          'module': 'shopify_ept'}
         return res
 
     @api.model

@@ -52,6 +52,16 @@ class ShopifyInstanceEpt(models.Model):
         return discount_product
 
     @api.model
+    def _default_duties_product(self):
+        """
+        This method is used to set the duties product in an instance.
+        @author: Nilam kubavat on Date 03-06-2022
+        @Task_id : 191580
+        """
+        duties_product = self.env.ref('shopify_ept.shopify_duties_product', False)
+        return duties_product
+
+    @api.model
     def _default_shipping_product(self):
         """
         This method is used to set the shipping product in an instance.
@@ -281,10 +291,18 @@ class ShopifyInstanceEpt(models.Model):
                                      help="This is used for set Tip product in a sale order lines")
     # Analytic
     shopify_analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account',
-                                          domain="['|', ('company_id', '=', False), ('company_id', '=', shopify_company_id)]")
+                                                  domain="['|', ('company_id', '=', False), ('company_id', '=', shopify_company_id)]")
     shopify_analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags',
-                                        domain="['|', ('company_id', '=', False), ('company_id', '=', shopify_company_id)]")
+                                                domain="['|', ('company_id', '=', False), ('company_id', '=', shopify_company_id)]")
     shopify_lang_id = fields.Many2one('res.lang', string='Language', default=_get_default_language)
+
+    # presentment currency
+    order_visible_currency = fields.Boolean(string="Import order in customer visible currency?")
+
+    duties_product_id = fields.Many2one("product.product", "Duties",
+                                          domain=[('detailed_type', '=', 'service')],
+                                          default=_default_duties_product,
+                                          help="This is used for set duties product in a sale order lines")
 
     _sql_constraints = [('unique_host', 'unique(shopify_host)',
                          "Instance already exists for given host. Host must be Unique for the instance!")]

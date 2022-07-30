@@ -17,6 +17,7 @@ from odoo.tools.misc import split_every
 from odoo import models, fields, api, _
 from .. import shopify
 from ..shopify.pyactiveresource.connection import ClientError
+from odoo.addons.website.tools import get_video_embed_code
 
 _logger = logging.getLogger("Shopify Operations")
 
@@ -86,6 +87,15 @@ class ShopifyProcessImportExport(models.TransientModel):
                                                      default="update_date", string="Import Based On")
     is_auto_validate_inventory = fields.Boolean(default=False, string='Auto Validate Inventory',
                                                 help="If you mark it, the inventory will be applied automatically.")
+
+    shopify_video_url = fields.Char('Video URL',
+                                    help='URL of a video for showcasing by operations.')
+    shopify_video_embed_code = fields.Html(compute="_compute_shopify_video_embed_code", sanitize=False)
+
+    @api.depends('shopify_video_url')
+    def _compute_shopify_video_embed_code(self):
+        for image in self:
+            image.shopify_video_embed_code = get_video_embed_code(image.shopify_video_url)
 
     def shopify_execute(self):
         """This method used to execute the operation as per given in wizard.
@@ -518,6 +528,9 @@ class ShopifyProcessImportExport(models.TransientModel):
         self.is_hide_operation_execute_button = False
         current_time = datetime.now()
         if instance:
+            # Attach Shopify Operations Videos
+            self.set_shopify_video_based_on_operation()
+
             if self.shopify_operation == "import_unshipped_orders":
                 self.orders_from_date = instance.last_date_order_import or False
                 self.shopify_check_running_schedulers('ir_cron_shopify_auto_import_order_instance_')
@@ -538,6 +551,36 @@ class ShopifyProcessImportExport(models.TransientModel):
             if instance.payout_last_import_date:
                 self.payout_start_date = instance.payout_last_import_date
             self.payout_end_date = current_time
+
+    def set_shopify_video_based_on_operation(self):
+        """
+        This method is used to set video link based on operation
+        @author: Meera Sidapara @Emipro Technologies Pvt. Ltd on date 28 June 2022.
+        Task_id: 193395 - Add video link while perform operation
+        """
+        if self.shopify_operation in ['sync_product', 'import_products_from_csv']:
+            self.shopify_video_url = 'https://www.youtube.com/watch?v=NbYkqmiUFFs&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=3'
+
+        if self.shopify_operation == 'import_customers':
+            self.shopify_video_url = 'https://www.youtube.com/watch?v=_X6ZbxMOMC8&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=15'
+
+        if self.shopify_operation == 'import_unshipped_orders':
+            self.shopify_video_url = 'https://www.youtube.com/watch?v=7aboj1fLYrA&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=8'
+
+        if self.shopify_operation == 'import_shipped_orders':
+            self.shopify_video_url = 'https://www.youtube.com/watch?v=iiSQINGFY5U&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=10'
+
+        if self.shopify_operation == 'update_order_status':
+            self.shopify_video_url = 'https://www.youtube.com/watch?v=qOFObt6qpSw&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=9'
+
+        if self.shopify_operation == 'import_stock':
+            self.shopify_video_url = 'https://www.youtube.com/watch?v=BPcGRZ7BKNE&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=14'
+
+        if self.shopify_operation == 'export_stock':
+            self.shopify_video_url = 'https://www.youtube.com/watch?v=Ea6ppXEpEXA&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=13'
+
+        if self.shopify_operation == 'import_location':
+            self.shopify_video_url = 'https://www.youtube.com/watch?v=41qTs4UQ1QU&list=PLZGehiXauylZAowR8580_18UZUyWRjynd&index=5'
 
     def import_products_from_file(self):
         """

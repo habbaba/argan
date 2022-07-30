@@ -59,6 +59,22 @@
                                readonly="context.get('is_already_instance_created', False)"/>
                     </group>
                 </group>
+                <div name="row" style="display: flex;">
+                    <style>
+                        .embed-responsive-item {
+                        width: 423px;
+                        height: 200px !important;
+                        }
+                    </style>
+                    <div class="col-md-6">
+                        <field name="shopify_api_video_url" string="Shopify API Video URL" invisible="1"/>
+                        <field name="shopify_api_video_embed_code" string="Shopify API Video" nolable="1"/>
+                    </div>
+                    <div class="col-md-6">
+                        <field name="shopify_instance_video_url" string="Shopify Instance Video URL" invisible="1"/>
+                        <field name="shopify_instance_video_embed_code" string="Shopify Instance Video" nolable="1"/>
+                    </div>
+                </div>
                 <group invisible="context.get('is_calling_from_onboarding_panel', False)">
                     <p colspan="2" class="alert alert-warning" role="alert">
                         <div style="color:#ff0000; font-size:15px;">
@@ -189,20 +205,20 @@
                             </div>
                         </div>
                         <div class="col-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_right_pane">
-                                    <label for="shopify_lang_id" string="Shopify Instance Language"/>
-                                    <div class="text-muted">
-                                        Select language based on your Shopify instance
-                                    </div>
-                                    <div class="content-group">
-                                        <div class="mt16">
-                                            <field name="shopify_lang_id" class="oe_inline"
-                                                   options="{'no_open':True,'no_create':True,'no_create_edit':True}"
-                                                   attrs="{'required':[('shopify_instance_id','!=',False)]}"/>
-                                        </div>
+                            <div class="o_setting_right_pane">
+                                <label for="shopify_lang_id" string="Shopify Instance Language"/>
+                                <div class="text-muted">
+                                    Select language based on your Shopify instance
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="shopify_lang_id" class="oe_inline"
+                                               options="{'no_open':True,'no_create':True,'no_create_edit':True}"
+                                               attrs="{'required':[('shopify_instance_id','!=',False)]}"/>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                     </div>
                     <div name="shopify_webhook_header"
                          attrs="{'invisible': [('shopify_instance_id', '=', False)]}">
@@ -473,6 +489,23 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="show_shopify_net_profit_report">
+<!--                            <div class="o_setting_left_pane">-->
+<!--                                <field name="group_show_net_profit_report" widget="upgrade_boolean"/>-->
+<!--                            </div>-->
+<!--                            <div class="o_setting_right_pane" name="show_net_profit_report_right_pane">-->
+<!--                                <label for="group_show_net_profit_report"/>-->
+<!--                                <div class="text-muted">-->
+<!--                                    Install this module if you are See Net profit report for all Instances-->
+<!--                                </div>-->
+<!--                                <button name="install_net_profit_report_module"-->
+<!--                                        type="object"-->
+<!--                                        string="Add Shopify Net Profit Report"-->
+<!--                                        class="oe_link"-->
+<!--                                        attrs="{'invisible':[('group_show_net_profit_report','=',False)]}"-->
+<!--                                        help="Install this module if you are See Net profit report for all Instances."/>-->
+<!--                            </div>-->
+                        </div>
                         <div class="col-xs-12 col-md-6 o_setting_box">
                             <div class="o_setting_left_pane">
                                 <field name="shopify_is_use_default_sequence" widget="boolean_toggle"
@@ -520,6 +553,19 @@
                             </div>
                         </div>
 
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="order_visible_currency" widget="boolean_toggle"
+                                       style="padding-left:25px;"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="order_visible_currency"/>
+                                <div class="text-muted">
+                                    If checked, It will import orders based on the customer's visible currency through
+                                    which the customer has paid the payment for orders.
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <h2 style="font-size:25px;background-color:#e9ecef;"
@@ -566,7 +612,8 @@
                                 </div>
                                 <div class="content-group">
                                     <div class="mt16">
-                                        <field name="shopify_credit_tax_account_id" attrs="{'required' : [('shopify_apply_tax_in_order','=','create_shopify_tax')]}"
+                                        <field name="shopify_credit_tax_account_id"
+                                               attrs="{'required' : [('shopify_apply_tax_in_order','=','create_shopify_tax'),('shopify_instance_id','!=',False)]}"
                                                class="o_light_label"/>
                                     </div>
                                 </div>
@@ -584,7 +631,8 @@
                                 </div>
                                 <div class="content-group">
                                     <div class="mt16">
-                                        <field name="shopify_invoice_tax_account_id" attrs="{'required' : [('shopify_apply_tax_in_order','=','create_shopify_tax')]}"
+                                        <field name="shopify_invoice_tax_account_id"
+                                               attrs="{'required' : [('shopify_apply_tax_in_order','=','create_shopify_tax'),('shopify_instance_id','!=',False)]}"
                                                class="o_light_label"/>
                                     </div>
                                 </div>

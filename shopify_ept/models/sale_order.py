@@ -200,9 +200,11 @@ class SaleOrder(models.Model):
         order_number = order_response.get("order_number")
         for line in lines:
             is_custom_line, is_gift_card_line, product = self.search_custom_tip_gift_card_product(line, instance)
-
+            price = line.get("price")
+            if instance.order_visible_currency:
+                price = self.get_price_based_on_customer_visible_currency(line.get("price_set"), order_response, price)
             order_line = self.shopify_create_sale_order_line(line, product, line.get("quantity"),
-                                                             product.name, line.get("price"),
+                                                             product.name, price,
                                                              order_response)
             if is_gift_card_line:
                 line_vals = {'is_gift_card_line': True}
@@ -212,6 +214,9 @@ class SaleOrder(models.Model):
 
             if is_custom_line:
                 order_line.write({'name': line.get('name')})
+
+            if line.get('duties'):
+                self.create_shopify_duties_lines(line.get('duties'), order_response, instance)
 
             if float(total_discount) > 0.0:
                 discount_amount = 0.0
@@ -226,6 +231,44 @@ class SaleOrder(models.Model):
                                                         is_discount=True)
                     _logger.info("Created discount line for Odoo order(%s) and Shopify order is (%s)", self.name,
                                  order_number)
+
+    def get_price_based_on_customer_visible_currency(self, price_set, order_response, price):
+        """
+        This method is used to set price based on customer visible currency.
+        @author: Meera Sidapara on Date 16-June-2022.
+        Task: 193010 - Shopify Multi currency changes
+        """
+        if float(price_set['shop_money']['amount']) > 0.0 and price_set['shop_money'][
+            'currency_code'] == order_response.get('presentment_currency'):
+            price = price_set['shop_money']['amount']
+        elif float(price_set['presentment_money']['amount']) > 0.0 and price_set['presentment_money'][
+            'currency_code'] == order_response.get('presentment_currency'):
+            price = price_set['presentment_money']['amount']
+        return price
+
+    def create_shopify_duties_lines(self, duties_line, order_response, instance):
+        """
+        Creates duties lines for shopify orders.
+        @author: Meera Sidapara on Date 17-June-2022.
+        """
+        order_number = order_response.get("order_number")
+        product = instance.duties_product_id if instance.duties_product_id else False
+        # add duties
+        for duties in duties_line:
+            duties_amount = 0.0
+            if instance.order_visible_currency:
+                duties_amount = self.get_price_based_on_customer_visible_currency(duties.get("price_set"),
+                                                                                  order_response,
+                                                                                  duties_amount)
+
+            if float(duties_amount) > 0.0:
+                _logger.info("Creating duties line for Odoo order(%s) and Shopify order is (%s)", self.name,
+                             order_number)
+                self.shopify_create_sale_order_line(duties, instance.duties_product_id, 1,
+                                                    product.name, float(duties_amount),
+                                                    order_response, is_duties=True)
+                _logger.info("Created duties line for Odoo order(%s) and Shopify order is (%s)", self.name,
+                             order_number)
 
     def search_custom_tip_gift_card_product(self, line, instance):
         """
@@ -270,9 +313,14 @@ class SaleOrder(models.Model):
             # Changes suggested by dipesh sir.
             if shipping_product:
                 if float(line.get("price")) > 0.0:
+                    shipping_price = line.get("price")
+                    if instance.order_visible_currency:
+                        shipping_price = self.get_price_based_on_customer_visible_currency(line.get("price_set"),
+                                                                                           order_response,
+                                                                                           shipping_price)
                     order_line = self.shopify_create_sale_order_line(line, shipping_product, 1,
                                                                      shipping_product.name or line.get("title"),
-                                                                     line.get("price"),
+                                                                     shipping_price,
                                                                      order_response, is_shipping=True)
                 discount_amount = 0.0
                 for discount_allocation in line.get("discount_allocations"):
@@ -733,7 +781,9 @@ class SaleOrder(models.Model):
         """
         currency_obj = self.env["res.currency"]
         pricelist_obj = self.env["product.pricelist"]
-        order_currency = order_response.get("currency") or False
+        order_currency = order_response.get(
+            "presentment_currency") if instance.order_visible_currency else order_response.get(
+            "currency") or False
         if order_currency:
             currency = currency_obj.search([("name", "=", order_currency)])
             if not currency:
@@ -781,7 +831,7 @@ class SaleOrder(models.Model):
 
     def shopify_create_sale_order_line(self, line, product, quantity, product_name, price,
                                        order_response, is_shipping=False, previous_line=False,
-                                       is_discount=False):
+                                       is_discount=False, is_duties=False):
         """
         This method used to create a sale order line.
         @param : self, line, product, quantity,product_name, order_id,price, is_shipping=False
@@ -794,10 +844,16 @@ class SaleOrder(models.Model):
         line_vals = self.prepare_vals_for_sale_order_line(product, product_name, price, quantity)
         order_line_vals = sale_order_line_obj.create_sale_order_line_ept(line_vals)
         order_line_vals = self.shopify_set_tax_in_sale_order_line(instance, line, order_response, is_shipping,
-                                                                  is_discount, previous_line, order_line_vals)
+                                                                  is_discount, previous_line, order_line_vals,
+                                                                  is_duties)
         if is_discount:
             order_line_vals["name"] = "Discount for " + str(product_name)
             if instance.apply_tax_in_order == "odoo_tax" and is_discount:
+                order_line_vals["tax_id"] = previous_line.tax_id
+
+        if is_duties:
+            order_line_vals["name"] = "Duties for " + str(product_name)
+            if instance.apply_tax_in_order == "odoo_tax" and is_duties:
                 order_line_vals["tax_id"] = previous_line.tax_id
 
         shopify_analytic_tag_ids = instance.shopify_analytic_tag_ids.ids
@@ -827,13 +883,14 @@ class SaleOrder(models.Model):
         return line_vals
 
     def shopify_set_tax_in_sale_order_line(self, instance, line, order_response, is_shipping, is_discount,
-                                           previous_line, order_line_vals):
+                                           previous_line, order_line_vals, is_duties):
         """ This method is used to set tax in the sale order line base on tax configuration in the
             Shopify setting in Odoo.
             :param line: Response of sale order line.
             :param order_response: Response of order.
             :param is_shipping: It used to identify that it a shipping line.
             :param is_discount: It used to identify that it a discount line.
+            :param is_duties: It used to identify that it a duties line.
             :param previous_line: Record of the previously created sale order line.
             :param order_line_vals: Prepared sale order line vals as the previous method.
             @author: Haresh Mori @Emipro Technologies Pvt. Ltd on date 20 October 2020 .
@@ -851,6 +908,12 @@ class SaleOrder(models.Model):
                                                           taxes_included)
                 if is_shipping:
                     # In the Shopify store there is configuration regarding tax is applicable on shipping or not,
+                    # if applicable then this use.
+                    tax_ids = self.shopify_get_tax_id_ept(instance,
+                                                          line.get("tax_lines"),
+                                                          taxes_included)
+                if is_duties:
+                    # In the Shopify store there is configuration regarding tax is applicable on line duties or not,
                     # if applicable then this use.
                     tax_ids = self.shopify_get_tax_id_ept(instance,
                                                           line.get("tax_lines"),
@@ -1452,10 +1515,10 @@ class SaleOrder(models.Model):
                 return [2]
         if self.amount_total == total_refund:
             move_reversal = self.env["account.move.reversal"].with_context(
-                {"active_model": "account.move", "active_ids": invoices.ids}).create(
+                {"active_model": "account.move", "active_ids": invoices[0].ids}).create(
                 {"refund_method": "refund", "date": refund_date,
                  "reason": "Refunded from shopify" if len(refunds_data) > 1 else refunds_data[0].get("note"),
-                 "journal_id": invoices.journal_id.id})
+                 "journal_id": invoices[0].journal_id.id})
             move_reversal.reverse_moves()
             move_reversal.new_move_ids.message_post(body=_("Credit note generated by %s as Order refunded in "
                                                            "Shopify.", created_by))
@@ -1558,7 +1621,8 @@ class SaleOrder(models.Model):
                                                        ("shopify_instance_id", "=", self.shopify_instance_id.id)])
             if existing_refund:
                 continue
-            new_move = self.create_move_and_delete_not_necessary_line(refund_data_line, invoices, created_by)
+            new_move = self.with_context(check_move_validity=False).create_move_and_delete_not_necessary_line(
+                refund_data_line, invoices, created_by)
             if refund_data_line.get('order_adjustments'):
                 self.create_refund_adjustment_line(refund_data_line.get('order_adjustments'), new_move)
             new_move.with_context(check_move_validity=False)._recompute_dynamic_lines()
@@ -1579,23 +1643,27 @@ class SaleOrder(models.Model):
 
         refund_date = self.convert_order_date(refunds_data)
         move_reversal = self.env["account.move.reversal"].with_context(
-            {"active_model": "account.move", "active_ids": invoices.ids}, check_move_validity=False).create(
+            {"active_model": "account.move", "active_ids": invoices[0].ids}, check_move_validity=False).create(
             {"refund_method": "refund",
              "reason": "Partially Refunded from shopify" if len(refunds_data) > 1 else refunds_data.get("note"),
-             "journal_id": invoices.journal_id.id, "date": refund_date})
+             "journal_id": invoices[0].journal_id.id, "date": refund_date})
 
         move_reversal.reverse_moves()
         new_move = move_reversal.new_move_ids
         new_move.write({'is_refund_in_shopify': True, 'shopify_refund_id': refunds_data.get('id')})
+        total_qty = 0.0
         for new_move_line in new_move.invoice_line_ids:
             shopify_line_id = new_move_line.sale_line_ids.shopify_line_id
-            if shopify_line_id and int(
-                    shopify_line_id) not in shopify_line_ids or new_move_line.product_id == self.shopify_instance_id.discount_product_id:
+            if new_move_line.product_id.id == self.shopify_instance_id.discount_product_id.id:
+                new_move_line.price_unit = new_move_line.price_unit / total_qty
+            elif shopify_line_id and int(shopify_line_id) not in shopify_line_ids:
                 delete_move_lines += new_move_line
                 delete_move_lines.recompute_tax_line = True
             else:
+                total_qty += new_move_line.sale_line_ids.product_uom_qty
                 new_move_line.quantity = shopify_line_ids_with_qty.get(int(shopify_line_id))
                 new_move_line.recompute_tax_line = True
+                self.set_price_based_on_refund(new_move_line)
 
         new_move.message_post(body=_("Credit note generated by %s as Order partially "
                                      "refunded in Shopify. This credit note has been created from "
@@ -1609,6 +1677,24 @@ class SaleOrder(models.Model):
             delete_move_lines.with_context(check_move_validity=False).unlink()
             new_move.with_context(check_move_validity=False)._recompute_tax_lines()
         return new_move
+
+    def set_price_based_on_refund(self, move_line):
+        """
+        Calculate tax price based on quantity and set in move line amount.
+        @author: Meera Sidapara @Emipro Technologies Pvt. Ltd on date 01/07/2022.
+        Task Id : 194381 - Shopify refund issue fix
+        """
+        total_adjust_amount = 0.0
+        for line in move_line.sale_line_ids:
+            if move_line.quantity != line.product_uom_qty:
+                tax_dict = json.loads(line.order_id.tax_totals_json)
+                sub_total_tax_dict = tax_dict.get('groups_by_subtotal').get('Untaxed Amount')
+                total_tax_amount = 0.0
+                for tax in sub_total_tax_dict:
+                    total_tax_amount += tax.get('tax_group_amount')
+                total_adjust_amount = total_tax_amount / line.product_uom_qty
+        move_line.price_unit += total_adjust_amount
+        return True
 
     def create_refund_adjustment_line(self, order_adjustments, move_ids):
         """This method is used to create an invoice line in a new move to manage the adjustment refund.
