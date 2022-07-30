@@ -103,7 +103,7 @@ class Integration(models.TransientModel):
 
     def importMaterials(self):
         username, password = self.getCredentials()
-        odooProducts = self.env['product.template'].search([('default_code', '!=', False)],limit=500)
+        odooProducts = self.env['product.template'].search([('default_code', '!=', False)],limit=100)
         allMaterials = []
         for odooProduct in odooProducts:
             url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + odooProduct.default_code
@@ -140,7 +140,7 @@ class Integration(models.TransientModel):
                     'materialGroup': material['materialGroup'],
                 })
             odooProduct = self.env['product.template'].search(
-                [('istikbal_product_code', '=', material['materialNumber'])])
+                [('default_code', '=', material['materialNumber'])])
             if odooProduct:
                 odooProduct.write({
                     'material_ids': [[4, odooMaterials.id]]
