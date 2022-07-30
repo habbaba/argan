@@ -199,7 +199,8 @@
                             <label for="shopify_credit_tax_account_id"
                                    string="Credit Note Tax Account"
                                    class="o_onboard_label"/>
-                            <field name="shopify_credit_tax_account_id" attrs="{'required' : [('shopify_apply_tax_in_order','=','create_shopify_tax')]}"
+                            <field name="shopify_credit_tax_account_id"
+                                   attrs="{'required' : [('shopify_apply_tax_in_order','=','create_shopify_tax'),('shopify_instance_id','!=',False)]}"
                                    class="o_light_label o_onboard_input"/>
                             <a href="javascript:void(0)"
                                title="Set the credit tax account base on this account we will set this account in the newly created tax when import import from Shopify to Odoo."
@@ -211,7 +212,8 @@
                         <div class="ml-2 pl-1">
                             <label for="shopify_invoice_tax_account_id" string="Invoice Tax Account"
                                    class="o_onboard_label"/>
-                            <field name="shopify_invoice_tax_account_id" attrs="{'required' : [('shopify_apply_tax_in_order','=','create_shopify_tax')]}"
+                            <field name="shopify_invoice_tax_account_id"
+                                   attrs="{'required' : [('shopify_apply_tax_in_order','=','create_shopify_tax'),('shopify_instance_id','!=',False)]}"
                                    class="o_light_label o_onboard_input"/>
                             <a href="javascript:void(0)"
                                title="Set the invoice tax account base on this account we will set this account in the newly created tax when import orders from Shopify to Odoo."

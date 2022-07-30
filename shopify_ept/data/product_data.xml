@@ -50,13 +50,21 @@
             <field name="invoice_policy">order</field>
         </record>
 
-		<!--Below product is used for TIP-->
-		<record id="shopify_tip_product" model="product.product">
-			<field name="name">TIP Product</field>
-			<field name="type">service</field>
-			<field name="default_code">shopifytip</field>
+        <!--Below product is used for TIP-->
+        <record id="shopify_tip_product" model="product.product">
+            <field name="name">TIP Product</field>
+            <field name="type">service</field>
+            <field name="default_code">shopifytip</field>
             <field name="invoice_policy">order</field>
-		</record>
+        </record>
+
+        <!--Create a shopify duties product-->
+        <record id="shopify_duties_product" model="product.product">
+            <field name="name">Shopify Duties Product</field>
+            <field name="type">service</field>
+            <field name="default_code">shopifydutiesproduct</field>
+            <field name="invoice_policy">order</field>
+        </record>
 
     </data>
 </odoo>
