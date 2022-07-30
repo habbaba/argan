@@ -32,7 +32,7 @@ class InheritPT(models.Model):
     def get_material(self):
         username, password = self.env['res.config.settings'].search([],limit = 1).getCredentials()
         odooProducts = self.env['product.template'].search([('istikbal_product_code', '!=', False)])
-        url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + self.istikbal_product_code
+        url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + self.default_code
         auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
         headers = {
             'Authorization': 'Basic ' + auth,
