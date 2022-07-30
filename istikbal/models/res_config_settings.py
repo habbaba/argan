@@ -103,10 +103,10 @@ class Integration(models.TransientModel):
 
     def importMaterials(self):
         username, password = self.getCredentials()
-        odooProducts = self.env['product.template'].search([('istikbal_product_code', '!=', False)])
+        odooProducts = self.env['product.template'].search([('default_code', '!=', False)])
         allMaterials = []
         for odooProduct in odooProducts:
-            url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + odooProduct.istikbal_product_code
+            url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + odooProduct.default_code
             auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
             headers = {
                 'Authorization': 'Basic ' + auth,
