@@ -3,3 +3,4 @@ access_istikbal_credentials,access.istikbal.credentials,model_istikbal_credentia
 access_istikbal_materials,access.istikbal.materials,model_istikbal_materials,base.group_user,1,1,1,1
 access_istikbal_shipments_header,access.istikbal.shipments.header,model_istikbal_shipments_header,base.group_user,1,1,1,1
 access_istikbal_shipments_details,access.istikbal.shipments.details,model_istikbal_shipments_details,base.group_user,1,1,1,1
+access_istikbal_incoming_shipments,access.istikbal.incoming.shipments,model_istikbal_incoming_shipments,base.group_user,1,1,1,1

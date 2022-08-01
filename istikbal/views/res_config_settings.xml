@@ -7,30 +7,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//div[hasclass('settings')]" position="inside">
                     <div class="app_settings_block" data-string="Istikbal" string="Istikbal" data-key="istikbal">
-<!--                        <div id="istikbal_Settings">-->
-<!--                            <h2>Istikbal Settings</h2>-->
-<!--                            <div class="row mt16 o_settings_container">-->
-<!--                                <div class="col-12 col-lg-6 o_setting_box">-->
-<!--                                    <div class="o_setting_right_pane">-->
-<!--                                        <span class="o_form_label">Credentials Layout</span>-->
-<!--&lt;!&ndash;                                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>&ndash;&gt;-->
-<!--                                        <div class="text-muted">-->
-<!--                                            You will find these things in your Portal.-->
-<!--                                        </div>-->
-<!--                                        <div class="content-group">-->
-<!--                                            <div class="mt16">-->
-<!--                                                <label for="username" string="Username" class="col-4 col-lg-4 o_light_label"/>-->
-<!--                                                <field name="username" class="oe_inline"/>-->
-<!--                                            </div>-->
-<!--                                            <div class="mt8">-->
-<!--                                                <label for="password" string="Password" class="col-4 col-lg-4 o_light_label"/>-->
-<!--                                                <field name="password" password="1" class="oe_inline"/>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
+
                         <div id="manual-import">
                             <h2>Manual Import Utility</h2>
                             <div class="row mt16 o_settings_container">
@@ -38,10 +15,10 @@
                                     <div class="o_setting_left_pane">
                                     </div>
                                     <div class="o_setting_right_pane">
-                                        <span class="o_form_label">Import Inventory</span>
+                                        <span class="o_form_label">Import Receipt Details</span>
                                         <span class="fa fa-lg fa-cube" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
                                         <div class="text-muted">
-                                            Here you will import inventory from Istikbal after clicking the button.
+                                            Here you will Import Receipt Details from Istikbal after clicking the button.
                                         </div>
                                         <div class="content-group">
                                             <div class="mt16">

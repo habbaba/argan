@@ -16,37 +16,30 @@ from datetime import datetime, timedelta
 class InheritPT(models.Model):
     _inherit = 'product.template'
 
-    istikbal_product_code = fields.Char('Product Code')
     syncedIstikbal = fields.Boolean('Synced Istikbal', default=False)
     material_ids = fields.Many2many('istikbal.materials', string='Istikbal Materials')
-    packageNum = fields.Char('packageNum')
-    maktx = fields.Char('maktx')
-    vrkme = fields.Char('vrkme')
-    lgort = fields.Char('lgort')
-    volum = fields.Char('volum')
-    audat = fields.Char('audat')
-    stawn = fields.Char('stawn')
-    bdtCode = fields.Char('bdtCode')
-    productRef = fields.Char('productRef')
+
 
     def get_material(self):
         username, password = self.env['res.config.settings'].search([],limit = 1).getCredentials()
-        odooProducts = self.env['product.template'].search([('istikbal_product_code', '!=', False)])
-        url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + self.default_code
-        auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
-        headers = {
-            'Authorization': 'Basic ' + auth,
-        }
+        if self.default_code:
+            url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + self.default_code
+            auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
+            headers = {
+                'Authorization': 'Basic ' + auth,
+            }
 
-        response = requests.request("GET", url, headers=headers)
-        if response.status_code == 200:
-            materials = json.loads(response.content)
-            if not materials:
-                raise UserError(_("No material detail found."))
+            response = requests.request("GET", url, headers=headers)
+            if response.status_code == 200:
+                materials = json.loads(response.content)
+                if not materials:
+                    raise UserError(_("No material detail found."))
 
 
-        self.createMaterials(materials)
-        self.env.cr.commit()
+            self.createMaterials(materials)
+            self.env.cr.commit()
+        else:
+            raise UserError(_("Please add product info code."))
 
     def createMaterials(self, materials):
         for material in materials:

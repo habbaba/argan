@@ -16,10 +16,15 @@
                     <field name="invoiceNumber" />
                     <field name="shipmentDate" />
                     <field name="truckPlate" />
-                    <field name="volume" />
+                    <field name="volum" />
+                    <field name="voleh" />
                 </tree>
             </field>
         </record>
+
+
+
+
         <record model="ir.ui.view" id="istikbal_shipments_form_view">
             <field name="name">Istikbal Shipments</field>
             <field name="model">istikbal.shipments.header</field>
@@ -30,34 +35,29 @@
                             <group>
                                 <field name="shipmentNumber" />
                                 <field name="invoiceNumber" />
+                                <field name="containerNumber" />
+                                <field name="shipmentDate" />
                             </group>
                             <group>
                                 <field name="truckPlate" />
                                 <field name="truckPlate2" />
-                            </group>
-                        </group>
-                        <group>
-                            <group>
-                                <field name="containerNumber" />
-                                <field name="volume" />
+                                 <field name="volum" />
+                                <field name="voleh" />
                                 <field name="company_id" />
-                            </group>
-                            <group>
-                                <field name="shipmentDate" />
                             </group>
                         </group>
                         <notebook>
                             <page name="istikbal_shipment_details" string="Details">
                                 <field name="detail_ids" mode="tree">
                                     <tree delete="1">
-                                        <field name="packageNum" />
-                                        <field name="bdtCode" />
+                                        <field name="pakageEnum" />
+                                        <field name="bdtCode"  optional="show"/>
                                         <field name="productCode" />
-                                        <field name="quantity" />
-                                        <field name="orderReference" />
-                                        <field name="customerOrderReference" />
+                                        <field name="orderReference"  optional="show"/>
+                                        <field name="customerOrderReference"  optional="show"/>
                                         <field name="productName" />
-                                        <field name="productNameEN" />
+                                        <field name="productNameEN"  optional="hide"/>
+                                           <field name="quantity" />
                                         <field name="volum" />
                                     </tree>
                                 </field>
@@ -70,7 +70,77 @@
 
 
 
+
+        <!-- Istikbal Incoming Shipment  -->
+        <record model="ir.ui.view" id="istikbal_incoming_shipments_form_view">
+            <field name="name">Istikbal Incoming Shipments</field>
+            <field name="model">istikbal.incoming.shipments</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group string="Incoming shipment details">
+                            <group>
+                                <field name="customerRef" />
+                                <field name="producCode" />
+                                <field name="bdtCode" />
+                                <field name="productRef" />
+                                <field name="maktx" />
+                                <field name="quantity" />
+                            </group>
+                            <group>
+                                <field name="packageEnum" />
+                                <field name="vrkme" />
+                                <field name="lgort" />
+                                <field name="volum" />
+                                <field name="audat" />
+                                <field name="stawn" />
+                                <field name="text" />
+                                <field name="company_id" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="istikbal_incoming_shipments_tree_view">
+            <field name="name">Istikbal Receipt details Tree</field>
+            <field name="model">istikbal.incoming.shipments</field>
+            <field name="arch" type="xml">
+                <tree string="Istikbal Shipments">
+                    <field name="customerRef" />
+                    <field name="producCode" />
+                    <field name="bdtCode"  optional="hide"/>
+                    <field name="productRef" />
+                    <field name="maktx" />
+                    <field name="packageEnum"  optional="hide"/>
+                    <field name="vrkme"  optional="hide"/>
+                    <field name="lgort" />
+                    <field name="volum" />
+                    <field name="quantity" />
+                    <field name="audat" />
+                    <field name="stawn" />
+                    <field name="text" />
+                    <field name="company_id" />
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="istikbal_incoming_shipments_action">
+            <field name="name">Istikbal Receipt details</field>
+            <field name="res_model">istikbal.incoming.shipments</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="istikbal.istikbal_incoming_shipments_tree_view"/>
+        </record>
+
+
         <menuitem id="istikbal_shipments_action_menu" parent="istikbal_root" name="Shipments" action="istikbal_shipments_action"/>
+        <menuitem id="istikbal_incoming_shipments_action_menu" parent="istikbal_root" name="Receipt detials" action="istikbal_incoming_shipments_action"/>
+
+
+
+
 
     </data>
 </odoo>
