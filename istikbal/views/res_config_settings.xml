@@ -22,7 +22,7 @@
                                         </div>
                                         <div class="content-group">
                                             <div class="mt16">
-                                                <button name="importInventory" string="Import Inventory" type="object" class="col-lg-5 o_light_label oe_highlight"/>
+                                                <button name="importInventory" string="Import Receipt Details" type="object" class="col-lg-5 o_light_label oe_highlight"/>
                                             </div>
                                         </div>
                                     </div>
