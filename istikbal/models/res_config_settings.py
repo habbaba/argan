@@ -75,7 +75,7 @@ class Integration(models.TransientModel):
                      'customerRef': product['customerRef'],
                      'productRef': product['productRef'],
                      'text': product['text'],
-                     'packageNum': product['packageNum'],
+                     'packageEnum': product['packageNum'],
                      'maktx': product['maktx'],
                      'vrkme':product['vrkme'],
                      'lgort': product['lgort'],
