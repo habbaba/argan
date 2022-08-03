@@ -23,7 +23,7 @@
 
         <menuitem id="istikbal_root" web_icon="istikbal,static/description/icon.png" name="Istikbal"/>
 
-        <menuitem id="istikbal_credentials_action_menu" parent="istikbal_root" name="Credentials" action="istikbal_credentials_action"/>
+        <menuitem id="istikbal_credentials_action_menu" parent="istikbal_root" name="Stores Credentials" action="istikbal_credentials_action"/>
 
     </data>
 </odoo>

@@ -75,7 +75,10 @@ class IncomingShipments(models.Model):
     quantity = fields.Char('Quantity')
 
     
-    
+
+class SalesOrderAnalysis(models.Model):
+    _name = 'istikbal.sales.order.analysis'
+
     
     
     

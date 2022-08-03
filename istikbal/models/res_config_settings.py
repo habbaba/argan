@@ -66,6 +66,7 @@ class Integration(models.TransientModel):
 
     def createProducts(self, products):
         for product in products:
+            print(product)
             odooProduct = self.env['istikbal.incoming.shipments'].search([('producCode', '=', product['producCode']),('company_id', '=', self.env.company.id)])
             if not odooProduct:
                 incoming_shipment = self.env['istikbal.incoming.shipments'].create(
@@ -83,7 +84,7 @@ class Integration(models.TransientModel):
                      'audat': product['audat'],
                      'stawn': product['stawn'],
                      'company_id':self.env.company.id
-                })
+                     })
 
 
 
@@ -101,18 +102,56 @@ class Integration(models.TransientModel):
             response = requests.request("GET", url, headers=headers)
             if response.status_code == 200:
                 materials = json.loads(response.content)
-                print(materials)
                 if len(materials) > 0:
                     allMaterials.extend(materials)
-
         self.createMaterials(allMaterials)
         self.env.cr.commit()
 
     def createMaterials(self, materials):
         for material in materials:
-            print(material)
             odooMaterials = self.env['istikbal.materials'].search([('materialNumber', '=', material['materialNumber'])])
-            if not odooMaterials:
+            if odooMaterials:
+                odooMaterials = self.env['istikbal.materials'].write({
+                    'materialNumber': material['materialNumber'],
+                    'bdtModelName': material['bdtModelName'],
+                    'bdtMaterialDesc': material['bdtMaterialDesc'],
+                    'bdtEnglishMaterailDesc': material['bdtEnglishMaterailDesc'],
+                    'netWeight': material['netWeight'],
+                    'grossWeight': material['grossWeight'],
+                    'numberExportContainer': material['numberExportContainer'],
+                    'volum': material['volum'],
+                    'producerCode': material['producerCode'],
+                    'materialGroup': material['materialGroup'],
+                    'vmstd':material['vmstd'],
+                    'vmsta':material['vmsta'],
+                    'bdtKartela':material['bdtKartela'],
+                    'meins':material['meins'],
+                    'ersda':material['ersda'],
+                    'productClass':material['productClass'],
+                    'productClassDef': material['productClassDef'],
+                    'mtpos': material['mtpos'],
+                    'prodh': material['prodh'],
+                    'vtext': material['vtext'],
+                    'mvgr3': material['mvgr3'],
+                    'zzbolG01': material['zzbolG01'],
+                    'zzbolG02': material['zzbolG02'],
+                    'zzbolG03': material['zzbolG03'],
+                    'zzbolG04': material['zzbolG04'],
+                    'zzbolG05': material['zzbolG05'],
+                    'zzbolG06': material['zzbolG06'],
+                    'zzbolG07': material['zzbolG07'],
+                    'zzbolG08': material['zzbolG08'],
+                    'zzbolG09': material['zzbolG09'],
+                    'zzbolG10': material['zzbolG10'],
+                    'zzbolG11': material['zzbolG11'],
+                    'zzbolG12': material['zzbolG12'],
+                    'zzbolG13': material['zzbolG13'],
+                    'zzbolG14': material['zzbolG14'],
+                    'zzbolG15': material['zzbolG15'],
+                    'fabric': material['fabric'],
+                    'company_id': self.env.company.id,
+                })
+            else:
                 odooMaterials = self.env['istikbal.materials'].create({
                     'materialNumber': material['materialNumber'],
                     'bdtModelName': material['bdtModelName'],
@@ -124,10 +163,40 @@ class Integration(models.TransientModel):
                     'volum': material['volum'],
                     'producerCode': material['producerCode'],
                     'materialGroup': material['materialGroup'],
+                    'vmstd': material['vmstd'],
+                    'vmsta': material['vmsta'],
+                    'bdtKartela': material['bdtKartela'],
+                    'meins': material['meins'],
+                    'ersda': material['ersda'],
+                    'productClass': material['productClass'],
+                    'productClassDef': material['productClassDef'],
+                    'mtpos': material['mtpos'],
+                    'prodh': material['prodh'],
+                    'vtext': material['vtext'],
+                    'mvgr3': material['mvgr3'],
+                    'zzbolG01': material['zzbolG01'],
+                    'zzbolG02': material['zzbolG02'],
+                    'zzbolG03': material['zzbolG03'],
+                    'zzbolG04': material['zzbolG04'],
+                    'zzbolG05': material['zzbolG05'],
+                    'zzbolG06': material['zzbolG06'],
+                    'zzbolG07': material['zzbolG07'],
+                    'zzbolG08': material['zzbolG08'],
+                    'zzbolG09': material['zzbolG09'],
+                    'zzbolG10': material['zzbolG10'],
+                    'zzbolG11': material['zzbolG11'],
+                    'zzbolG12': material['zzbolG12'],
+                    'zzbolG13': material['zzbolG13'],
+                    'zzbolG14': material['zzbolG14'],
+                    'zzbolG15': material['zzbolG15'],
+                    'fabric': material['fabric'],
+                    'company_id': self.env.company.id,
                 })
             odooProduct = self.env['product.template'].search(
                 [('default_code', '=', material['materialNumber'])])
             if odooProduct:
+                odooMaterials = self.env['istikbal.materials'].search(
+                    [('materialNumber', '=', material['materialNumber'])])
                 odooProduct.write({
                     'material_ids': [[4, odooMaterials.id]]
                 })
@@ -147,7 +216,6 @@ class Integration(models.TransientModel):
             self.createShipmentsHeader(shipmentsHeader)
             self.createShipmentsDetails(shipmentsDetails)
             self.env.cr.commit()
-
 
     def createShipmentsHeader(self, headers):
         for header in headers:
@@ -210,4 +278,18 @@ class Integration(models.TransientModel):
                     'gewei': detail['gewei'],
                     'voleh': detail['voleh']
                 })
+
+    def importSaleOrderAnalysis(self):
+        username, password = self.getCredentials()
+        url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getordersanalysisreport?dudDate=" + "01.07.2022"+"&"+"dddateb="+"01.08.2022"
+        auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
+        headers = {
+            'Authorization': 'Basic ' + auth,
+        }
+
+        response = requests.request("GET", url, headers=headers)
+        print(response.text)
+            # if response.status_code == 200:
+            #     materials = json.loads(response.content)
+
 
