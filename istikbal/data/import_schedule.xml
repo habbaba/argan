@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="import_receipt_detials_scheduler" model="ir.cron">
-        <field name="name">Import Receipt Details</field>
+        <field name="name">Import Istikbal GET Inventory</field>
         <field name="model_id" ref="model_res_config_settings"/>
         <field name="state">code</field>
         <field name="active">1</field>
@@ -13,7 +13,7 @@
 
 
      <record id="import_shipment_scheduler" model="ir.cron">
-        <field name="name">Import Shipment</field>
+        <field name="name">Import Istikbal GET Shipments</field>
         <field name="model_id" ref="model_res_config_settings"/>
         <field name="state">code</field>
         <field name="active">1</field>
@@ -25,7 +25,7 @@
 
 
     <record id="import_material_scheduler" model="ir.cron">
-        <field name="name">Import Material</field>
+        <field name="name">Import Istikbal GET Materials</field>
         <field name="model_id" ref="model_res_config_settings"/>
         <field name="state">code</field>
         <field name="active">1</field>

@@ -26,6 +26,7 @@
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
+        'data/import_schedule.xml',
         'views/res_config_settings.xml',
         'views/istikbal_settings.xml',
         'views/product_template.xml',
