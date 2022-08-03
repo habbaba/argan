@@ -232,6 +232,7 @@ class Integration(models.TransientModel):
                     'shipmentNumber': header['shipmentNumber'],
                     'volum': header['volume'],
                     'voleh': header['volume'],
+                    'company_id': self.env.company.id,
                 })
 
             else:
@@ -245,6 +246,7 @@ class Integration(models.TransientModel):
                     'shipmentNumber': header['shipmentNumber'],
                     'volum': header['volume'],
                     'voleh': header['volume'],
+                    'company_id': self.env.company.id,
                 })
 
     def createShipmentsDetails(self, details):
@@ -276,7 +278,8 @@ class Integration(models.TransientModel):
                     'mvgr3Desc': detail['mvgr3Desc'],
                     'brgew': detail['brgew'],
                     'gewei': detail['gewei'],
-                    'voleh': detail['voleh']
+                    'voleh': detail['voleh'],
+                    'company_id': self.env.company.id,
                 })
 
     def importSaleOrderAnalysis(self):
