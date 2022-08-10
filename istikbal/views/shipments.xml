@@ -18,6 +18,8 @@
                     <field name="truckPlate" />
                     <field name="volum" />
                     <field name="voleh" />
+                     <field name="company_id" />
+                    <field name="create_date" />
                 </tree>
             </field>
         </record>
@@ -116,7 +118,8 @@
                     <field name="audat" />
                     <field name="stawn" />
                     <field name="text" />
-                    <field name="company_id" />
+                          <field name="company_id" />
+                    <field name="create_date" />
                 </tree>
             </field>
         </record>
@@ -222,7 +225,8 @@
                                 <field name="zzbolG14"  optional="hide"/>
                                 <field name="zzbolG15"    optional="hide"/>
                                 <field name="fabric"   optional="hide"/>
-                    <field name="company_id" />
+                          <field name="company_id" />
+                    <field name="create_date" />
                 </tree>
             </field>
         </record>
