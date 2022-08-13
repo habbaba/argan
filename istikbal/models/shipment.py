@@ -9,25 +9,29 @@ from datetime import datetime
 class Shipments(models.Model):
     _name = 'istikbal.shipments.header'
 
+    disPactDate = fields.Char('disPactDate')
     containerNumber = fields.Char('Container Number')
     truckPlate = fields.Char('Truck Plate')
     truckPlate2 = fields.Char('Truck Plate 2')
-    shipmentDate = fields.Datetime('Shipment Date')
+    shipmentDate = fields.Char('Shipment Date')
     invoiceNumber = fields.Char('Invoice Number')
     shipmentNumber = fields.Char('Shipment Number')
     name = fields.Char('Shipment Number')
-    volume = fields.Float('Volume')
+    volum = fields.Float('volum')
+    voleh = fields.Float('voleh')
     detail_ids = fields.One2many('istikbal.shipments.details', 'shipment_id', string='Shipment Details')
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
+
+
 
 
 class ShipmentDetails(models.Model):
     _name = 'istikbal.shipments.details'
 
     shipment_id = fields.Many2one('istikbal.shipments.header')
-    packageNum = fields.Char('Package Number')
-    shipmentNumber = fields.Char('Shipment Number')
+    pakageEnum = fields.Char('Package Number')
+    shipMentNumber = fields.Char('Shipment Number')
     bdtCode = fields.Char('Code')
     productCode = fields.Char('Product Code')
     productPackage = fields.Char('Product Package')
@@ -41,6 +45,51 @@ class ShipmentDetails(models.Model):
     productNamePack = fields.Char('Product Name Pack')
     productNameEN = fields.Char('Product Name Eng.')
     volum = fields.Float('Volume')
-    zzbdtAmount = fields.Char('Amount')
+    vrkme = fields.Char('vrkme')
+    inhalt = fields.Char('inhalt')
+    mvgr3Desc = fields.Char('mvgr3Desc')
+    brgew = fields.Char('brgew')
+    gewei = fields.Char('gewei')
+    zzbdtAmount = fields.Char('zzbdtAmount')
+    voleh = fields.Char('voleh')
 
+class IncomingShipments(models.Model):
+    _name = 'istikbal.incoming.shipments'
 
+    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
+                                 default=lambda self: self.env.company)
+    producCode = fields.Char('Product Code')
+    packageEnum = fields.Char('packageNum')
+    bdtCode = fields.Char('bdtCode')
+    productRef  = fields.Char('productRef')
+    maktx = fields.Char('maktx')
+    vrkme = fields.Char('vrkme')
+    lgort = fields.Char('lgort')
+    volum  = fields.Char('volum')
+    audat=  fields.Char('audat')
+    stawn = fields.Char('stawn')
+    quatity = fields.Char('quatity')
+    customerRef = fields.Char('customerRef')
+    customerBarCode = fields.Char('customerBarCode')
+    text = fields.Char('text')
+    quantity = fields.Char('Quantity')
+
+    
+
+class SalesOrderAnalysis(models.Model):
+    _name = 'istikbal.sales.order.analysis'
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
