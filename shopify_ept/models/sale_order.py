@@ -221,7 +221,11 @@ class SaleOrder(models.Model):
             if float(total_discount) > 0.0:
                 discount_amount = 0.0
                 for discount_allocation in line.get("discount_allocations"):
-                    discount_amount += float(discount_allocation.get("amount"))
+                    if instance.order_visible_currency:
+                        discount_total_price = self.get_price_based_on_customer_visible_currency(
+                            discount_allocation.get("amount_set"), order_response, discount_amount)
+                        if discount_total_price:
+                            discount_amount += float(discount_total_price)
                 if discount_amount > 0.0:
                     _logger.info("Creating discount line for Odoo order(%s) and Shopify order is (%s)", self.name,
                                  order_number)
@@ -508,31 +512,38 @@ class SaleOrder(models.Model):
             Task_id: 179249
         """
         message = ""
-        if shopify_financial_status == "refunded":
-            total_refund = 0.0
+        if shopify_financial_status == "refunded" or "partially_refunded" and order_response.get(
+                "refunds"):
+            is_need_create_refund = False
             for refund in order_response.get('refunds'):
                 for transaction in refund.get('transactions'):
                     if transaction.get('kind') == 'refund' and transaction.get('status') == 'success':
-                        total_refund += float(transaction.get('amount'))
-            refunded = sale_order.create_shopify_refund(order_response.get("refunds"), total_refund, created_by)
-            if refunded[0] == 0:
-                message = "- Refund can only be generated if it's related order " \
-                          "invoice is found.\n- For order [%s], system could not find the " \
-                          "related order invoice. " % (order_response.get('name'))
-            elif refunded[0] == 2:
-                message = "- Refund can only be generated if it's related order " \
-                          "invoice is in 'Post' status.\n- For order [%s], system found " \
-                          "related invoice but it is not in 'Post' status." % (
-                              order_response.get('name'))
-            elif refunded[0] == 3:
-                message = "- Partial refund is received from Shopify for order [%s].\n " \
-                          "- System do not process partial refunds.\n" \
-                          "- Either create partial refund manually in Odoo or do full " \
-                          "refund in Shopify." % (order_response.get('name'))
-        elif shopify_financial_status == "partially_refunded" and order_response.get("refunds"):
-            message = sale_order.create_shopify_partially_refund(order_response.get("refunds"),
-                                                                 order_response.get('name'), created_by)
-        self.prepare_vals_shopify_multi_payment_refund(order_response.get("refunds"), sale_order)
+                        is_need_create_refund = True
+
+            if is_need_create_refund:
+                message = sale_order.create_shopify_partially_refund(order_response.get("refunds"),
+                                                                     order_response.get('name'), created_by,
+                                                                     shopify_financial_status)
+            self.prepare_vals_shopify_multi_payment_refund(order_response.get("refunds"), sale_order)
+            # refunded = sale_order.create_shopify_refund(order_response.get("refunds"), total_refund, created_by)
+            # if refunded[0] == 0:
+            #     message = "- Refund can only be generated if it's related order " \
+            #               "invoice is found.\n- For order [%s], system could not find the " \
+            #               "related order invoice. " % (order_response.get('name'))
+            # elif refunded[0] == 2:
+            #     message = "- Refund can only be generated if it's related order " \
+            #               "invoice is in 'Post' status.\n- For order [%s], system found " \
+            #               "related invoice but it is not in 'Post' status." % (
+            #                   order_response.get('name'))
+            # elif refunded[0] == 3:
+            #     message = "- Partial refund is received from Shopify for order [%s].\n " \
+            #               "- System do not process partial refunds.\n" \
+            #               "- Either create partial refund manually in Odoo or do full " \
+            #               "refund in Shopify." % (order_response.get('name'))
+        # elif shopify_financial_status == "partially_refunded" and order_response.get("refunds"):
+        #     message = sale_order.create_shopify_partially_refund(order_response.get("refunds"),
+        #                                                          order_response.get('name'), created_by)
+        # self.prepare_vals_shopify_multi_payment_refund(order_response.get("refunds"), sale_order)
         return message
 
     def prepare_vals_shopify_multi_payment_refund(self, order_refunds, order):
@@ -636,13 +647,14 @@ class SaleOrder(models.Model):
             @return: order
             @author: Haresh Mori @Emipro Technologies Pvt. Ltd on date 12/11/2019.
             Task Id : 157350
+            @change : if configuration on for Create delivery fee than going to create order line for delivery fee
+            @change by : Nilam Kubavat at 09-Aug-2022 for task id : 197829
         """
         payment_gateway_obj = self.env["shopify.payment.gateway.ept"]
         gateway = order_response.get('gateway') or "no_payment_gateway"
-        payment_gateway, workflow = payment_gateway_obj.shopify_search_create_gateway_workflow(instance,
-                                                                                               order_data_queue_line,
-                                                                                               order_response,
-                                                                                               log_book_id, gateway)
+        payment_gateway, workflow, payment_term = \
+            payment_gateway_obj.shopify_search_create_gateway_workflow(instance, order_data_queue_line, order_response,
+                                                                       log_book_id, gateway)
 
         if not all([payment_gateway, workflow]):
             return False
@@ -651,6 +663,7 @@ class SaleOrder(models.Model):
                                                      invoice_address, order_response,
                                                      payment_gateway,
                                                      workflow)
+        order_vals.update({'payment_term_id': payment_term and payment_term.id or False})
         if len(order_response.get('payment_gateway_names')) > 1:
             payment_vals = self.prepare_vals_shopify_multi_payment(instance, order_data_queue_line, order_response,
                                                                    log_book_id, payment_gateway, workflow)
@@ -668,7 +681,31 @@ class SaleOrder(models.Model):
         order.create_shopify_shipping_lines(order_response, instance)
         _logger.info("Created Shipping lines for order (%s).", order.name)
 
+        if instance.is_delivery_fee:
+            order.create_shopify_Delivery_Fee_lines(order_response, instance)
+            _logger.info("Created Delivery Fee for order (%s).", order.name)
+
         return order
+
+    def create_shopify_Delivery_Fee_lines(self, order_response, instance):
+        """
+        Creates Delivery Fee lines for shopify orders.
+        @author: Nilam Kubavat @Emipro Technologies Pvt. Ltd on date 09-Aug-2022
+        Task Id : 197829
+        """
+        shipping_product = instance.shipping_product_id
+        for line in order_response.get("tax_lines", []):
+            if line.get('title') == instance.delivery_fee_name:
+                delivery_fee_price = line.get("price")
+                if instance.order_visible_currency:
+                    delivery_fee_price = self.get_price_based_on_customer_visible_currency(line.get("price_set"),
+                                                                                           order_response,
+                                                                                           delivery_fee_price)
+                order_line = self.shopify_create_sale_order_line(line, shipping_product, 1,
+                                                                 line.get('title'),
+                                                                 delivery_fee_price,
+                                                                 order_response)
+                order_line.name = line.get('title')
 
     def prepare_shopify_order_vals(self, instance, partner, shipping_address,
                                    invoice_address, order_response, payment_gateway,
@@ -786,25 +823,23 @@ class SaleOrder(models.Model):
             "currency") or False
         if order_currency:
             currency = currency_obj.search([("name", "=", order_currency)])
+            if instance.shopify_pricelist_id.currency_id.id == currency.id:
+                return instance.shopify_pricelist_id
             if not currency:
                 currency = currency_obj.search(
                     [("name", "=", order_currency), ("active", "=", False)])
-                if currency:
-                    currency.write({"active": True})
-                    pricelist = pricelist_obj.search(
-                        [("currency_id", "=", currency.id), ("company_id", "=", instance.shopify_company_id.id)],
-                        limit=1)
-                    if pricelist:
-                        return pricelist
-                    pricelist_vals = {"name": currency.name,
-                                      "currency_id": currency.id,
-                                      "company_id": instance.shopify_company_id.id}
-                    pricelist = pricelist_obj.create(pricelist_vals)
+            if currency:
+                currency.write({"active": True})
+                pricelist = pricelist_obj.search(
+                    [("currency_id", "=", currency.id), ("company_id", "=", instance.shopify_company_id.id)],
+                    limit=1)
+                if pricelist:
                     return pricelist
-                pricelist = instance.shopify_pricelist_id if instance.shopify_pricelist_id else False
+                pricelist_vals = {"name": currency.name,
+                                  "currency_id": currency.id,
+                                  "company_id": instance.shopify_company_id.id}
+                pricelist = pricelist_obj.create(pricelist_vals)
                 return pricelist
-            if instance.shopify_pricelist_id.currency_id.id == currency.id:
-                return instance.shopify_pricelist_id
             pricelist = pricelist_obj.search([("currency_id", "=", currency.id)], limit=1)
             return pricelist
         pricelist = instance.shopify_pricelist_id if instance.shopify_pricelist_id else False
@@ -848,12 +883,12 @@ class SaleOrder(models.Model):
                                                                   is_duties)
         if is_discount:
             order_line_vals["name"] = "Discount for " + str(product_name)
-            if instance.apply_tax_in_order == "odoo_tax" and is_discount:
+            if instance.apply_tax_in_order == "odoo_tax" and previous_line:
                 order_line_vals["tax_id"] = previous_line.tax_id
 
         if is_duties:
             order_line_vals["name"] = "Duties for " + str(product_name)
-            if instance.apply_tax_in_order == "odoo_tax" and is_duties:
+            if instance.apply_tax_in_order == "odoo_tax" and previous_line:
                 order_line_vals["tax_id"] = previous_line.tax_id
 
         shopify_analytic_tag_ids = instance.shopify_analytic_tag_ids.ids
@@ -1006,11 +1041,12 @@ class SaleOrder(models.Model):
                                            'remaining_refund_amount': amount})
                     payment_list_vals.append(payment_list)
                     continue
-                new_payment_gateway, new_workflow = payment_gateway_obj.shopify_search_create_gateway_workflow(instance,
-                                                                                                               order_data_queue_line,
-                                                                                                               order_response,
-                                                                                                               log_book_id,
-                                                                                                               gateway)
+                new_payment_gateway, new_workflow, payment_term = \
+                    payment_gateway_obj.shopify_search_create_gateway_workflow(instance,
+                                                                               order_data_queue_line,
+                                                                               order_response,
+                                                                               log_book_id,
+                                                                               gateway)
                 if not all([new_payment_gateway, new_workflow]):
                     return False
                 payment_list = (0, 0, {'payment_gateway_id': new_payment_gateway.id, 'workflow_id': new_workflow.id,
@@ -1091,7 +1127,7 @@ class SaleOrder(models.Model):
         """
         tracking_numbers = []
         line_items = []
-        for move in product_moves:
+        for move in product_moves.filtered(lambda line: line.product_id.detailed_type == 'product'):
             shopify_line_id = move.sale_line_id.shopify_line_id
 
             line_items.append({"id": shopify_line_id, "quantity": int(move.product_qty)})
@@ -1429,31 +1465,32 @@ class SaleOrder(models.Model):
                 if not cancelled:
                     message = "System can not cancel the order {0} as one of the Delivery Order " \
                               "related to it is in the 'Done' status.".format(order.name)
-            if shopify_status == "refunded":
-                if not message:
-                    total_refund = 0.0
-                    for refund in order_data.get('refunds'):
-                        for transaction in refund.get('transactions'):
-                            if transaction.get('kind') == 'refund' and transaction.get('status') == 'success':
-                                total_refund += float(transaction.get('amount'))
-                    refunded = order.create_shopify_refund(order_data.get("refunds"), total_refund, created_by)
-                    if refunded[0] == 0:
-                        message = "- Refund can only be generated if it's related order " \
-                                  "invoice is found.\n- For order [%s], system could not find the " \
-                                  "related order invoice. " % (order_data.get('name'))
-                    elif refunded[0] == 2:
-                        message = "- Refund can only be generated if it's related order " \
-                                  "invoice is in 'Post' status.\n- For order [%s], system found " \
-                                  "related invoice but it is not in 'Post' status." % (
-                                      order_data.get('name'))
-                    elif refunded[0] == 3:
-                        message = "- Partial refund is received from Shopify for order [%s].\n " \
-                                  "- System do not process partial refunds.\n" \
-                                  "- Either create partial refund manually in Odoo or do full " \
-                                  "refund in Shopify." % (order_data.get('name'))
-            elif shopify_status == "partially_refunded" and order_data.get("refunds"):
-                message = order.create_shopify_partially_refund(order_data.get("refunds"), order_data.get('name'),
-                                                                created_by)
+            if shopify_status == "refunded" or "partially_refunded" and order_data.get("refunds"):
+                message = self.create_shipped_order_refund(shopify_status, order_data, order, created_by)
+            #     if not message:
+            #         total_refund = 0.0
+            #         for refund in order_data.get('refunds'):
+            #             for transaction in refund.get('transactions'):
+            #                 if transaction.get('kind') == 'refund' and transaction.get('status') == 'success':
+            #                     total_refund += float(transaction.get('amount'))
+            #         refunded = order.create_shopify_refund(order_data.get("refunds"), total_refund, created_by)
+            #         if refunded[0] == 0:
+            #             message = "- Refund can only be generated if it's related order " \
+            #                       "invoice is found.\n- For order [%s], system could not find the " \
+            #                       "related order invoice. " % (order_data.get('name'))
+            #         elif refunded[0] == 2:
+            #             message = "- Refund can only be generated if it's related order " \
+            #                       "invoice is in 'Post' status.\n- For order [%s], system found " \
+            #                       "related invoice but it is not in 'Post' status." % (
+            #                           order_data.get('name'))
+            #         elif refunded[0] == 3:
+            #             message = "- Partial refund is received from Shopify for order [%s].\n " \
+            #                       "- System do not process partial refunds.\n" \
+            #                       "- Either create partial refund manually in Odoo or do full " \
+            #                       "refund in Shopify." % (order_data.get('name'))
+            # elif shopify_status == "partially_refunded" and order_data.get("refunds"):
+            #     message = order.create_shopify_partially_refund(order_data.get("refunds"), order_data.get('name'),
+            #                                                     created_by)
             # Below condition use for, In shopify store there is fulfilled order.
             elif order_data.get('fulfillment_status') == 'fulfilled':
                 fulfilled = order.fulfilled_shopify_order()
@@ -1463,7 +1500,7 @@ class SaleOrder(models.Model):
                 elif not fulfilled:
                     message = "There is not enough stock to complete Delivery for order [" \
                               "%s]" % order_data.get('name')
-            self.prepare_vals_shopify_multi_payment_refund(order_data.get("refunds"), order)
+            # self.prepare_vals_shopify_multi_payment_refund(order_data.get("refunds"), order)
             if message:
                 model_id = common_log_line_obj.get_model_id(self._name)
                 common_log_line_obj.shopify_create_order_log_line(message, model_id,
@@ -1488,44 +1525,44 @@ class SaleOrder(models.Model):
         self.canceled_in_shopify = True
         return True
 
-    def create_shopify_refund(self, refunds_data, total_refund, created_by=""):
-        """
-        Creates refund of shopify order, when order is refunded in Shopify.
-        It will need invoice created and posted for creating credit note in Odoo, otherwise it will
-        create log and generate activity as per configuration.
-        @author: Haresh Mori @Emipro Technologies Pvt. Ltd on date 13-Jan-2020..
-        @param refunds_data: Data of refunds.
-        @param total_refund: Total refund amount.
-        @param created_by: created by refund.
-        @return:[0] : When no invoice is created.
-                [1] : When invoice is not posted.
-                [2] : When partial refund was made in Shopify.
-                [True]:When credit notes are created or partial refund is done.
-        """
-        if not self.invoice_ids:
-            return [0]
-        invoices = self.invoice_ids.filtered(lambda x: x.move_type == "out_invoice")
-        refunds = self.invoice_ids.filtered(lambda x: x.move_type == "out_refund")
-        refund_date = self.convert_order_date(refunds_data[0])
-        if refunds:
-            return [True]
-
-        for invoice in invoices:
-            if not invoice.state == "posted":
-                return [2]
-        if self.amount_total == total_refund:
-            move_reversal = self.env["account.move.reversal"].with_context(
-                {"active_model": "account.move", "active_ids": invoices[0].ids}).create(
-                {"refund_method": "refund", "date": refund_date,
-                 "reason": "Refunded from shopify" if len(refunds_data) > 1 else refunds_data[0].get("note"),
-                 "journal_id": invoices[0].journal_id.id})
-            move_reversal.reverse_moves()
-            move_reversal.new_move_ids.message_post(body=_("Credit note generated by %s as Order refunded in "
-                                                           "Shopify.", created_by))
-            move_reversal.new_move_ids.write(
-                {"is_refund_in_shopify": True, "shopify_refund_id": refunds_data[0].get('id')})
-            return [True]
-        return [3]
+    # def create_shopify_refund(self, refunds_data, total_refund, created_by=""):
+    #     """
+    #     Creates refund of shopify order, when order is refunded in Shopify.
+    #     It will need invoice created and posted for creating credit note in Odoo, otherwise it will
+    #     create log and generate activity as per configuration.
+    #     @author: Haresh Mori @Emipro Technologies Pvt. Ltd on date 13-Jan-2020..
+    #     @param refunds_data: Data of refunds.
+    #     @param total_refund: Total refund amount.
+    #     @param created_by: created by refund.
+    #     @return:[0] : When no invoice is created.
+    #             [1] : When invoice is not posted.
+    #             [2] : When partial refund was made in Shopify.
+    #             [True]:When credit notes are created or partial refund is done.
+    #     """
+    #     if not self.invoice_ids:
+    #         return [0]
+    #     invoices = self.invoice_ids.filtered(lambda x: x.move_type == "out_invoice")
+    #     refunds = self.invoice_ids.filtered(lambda x: x.move_type == "out_refund")
+    #     refund_date = self.convert_order_date(refunds_data[0])
+    #     if refunds:
+    #         return [True]
+    #
+    #     for invoice in invoices:
+    #         if not invoice.state == "posted":
+    #             return [2]
+    #     if self.amount_total == total_refund:
+    #         move_reversal = self.env["account.move.reversal"].with_context(
+    #             {"active_model": "account.move", "active_ids": invoices[0].ids}).create(
+    #             {"refund_method": "refund", "date": refund_date,
+    #              "reason": "Refunded from shopify" if len(refunds_data) > 1 else refunds_data[0].get("note"),
+    #              "journal_id": invoices[0].journal_id.id})
+    #         move_reversal.reverse_moves()
+    #         move_reversal.new_move_ids.message_post(body=_("Credit note generated by %s as Order refunded in "
+    #                                                        "Shopify.", created_by))
+    #         move_reversal.new_move_ids.write(
+    #             {"is_refund_in_shopify": True, "shopify_refund_id": refunds_data[0].get('id')})
+    #         return [True]
+    #     return [3]
 
     def fulfilled_shopify_order(self):
         """
@@ -1596,7 +1633,7 @@ class SaleOrder(models.Model):
         }
         return vals
 
-    def create_shopify_partially_refund(self, refunds_data, order_name, created_by=""):
+    def create_shopify_partially_refund(self, refunds_data, order_name, created_by="", shopify_financial_status=""):
         """This method is used to check the required validation before create
             a partial refund and call child methods for a partial refund.
             @author: Haresh Mori @Emipro Technologies Pvt. Ltd on date 17/05/2021.
@@ -1604,6 +1641,10 @@ class SaleOrder(models.Model):
         """
         account_move_obj = self.env['account.move']
         message = False
+        if shopify_financial_status == "refunded":
+            shopify_financial_status = "Refunded"
+        else:
+            shopify_financial_status = "Partially Refunded"
         if not self.invoice_ids:
             message = "- Partially refund can only be generated if it's related order " \
                       "invoice is found.\n- For order [%s], system could not find the " \
@@ -1622,13 +1663,15 @@ class SaleOrder(models.Model):
             if existing_refund:
                 continue
             new_move = self.with_context(check_move_validity=False).create_move_and_delete_not_necessary_line(
-                refund_data_line, invoices, created_by)
+                refund_data_line, invoices, created_by, shopify_financial_status)
             if refund_data_line.get('order_adjustments'):
                 self.create_refund_adjustment_line(refund_data_line.get('order_adjustments'), new_move)
             new_move.with_context(check_move_validity=False)._recompute_dynamic_lines()
+            if new_move.state == 'draft':
+                new_move.action_post()
         return message
 
-    def create_move_and_delete_not_necessary_line(self, refunds_data, invoices, created_by):
+    def create_move_and_delete_not_necessary_line(self, refunds_data, invoices, created_by, shopify_financial_status):
         """This method is used to create a reverse move of invoice and delete the invoice lines from the newly
             created move which product not refunded in Shopify.
             @author: Haresh Mori @Emipro Technologies Pvt. Ltd on date 19/05/2021.
@@ -1665,16 +1708,18 @@ class SaleOrder(models.Model):
                 new_move_line.recompute_tax_line = True
                 self.set_price_based_on_refund(new_move_line)
 
-        new_move.message_post(body=_("Credit note generated by %s as Order partially "
-                                     "refunded in Shopify. This credit note has been created from "
+        new_move.message_post(body=_("Credit note generated by %s as Order %s "
+                                     "in Shopify. This credit note has been created from "
                                      "<a href=# data-oe-model=sale.order data-oe-id=%d>%s</a>") % (
-                                       created_by, self.id, self.name))
+                                       created_by, shopify_financial_status, self.id, self.name))
         self.message_post(body=_(
-            "Partially credit note created <a href=# data-oe-model=account.move data-oe-id=%d>%s</a> via %s") % (
+            "Credit note created <a href=# data-oe-model=account.move data-oe-id=%d>%s</a> via %s") % (
                                    new_move.id, new_move.name, created_by))
 
         if delete_move_lines:
-            delete_move_lines.with_context(check_move_validity=False).unlink()
+            delete_move_lines.with_context(check_move_validity=False).write({'quantity': 0})
+            delete_move_lines.with_context(check_move_validity=False)._onchange_price_subtotal()
+            # delete_move_lines.with_context(check_move_validity=False).unlink()
             new_move.with_context(check_move_validity=False)._recompute_tax_lines()
         return new_move
 
@@ -1690,9 +1735,10 @@ class SaleOrder(models.Model):
                 tax_dict = json.loads(line.order_id.tax_totals_json)
                 sub_total_tax_dict = tax_dict.get('groups_by_subtotal').get('Untaxed Amount')
                 total_tax_amount = 0.0
-                for tax in sub_total_tax_dict:
-                    total_tax_amount += tax.get('tax_group_amount')
-                total_adjust_amount = total_tax_amount / line.product_uom_qty
+                if sub_total_tax_dict:
+                    for tax in sub_total_tax_dict:
+                        total_tax_amount += tax.get('tax_group_amount')
+                    total_adjust_amount = total_tax_amount / line.product_uom_qty
         move_line.price_unit += total_adjust_amount
         return True
 

@@ -672,7 +672,8 @@ class ShopifyProductProductEpt(models.Model):
             return True
 
         instance.connect_in_shopify()
-        location_ids = self.env["shopify.location.ept"].search([("instance_id", "=", instance.id)])
+        location_ids = self.env["shopify.location.ept"].search(
+            [("instance_id", "=", instance.id), ('legacy', '=', False)])
         if not location_ids:
             message = "Location not found for instance %s while update stock" % instance.name
             log_line_array = self.shopify_create_log(message, model_id, False, log_line_array)
@@ -717,6 +718,11 @@ class ShopifyProductProductEpt(models.Model):
                             shopify.InventoryLevel.set(location_id.shopify_location_id,
                                                        shopify_product.inventory_item_id,
                                                        int(quantity))
+                            continue
+                        elif error.response.code == 422 and error.response.msg == "Unprocessable Entity":
+                            if json.loads(error.response.body.decode()).get("errors")[
+                                0] == 'Inventory item does not have inventory tracking enabled':
+                                shopify_product.write({'inventory_management': "Dont track Inventory"})
                             continue
                         message = "Error while Export stock for Product ID: %s & Product Name: '%s' for instance:" \
                                   "'%s'\nError: %s\n%s" % (odoo_product.id, odoo_product.name, instance.name,
@@ -788,7 +794,8 @@ class ShopifyProductProductEpt(models.Model):
         """
         shopify_products = self.search([("shopify_instance_id", "=", instance.id),
                                         ("exported_in_shopify", "=", True),
-                                        ("product_id", "in", product_ids)], order='last_stock_update_date')
+                                        ("product_id", "in", product_ids), ('inventory_management', '=', 'shopify')],
+                                       order='last_stock_update_date')
         return shopify_products
 
     def check_stock(self, instance, product_ids, prod_obj, warehouse):
