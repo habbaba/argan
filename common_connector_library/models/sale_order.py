@@ -106,9 +106,9 @@ class SaleOrder(models.Model):
             origin_country_id = origin_country_id or (warehouse.company_id.partner_id.country_id
                                                       and warehouse.company_id.partner_id.country_id.id or False)
             is_amz_customer = getattr(self.partner_id, 'is_amz_customer', False)
-
+            is_bol_customer = getattr(self.partner_id, 'is_bol_customer', False)
             fiscal_position = self.env['account.fiscal.position'].with_context(
-                origin_country_ept=origin_country_id, is_amazon_fpos=is_amz_customer).with_company(
+                origin_country_ept=origin_country_id, is_amazon_fpos=is_amz_customer,is_bol_fpos=is_bol_customer).with_company(
                 warehouse.company_id.id).get_fiscal_position(self.partner_id.id, self.partner_shipping_id.id)
 
         return fiscal_position

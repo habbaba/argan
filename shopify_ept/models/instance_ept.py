@@ -300,9 +300,11 @@ class ShopifyInstanceEpt(models.Model):
     order_visible_currency = fields.Boolean(string="Import order in customer visible currency?")
 
     duties_product_id = fields.Many2one("product.product", "Duties",
-                                          domain=[('detailed_type', '=', 'service')],
-                                          default=_default_duties_product,
-                                          help="This is used for set duties product in a sale order lines")
+                                        domain=[('detailed_type', '=', 'service')],
+                                        default=_default_duties_product,
+                                        help="This is used for set duties product in a sale order lines")
+    is_delivery_fee = fields.Boolean(string='Are you selling for Colorado State(US)')
+    delivery_fee_name = fields.Char(string='Delivery fee name')
 
     _sql_constraints = [('unique_host', 'unique(shopify_host)',
                          "Instance already exists for given host. Host must be Unique for the instance!")]

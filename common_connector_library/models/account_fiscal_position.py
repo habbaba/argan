@@ -50,6 +50,9 @@ class AccountFiscalPosition(models.Model):
         is_amazon_fpos = self._context.get('is_amazon_fpos', False)
         if is_amazon_fpos:
             base_domain.append(('is_amazon_fpos', '=', is_amazon_fpos))
+        is_bol_fpos = self._context.get('is_bol_fpos', False)
+        if is_bol_fpos:
+            base_domain.append(('is_bol_fiscal_position', '=', is_bol_fpos))
         if zipcode:
             zip_domain = [('zip_from', '<=', zipcode), ('zip_to', '>=', zipcode)]
         if state_id:

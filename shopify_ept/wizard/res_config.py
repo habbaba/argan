@@ -308,6 +308,9 @@ class ResConfigSettings(models.TransientModel):
     # presentment currency
     order_visible_currency = fields.Boolean(string="Import order in customer visible currency?")
 
+    is_delivery_fee = fields.Boolean(string='Are you selling for Colorado State(US)')
+    delivery_fee_name = fields.Char(string='Delivery fee name')
+
     # group_show_net_profit_report = fields.Boolean(string='Net Profit Report',
     #                                               implied_group='shopify_ept.group_visible_net_profit_report')
 
@@ -355,6 +358,8 @@ class ResConfigSettings(models.TransientModel):
             self.shopify_analytic_tag_ids = instance.shopify_analytic_tag_ids.ids
             self.shopify_lang_id = instance.shopify_lang_id and instance.shopify_lang_id.id or False
             self.order_visible_currency = instance.order_visible_currency or False
+            self.is_delivery_fee = instance.is_delivery_fee or False
+            self.delivery_fee_name = instance.delivery_fee_name
 
     def execute(self):
         """This method used to set value in an instance of configuration.
@@ -405,6 +410,8 @@ class ResConfigSettings(models.TransientModel):
             values["shopify_analytic_tag_ids"] = [(6, 0, self.shopify_analytic_tag_ids.ids)]
             values['shopify_lang_id'] = self.shopify_lang_id and self.shopify_lang_id.id or False
             values['order_visible_currency'] = self.order_visible_currency or False
+            values["is_delivery_fee"] = self.is_delivery_fee
+            values["delivery_fee_name"] = self.delivery_fee_name
 
             product_webhook_changed = customer_webhook_changed = order_webhook_changed = False
             if instance.create_shopify_products_webhook != self.create_shopify_products_webhook:

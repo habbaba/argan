@@ -55,9 +55,9 @@ class Main(http.Controller):
         res, instance = self.get_basic_info(webhook_route)
         if not res:
             return
-
-        _logger.info("%s call for Customer: %s", webhook_route, (res.get("first_name") + " " + res.get("last_name")))
-        self.customer_webhook_process(res, instance)
+        if res.get("first_name") and res.get("last_name"):
+            _logger.info("%s call for Customer: %s", webhook_route, (res.get("first_name") + " " + res.get("last_name")))
+            self.customer_webhook_process(res, instance)
         return
 
     def customer_webhook_process(self, response, instance):

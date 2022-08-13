@@ -548,8 +548,8 @@ class ShopifyPaymentReportEpt(models.Model):
         shopify_payout_report_line_id = shopify_payout_report_line_obj.search(
             [('transaction_id', '=', statement_line.payment_ref)])
         sale_order_id = sale_order_obj.search(
-            [('shopify_order_id', '=', shopify_payout_report_line_id.source_order_id),
-             ('shopify_instance_id', '=', self.instance_id.id)], limit=1)
+            ['|', ('shopify_order_id', '=', shopify_payout_report_line_id.source_order_id),
+             ('name', '=', statement_line.payment_ref), ('shopify_instance_id', '=', self.instance_id.id)], limit=1)
         if sale_order_id:
             shopify_payout_report_line_id.write({'order_id': sale_order_id.id})
             statement_line.write({'sale_order_id': sale_order_id.id})
@@ -557,6 +557,14 @@ class ShopifyPaymentReportEpt(models.Model):
             if invoice and invoice.move_type == "out_refund":
                 statement_line.update({"refund_invoice_id": invoice.id})
         order = statement_line.sale_order_id
+        if order and not shopify_payout_report_line_id:
+            shopify_payout_report_line_id = shopify_payout_report_line_obj.search(
+                [('transaction_id', '=', statement_line.shopify_transaction_id)])
+        if shopify_payout_report_line_id and shopify_payout_report_line_id.transaction_type == 'refund' and not statement_line.refund_invoice_id:
+            invoices = self.env['account.move'].search(
+                [('shopify_instance_id', '=', self.instance_id.id), ('invoice_origin', '=', order.name),
+                 ('move_type', '=', 'out_refund'), ('amount_total', '=', abs(statement_line.amount))])
+            return invoices
         if statement_line.refund_invoice_id:
             invoices = statement_line.refund_invoice_id
         else:
