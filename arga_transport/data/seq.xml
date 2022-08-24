@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+          <record id="get_arga_seq" model="ir.sequence">
+            <field name="name">Arga transport sequence </field>
+            <field name="code">arga.transport</field>
+            <field name="prefix">TNR/2022/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>    

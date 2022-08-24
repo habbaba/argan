@@ -23,18 +23,20 @@
                         </group>
                         <group>
                             <group>
-                                <field name="cost_without_vat" />
-                                <field name="vat19" />
+                                <field name="customer_inv"  domain="[('move_type','=','out_invoice')]"/>
+                                <field name="cost_without_vat" force_save="1"/>
+                                <field name="vat19" force_save="1"/>
                                 <field name="cost_total" />
-                                <field name="cost_paid" />
+                                <field name="cost_paid"  force_save="1"/>
                                 <field name="open_cost" />
                             </group>
                             <group>
                                 <field name="vendor_id" />
+                                <field name="vendor_bill" domain="[('move_type','=','in_invoice')]"/>
                                 <field name="incoming_inc" />
-                                <field name="vend_cost" />
-                                <field name="vat_zero" />
-                                <field name="vend_paid" />
+                                <field name="vend_cost"   force_save="1"/>
+                                <field name="vat_zero"  force_save="1"/>
+                                <field name="vend_paid"  force_save="1" />
                                 <field name="vend_open" />
                             </group>
                         </group>
