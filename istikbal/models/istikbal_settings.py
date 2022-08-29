@@ -14,4 +14,4 @@ class Credentials(models.Model):
     password = fields.Char('Password')
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
-    active = fields.Boolean('Active')
+    active = fields.Boolean('Active',default=True)
