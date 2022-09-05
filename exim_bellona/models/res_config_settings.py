@@ -18,7 +18,7 @@ INTERVAL = [
 class Integration(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    importInventoryButton = fields.Boolean("Import Inventory")
+    importInventoryButton = fields.Boolean("Import Bellona Inventory")
     importInventoryUnit = fields.Integer("Import Unit")
     importInventoryInterval = fields.Selection(INTERVAL, "Import Interval", default='months')
     importPriceButton = fields.Boolean("Import Price")
@@ -39,9 +39,9 @@ class Integration(models.TransientModel):
             self.changeSettingsOfImportPriceScheduler(False)
 
     def changeSettingsOfImportInventoryScheduler(self, state):
-        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Inventory')])
+        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Bellona Inventory')])
         if not scheduler:
-            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Inventory'),
+            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Bellona Inventory'),
                                                     ('active', '=', False)])
         scheduler.active = state
         scheduler.interval_number = self.importInventoryUnit
@@ -105,7 +105,7 @@ class Integration(models.TransientModel):
 
 
     #Beloona Shipments
-    def importInventory(self):
+    def importBellonaInventory(self):
         token = self.getCredentials()
         url = self.getBaseURL() + "api/Material/SearchInventory"
         headers = {
@@ -360,7 +360,6 @@ class BeloonaShiment(models.Model):
     kpein = fields.Char('kpein')
     biriM_FIYAT = fields.Char('biriM_FIYAT')
     konwa = fields.Char('konwa')
-    materialNumber = fields.Char('Product Code')
 
 
 
@@ -371,7 +370,6 @@ class BeloonaMaterial(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
     matnr = fields.Char('matnr')
-    materialNumber = fields.Char('Product Code')
     zbdT_MLZTANIM = fields.Char('zbdT_MLZTANIM')
     zZ_BDTINGTNM = fields.Char('zZ_BDTINGTNM')
     ntgew = fields.Char('ntgew')

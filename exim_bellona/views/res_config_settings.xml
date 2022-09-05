@@ -22,7 +22,7 @@
                                         </div>
                                         <div class="content-group">
                                             <div class="mt16">
-                                                <button name="importInventory" string="Search Inventory" type="object" class="col-lg-5 o_light_label oe_highlight"/>
+                                                <button name="importBellonaInventory" string="Search Inventory" type="object" class="col-lg-5 o_light_label oe_highlight"/>
                                             </div>
                                         </div>
                                     </div>
@@ -69,10 +69,10 @@
                                         <field name="importInventoryButton" widget="boolean_toggle" />
                                     </div>
                                     <div class="o_setting_right_pane">
-                                        <span class="o_form_label">Import Inventory</span>
+                                        <span class="o_form_label">Import Bellona Inventory</span>
                                         <div class="content-group" attrs="{'invisible':[('importInventoryButton','=',False)]}">
                                             <div class="mt16">
-                                                <span class="o_form_label">Import Inventory Scheduler Settings</span>
+                                                <span class="o_form_label">Import Bellona Inventory Scheduler Settings</span>
                                                 <div class="text-muted">
                                                     Here you will import inventory from Bellona to Odoo after clicking the button.
                                                 </div>
