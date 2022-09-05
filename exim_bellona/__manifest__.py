@@ -32,7 +32,7 @@
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
-        'views/bellona_settings.xml',
+#         'views/bellona_settings.xml',
         'views/res_config_settings.xml',
         'data/import_schedulers.xml',
     ],
