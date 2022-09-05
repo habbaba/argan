@@ -11,6 +11,7 @@ class PTInherit(models.Model):
     _inherit = 'product.template'
 
     material_ids = fields.Many2many('bellona.material', string='Bellona Materials')
+    materialNumber = fields.Char('Product Code')
 
     def importMaterials(self):
         get_connect = self.env['bellona.credentials'].connect_credentials()
