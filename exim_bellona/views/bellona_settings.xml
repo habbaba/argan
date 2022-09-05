@@ -1,65 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-        <record model="ir.ui.view" id="bellona_product_view_inherit">
-            <field name="name">product.view.inherit</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="stock.product_template_form_view_procurement_button" />
-            <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_update_quantity_on_hand']" position="after">
-                    <button string="Get Bellona Material" type="object" name="importMaterials"/>
-                </xpath>
-                <notebook position='inside'>
-                    <page name="bellona_materials" string="Bellona Materials">
-                        <field name="material_ids" mode="tree">
-                            <tree create="0" delete="1">
-                                <field name="matnr"/>
-                                <field name="meins"/>
-                                <field name="ersda"/>
-                                <field name="zzextwg"/>
-                                <field name="mtpos"/>
-                                <field name="prodh"/>
-                                <field name="vtexT_TR"/>
-                                <field name="vtexT_EN"/>
-                                <field name="ntgew" optional="hide"/>
-                                <field name="zZ_BDTINGTNM" optional="hide"/>
-                                <field name="zbdT_MLZTANIM" optional="hide"/>
-                                <field name="zzbolG15" optional="hide"/>
-                                <field name="e_MODEL_T" optional="hide"/>
-                                <field name="e_UNITE_T" optional="hide"/>
-                                <field name="brgew" optional="hide"/>
-                                <field name="zzbdT_KAPADEDI" optional="hide"/>
-                                <field name="volum" optional="hide"/>
-                                <field name="vmstd" optional="hide"/>
-                                <field name="vmsta" optional="hide"/>
-                                <field name="zbdT_KARTELA" optional="hide"/>
-                                <field name="zbdT_URETICI" optional="hide"/>
-                                <field name="mvgR1" optional="hide"/>
-                                <field name="zzbolG14" optional="hide"/>
-                                <field name="zzbolG13" optional="hide"/>
-                                <field name="zzbolG12" optional="hide"/>
-                                <field name="zzbolG11" optional="hide"/>
-                                <field name="zzbolG10" optional="hide"/>
-                                <field name="zzbolG09" optional="hide"/>
-                                <field name="zzbolG08" optional="hide"/>
-                                <field name="zzbolG02" optional="hide"/>
-                                <field name="zzbolG03" optional="hide"/>
-                                <field name="zzbolG04" optional="hide"/>
-                                <field name="zzbolG05" optional="hide"/>
-                                <field name="zzbolG06" optional="hide"/>
-                                <field name="maktx" optional="hide"/>
-                                <field name="e_EXTWG_E" optional="hide"/>
-                                <field name="e_FLART_E" optional="hide"/>
-                                <field name="e_UNITE_E" optional="hide"/>
-                                <field name="e_MODEL_E" optional="hide"/>
-                                <field name="e_EXTWG_T" optional="hide"/>
-                                <field name="e_FLART_T" optional="hide"/>
-                            </tree>
-                        </field>
-                    </page>
-                </notebook>
-            </field>
-        </record>
 
         <record model="ir.actions.act_window" id="bellona_credentials_action">
             <field name="name">Bellona Credentials</field>
