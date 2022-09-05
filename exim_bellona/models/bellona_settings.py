@@ -13,6 +13,8 @@ class Credentials(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
     active = fields.Boolean('Active',default=True)
+    state = fields.Selection([('active', 'Activated'), ('disconnect', 'Discounted')], string='Status',readonly=True)
+
 
     def getCredentials(self):
         currentCompany = self.env.company
@@ -26,6 +28,7 @@ class Credentials(models.Model):
             return bellonaCredentials.username, bellonaCredentials.password
 
     def connect_credentials(self):
+
         settings = self.env['res.config.settings']
         url = settings.getBaseURL() + "api/Account"
         username,  password = self.getCredentials()
@@ -36,10 +39,16 @@ class Credentials(models.Model):
         headers = {
             'Content-Type': 'application/json'
         }
+        currentCompany = self.env.company
+        bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
+                                                                     ('active', '=', True)],limit=1)
 
         response = requests.request("POST", url, headers=headers, data=payload)
         if response.status_code == 200:
+            bellonaCredentials.state='active'
             response = json.loads(response.text)
             self.write({
                 'token': response['value']
             })
+        else:
+            bellonaCredentials.state = 'disconnect'

@@ -134,6 +134,7 @@
                     <field name="active" widget="boolean_toggle"/>
                     <field name="company_id" />
                     <field name="token" invisible="1"/>
+                    <field name="state" widget="badge" decoration-info="state == 'active'" decoration-danger="state == 'disconnect'" />
                     <button name="connect_credentials" type="object" string="Connect"/>
                 </tree>
             </field>
