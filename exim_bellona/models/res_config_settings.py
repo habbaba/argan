@@ -360,6 +360,7 @@ class BeloonaShiment(models.Model):
     kpein = fields.Char('kpein')
     biriM_FIYAT = fields.Char('biriM_FIYAT')
     konwa = fields.Char('konwa')
+    materialNumber = fields.Char('Product Code')
 
 
 
@@ -370,6 +371,7 @@ class BeloonaMaterial(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
     matnr = fields.Char('matnr')
+    materialNumber = fields.Char('Product Code')
     zbdT_MLZTANIM = fields.Char('zbdT_MLZTANIM')
     zZ_BDTINGTNM = fields.Char('zZ_BDTINGTNM')
     ntgew = fields.Char('ntgew')
