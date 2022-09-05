@@ -6,9 +6,9 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="stock.product_template_form_view_procurement_button" />
             <field name="arch" type="xml">
-<!--                 <xpath expr="//button[@name='action_update_quantity_on_hand']" position="after">
+                <xpath expr="//button[@name='action_update_quantity_on_hand']" position="after">
                     <button string="Get Bellona Material" type="object" name="importMaterials"/>
-                </xpath> -->
+                </xpath>
                 <notebook position='inside'>
                     <page name="bellona_materials" string="Bellona Materials">
                         <field name="material_ids" mode="tree">
