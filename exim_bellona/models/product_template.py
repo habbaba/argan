@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 class PTInherit(models.Model):
     _inherit = 'product.template'
 
-    material_ids = fields.Many2many('bellona.material', string='Bellona Materials')
+    bellona_material_ids = fields.Many2many('bellona.material', string='Bellona Materials')
 
     def importMaterials(self):
         get_connect = self.env['bellona.credentials'].connect_credentials()
@@ -21,7 +21,8 @@ class PTInherit(models.Model):
             'Authorization': 'Bearer ' + token,
         }
         data = {
-            "matnr": self.default_code
+            "matnr": self.default_code,
+            "date": "2022-08-07"
         }
         payload = json.dumps(data)
         response = requests.request("POST", url, headers=headers, data=payload)
@@ -31,7 +32,10 @@ class PTInherit(models.Model):
             print("Material response", products)
             self.createMaterials(products)
         else:
-            print(response)
+            currentCompany = self.env.company
+            bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
+                                                                         ('active', '=', True)], limit=1)
+            bellonaCredentials.state='disconnect'
         self.env.cr.commit()
 
     def createMaterials(self, materials):
@@ -82,7 +86,7 @@ class PTInherit(models.Model):
                     'e_FLART_T': material['e_FLART_T'],
                 })
                 self.write({
-                    'material_ids': [[4, odooMaterials.id]]
+                    'bellona_material_ids': [[4, odooMaterials.id]]
                 })
             else:
                 odooMaterials.write({
@@ -129,5 +133,5 @@ class PTInherit(models.Model):
                     'e_FLART_T': material['e_FLART_T'],
                 })
                 self.write({
-                    'material_ids': [[4, odooMaterials.id]]
+                    'bellona_material_ids': [[4, odooMaterials.id]]
                 })

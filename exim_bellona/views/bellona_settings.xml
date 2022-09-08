@@ -6,12 +6,12 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="stock.product_template_form_view_procurement_button" />
             <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_update_quantity_on_hand']" position="after">
-                    <button string="Get Bellona Material" type="object" name="importMaterials"/>
-                </xpath>
+<!--                <xpath expr="//button[@name='action_update_quantity_on_hand']" position="after">-->
+<!--                    <button string="Get Bellona Material" type="object" name="importMaterials"/>-->
+<!--                </xpath>-->
                 <notebook position='inside'>
                     <page name="bellona_materials" string="Bellona Materials">
-                        <field name="material_ids" mode="tree">
+                        <field name="bellona_material_ids" mode="tree">
                             <tree create="0" delete="1">
                                 <field name="matnr"/>
                                 <field name="meins"/>
@@ -60,20 +60,79 @@
                 </notebook>
             </field>
         </record>
-
-        <record model="ir.actions.act_window" id="bellona_credentials_action">
+        <record model="ir.ui.view" id="bellona_credentials_tree_view">
             <field name="name">Bellona Credentials</field>
-            <field name="res_model">bellona.credentials</field>
-            <field name="view_mode">tree</field>
+            <field name="model">bellona.credentials</field>
+            <field name="arch" type="xml">
+                <tree editable="top" create="1" delete="1" multi_edit="1" string="Bellona Credentials">
+                    <field name="username" />
+                    <field name="password" password="1"/>
+                    <field name="active" widget="boolean_toggle"/>
+                    <field name="company_id" />
+                    <field name="token" invisible="1"/>
+                    <field name="state" widget="badge" decoration-info="state == 'active'" decoration-danger="state == 'disconnect'" />
+                    <button name="connect_credentials" type="object" string="Connect"/>
+                </tree>
+            </field>
         </record>
 
-        <record model="ir.actions.act_window" id="bellona_materials_action">
+        <record model="ir.ui.view" id="bellona_material_form_view">
             <field name="name">Bellona Materials</field>
-            <field name="res_model">bellona.material</field>
-            <field name="view_mode">tree</field>
+            <field name="model">bellona.material</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="matnr"/>
+                                <field name="meins"/>
+                                <field name="ersda"/>
+                                <field name="zzextwg"/>
+                                <field name="mtpos"/>
+                                <field name="prodh"/>
+                                <field name="vtexT_TR"/>
+                                <field name="vtexT_EN"/>
+                                <field name="ntgew" />
+                                <field name="zZ_BDTINGTNM" />
+                                <field name="zbdT_MLZTANIM" />
+                                <field name="zzbolG15" />
+                                <field name="e_MODEL_T" />
+                                <field name="e_UNITE_T" />
+                                <field name="brgew" />
+                                <field name="zzbdT_KAPADEDI" />
+                                <field name="volum" />
+                                <field name="vmstd" />
+                                <field name="vmsta" />
+                                <field name="zbdT_KARTELA" />
+                                <field name="zbdT_URETICI" />
+                                <field name="mvgR1" />
+                                <field name="zzbolG14" />
+                                <field name="zzbolG13" />
+                                <field name="zzbolG12" />
+                                <field name="zzbolG11" />
+                                <field name="zzbolG10" />
+                                <field name="zzbolG09" />
+                                <field name="zzbolG08" />
+                                <field name="zzbolG02" />
+                                <field name="zzbolG03" />
+                                <field name="zzbolG04" />
+                                <field name="zzbolG05" />
+                                <field name="zzbolG06" />
+                                <field name="maktx" />
+                                <field name="e_EXTWG_E" />
+                                <field name="e_FLART_E" />
+                                <field name="e_UNITE_E" />
+                                <field name="e_MODEL_E" />
+                                <field name="e_EXTWG_T" />
+                                <field name="e_FLART_T" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
         </record>
 
-        <record model="ir.ui.view" id="bellona_tree_view">
+        <record model="ir.ui.view" id="bellona_material_tree_view">
             <field name="name">Bellona Materials</field>
             <field name="model">bellona.material</field>
             <field name="arch" type="xml">
@@ -124,33 +183,59 @@
         </record>
 
 
-        <record model="ir.ui.view" id="bellona_credentials_tree_view">
-            <field name="name">Bellona Credentials</field>
-            <field name="model">bellona.credentials</field>
+        <record model="ir.ui.view" id="bellona_shipments_form_view">
+            <field name="name">Bellona Shipments</field>
+            <field name="model">bellona.shipments</field>
             <field name="arch" type="xml">
-                <tree editable="top" create="1" delete="1" multi_edit="1" string="Bellona Credentials">
-                    <field name="username" />
-                    <field name="password" password="1"/>
-                    <field name="active" widget="boolean_toggle"/>
-                    <field name="company_id" />
-                    <field name="token" invisible="1"/>
-                    <field name="state" widget="badge" decoration-info="state == 'active'" decoration-danger="state == 'disconnect'" />
-                    <button name="connect_credentials" type="object" string="Connect"/>
-                </tree>
+                <form string="Incoming Shipments">
+                    <sheet string="Incoming Shipments">
+                        <group string="Incoming Shipments">
+                            <group>
+                                <field name="productcode"/>
+                                <field name="ordeR_QUANTITY"/>
+                                <field name="stocK_QUANTITY"/>
+                                <field name="customerref"/>
+                                <field name="productref"/>
+                                <field name="packagenum"/>
+                                <field name="maktX_TR"/>
+                                <field name="maktX_EN"/>
+                                <field name="volum"/>
+                                <field name="audat"/>
+                            </group>
+                            <group>
+                                <field name="stawn"/>
+                                <field name="saleS_ORDER"/>
+                                <field name="saleS_ORDER_POSNR"/>
+                                <field name="balancE_QUANTITY"/>
+                                <field name="materiaL_TEXT"/>
+                                <field name="previouS_ORDER"/>
+                                <field name="materiaL_VOLUM"/>
+                                <field name="customerbarcode"/>
+                                <field name="previouS_ORDER_POS"/>
+                                <field name="producT_STOCK"/>
+                            </group>
+                            <group string="Product Informations">
+                                  <field name="product_template"/>
+                                <field name="maktx"/>
+                                <field name="datab"/>
+                                <field name="datbi"/>
+                                <field name="kbetr"/>
+                                <field name="kpein"/>
+                                <field name="konwa"/>
+                                <field name="biriM_FIYAT"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
             </field>
         </record>
 
-        <record model="ir.actions.act_window" id="bellona_shipments_action">
-            <field name="name">Search Inventory</field>
-            <field name="res_model">bellona.shipments</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
-        <record model="ir.ui.view" id="bellona_shipments_tree_view">
+          <record model="ir.ui.view" id="bellona_shipments_tree_view">
             <field name="name">Search Inventory</field>
             <field name="model">bellona.shipments</field>
             <field name="arch" type="xml">
                 <tree string="Bellona Shipments">
+                    <field name="product_template"/>
                     <field name="saleS_ORDER" />
                     <field name="customerref"/>
                     <field name="productref"/>
@@ -182,50 +267,23 @@
             </field>
         </record>
 
-        <record model="ir.ui.view" id="bellona_shipments_form_view">
-            <field name="name">Bellona Shipments</field>
-            <field name="model">bellona.shipments</field>
-            <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group string="Incoming Shipments">
-                            <group>
-                                <field name="productcode"/>
-                                <field name="ordeR_QUANTITY"/>
-                                <field name="stocK_QUANTITY"/>
-                                <field name="customerref"/>
-                                <field name="productref"/>
-                                <field name="packagenum"/>
-                                <field name="maktX_TR"/>
-                                <field name="maktX_EN"/>
-                                <field name="volum"/>
-                                <field name="audat"/>
-                            </group>
-                            <group>
-                                <field name="stawn"/>
-                                <field name="saleS_ORDER"/>
-                                <field name="saleS_ORDER_POSNR"/>
-                                <field name="balancE_QUANTITY"/>
-                                <field name="materiaL_TEXT"/>
-                                <field name="previouS_ORDER"/>
-                                <field name="materiaL_VOLUM"/>
-                                <field name="customerbarcode"/>
-                                <field name="previouS_ORDER_POS"/>
-                                <field name="producT_STOCK"/>
-                            </group>
-                            <group string="Product Informations">
-                                <field name="maktx"/>
-                                <field name="datab"/>
-                                <field name="datbi"/>
-                                <field name="kbetr"/>
-                                <field name="kpein"/>
-                                <field name="konwa"/>
-                                <field name="biriM_FIYAT"/>
-                            </group>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
+
+        <record model="ir.actions.act_window" id="bellona_credentials_action">
+            <field name="name">Bellona Credentials</field>
+            <field name="res_model">bellona.credentials</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="bellona_shipments_action">
+            <field name="name">Search Inventory</field>
+            <field name="res_model">bellona.shipments</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="bellona_materials_action">
+            <field name="name">Bellona Materials</field>
+            <field name="res_model">bellona.material</field>
+            <field name="view_mode">tree,form</field>
         </record>
 
         <menuitem id="bellona_root" web_icon="exim_bellona,static/description/icon.png" name="Bellona"/>

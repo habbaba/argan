@@ -13,7 +13,7 @@ class Credentials(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
     active = fields.Boolean('Active',default=True)
-    state = fields.Selection([('active', 'Activated'), ('disconnect', 'Discounted')], string='Status',readonly=True)
+    state = fields.Selection([('active', 'Connected'), ('disconnect', 'Discounted')], string='Status',readonly=True)
 
 
     def getCredentials(self):

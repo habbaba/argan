@@ -120,14 +120,19 @@ class Integration(models.TransientModel):
             self.createShipments(shipments)
             self.env.cr.commit()
         else:
-            print(response)
+            currentCompany = self.env.company
+            bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
+                                                                         ('active', '=', True)], limit=1)
+            bellonaCredentials.state = 'disconnect'
 
     def createShipments(self, shipments):
         for shipment in shipments:
             shipment_obj = self.env['bellona.shipments'].search([('saleS_ORDER', '=', shipment['saleS_ORDER']),('previouS_ORDER', '=', shipment['previouS_ORDER']),('productref', '=', shipment['productref'])])
+            product_template = self.env['product.template'].search([('default_code', '=', shipment['productcode'])],limit=1)
             if not shipment_obj:
                 shipment_obj.create({
                     'productcode': shipment['productcode'],
+                    'product_template': product_template.id,
                     'ordeR_QUANTITY': shipment['ordeR_QUANTITY'],
                     'stocK_QUANTITY': shipment['stocK_QUANTITY'],
                     'customerref': shipment['customerref'],
@@ -152,6 +157,7 @@ class Integration(models.TransientModel):
             else:
                 shipment_obj.write({
                     'productcode': shipment['productcode'],
+                    'product_template': product_template.id,
                     'ordeR_QUANTITY': shipment['ordeR_QUANTITY'],
                     'stocK_QUANTITY': shipment['stocK_QUANTITY'],
                     'customerref': shipment['customerref'],
@@ -173,7 +179,6 @@ class Integration(models.TransientModel):
                     'producT_STOCK': shipment['producT_STOCK'],
                 })
 
-
     #Bellona Materials
     def importMaterials(self):
         token = self.getCredentials()
@@ -185,7 +190,8 @@ class Integration(models.TransientModel):
         odooProducts = self.env['product.template'].search([('default_code', '!=', False)])
         for odooProduct in odooProducts:
             data = {
-                "matnr": odooProduct.default_code
+                "matnr": odooProduct.default_code,
+                "date": "2022-01-07"
             }
             payload = json.dumps(data)
             response = requests.request("POST", url, headers=headers, data=payload)
@@ -194,12 +200,16 @@ class Integration(models.TransientModel):
                 print("Material response",products)
                 self.createMaterials(products)
             else:
-                print(response)
+                currentCompany = self.env.company
+                bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
+                                                                             ('active', '=', True)], limit=1)
+                bellonaCredentials.state = 'disconnect'
             self.env.cr.commit()
 
     def createMaterials(self, materials):
         for material in materials:
             odooMaterials = self.env['bellona.material'].search([('matnr', '=', material['matnr'])])
+            odooProduct = self.env['product.template'].search([('matnr', '=', material['matnr'])])
             if not odooMaterials:
                 odooMaterials = self.env['bellona.material'].create({
                     'matnr': material['matnr'],
@@ -244,8 +254,8 @@ class Integration(models.TransientModel):
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
                 })
-                self.write({
-                    'material_ids': [[4, odooMaterials.id]]
+                odooProduct.write({
+                    'bellona_material_ids': [[4, odooMaterials.id]]
                 })
             else:
                 odooMaterials.write({
@@ -291,8 +301,8 @@ class Integration(models.TransientModel):
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
                 })
-                self.write({
-                    'material_ids': [[4, odooMaterials.id]]
+                odooProduct.write({
+                    'bellona_material_ids': [[4, odooMaterials.id]]
                 })
 
     def importPrice(self):
@@ -309,6 +319,11 @@ class Integration(models.TransientModel):
             if response.status_code == 200:
                 product = json.loads(response.content)
                 self.updatePrice(odooProduct, product)
+            else:
+                currentCompany = self.env.company
+                bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
+                                                                             ('active', '=', True)], limit=1)
+                bellonaCredentials.state = 'disconnect'
         self.env.cr.commit()
 
     def updatePrice(self, odooProduct, product):
@@ -326,7 +341,6 @@ class Integration(models.TransientModel):
                 shipment.kpein = product[0]['kpein']
                 shipment.biriM_FIYAT = product[0]['biriM_FIYAT']
 
-
 class BeloonaShiment(models.Model):
     _name = 'bellona.shipments'
 
@@ -334,6 +348,7 @@ class BeloonaShiment(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
     productcode = fields.Char('productcode')
+    product_template = fields.Many2one('product.template','Product Template')
     ordeR_QUANTITY = fields.Char('ordeR_QUANTITY')
     stocK_QUANTITY = fields.Char('stocK_QUANTITY')
     customerref  = fields.Char('customerref')
@@ -360,7 +375,6 @@ class BeloonaShiment(models.Model):
     kpein = fields.Char('kpein')
     biriM_FIYAT = fields.Char('biriM_FIYAT')
     konwa = fields.Char('konwa')
-
 
 
 class BeloonaMaterial(models.Model):
