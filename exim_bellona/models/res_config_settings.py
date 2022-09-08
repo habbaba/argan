@@ -192,7 +192,7 @@ class Integration(models.TransientModel):
         for odooProduct in odooProducts:
             data = {
                 "matnr": odooProduct.default_code,
-                "date": "2022-01-07"
+                "date": "2022-02-01"
             }
             payload = json.dumps(data)
             response = requests.request("POST", url, headers=headers, data=payload)
