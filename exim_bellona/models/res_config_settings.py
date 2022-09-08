@@ -211,7 +211,7 @@ class Integration(models.TransientModel):
     def createMaterials(self, materials):
         for material in materials:
             odooMaterials = self.env['bellona.material'].search([('matnr', '=', material['matnr'])])
-            odooProduct = self.env['product.template'].search([('matnr', '=', material['matnr'])])
+            odooProduct = self.env['product.template'].search([('default_code', '=', material['matnr'])])
             if not odooMaterials:
                 odooMaterials = self.env['bellona.material'].create({
                     'matnr': material['matnr'],
