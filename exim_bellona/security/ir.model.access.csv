@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_bellona_credentials,access.bellona.credentials,model_bellona_credentials,base.group_user,1,1,1,1
 access_bellona_shipments,bellona_shipments_bellona_shipments,model_bellona_shipments,base.group_user,1,1,1,1
 access_bellona_material,bellona_material_bellona_material,model_bellona_material,base.group_user,1,1,1,1
+access_bellona_bom,bellona_bom_bellona_bom,model_bellona_bom,base.group_user,1,1,1,1

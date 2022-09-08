@@ -35,7 +35,8 @@ class PTInherit(models.Model):
             currentCompany = self.env.company
             bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
                                                                          ('active', '=', True)], limit=1)
-            bellonaCredentials.state='disconnect'
+            bellonaCredentials.connect_credentials()
+            self.importMaterials()
         self.env.cr.commit()
 
     def createMaterials(self, materials):

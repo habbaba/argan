@@ -9,11 +9,17 @@
        3.Import Inventory
        4.Import BOM
        5.Import Price
-       https://www.loom.com/share/296b682aa14d49c8a680878ff8414caa
+     
        """,
 
     'description': """
-        Long description of module's purpose
+      Bellona Integration with odoo
+       1.Import shipments
+       2.Import material
+       3.Import Inventory
+       4.Import BOM
+       5.Import Price
+          https://www.loom.com/share/296b682aa14d49c8a680878ff8414caa
     """,
 
     'author': "HAK solutions",
@@ -23,7 +29,7 @@
     # Check https://github.com/odoo/odoo/blob/14.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.0',
+    'version': '2.0',
 
     # any module necessary for this one to work correctly
     'depends': ['stock','sale'],

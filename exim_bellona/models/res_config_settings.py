@@ -123,7 +123,8 @@ class Integration(models.TransientModel):
             currentCompany = self.env.company
             bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
                                                                          ('active', '=', True)], limit=1)
-            bellonaCredentials.state = 'disconnect'
+            bellonaCredentials.connect_credentials()
+            self.importBellonaInventory()
 
     def createShipments(self, shipments):
         for shipment in shipments:
@@ -203,7 +204,8 @@ class Integration(models.TransientModel):
                 currentCompany = self.env.company
                 bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
                                                                              ('active', '=', True)], limit=1)
-                bellonaCredentials.state = 'disconnect'
+                bellonaCredentials.connect_credentials()
+                self.importMaterials()
             self.env.cr.commit()
 
     def createMaterials(self, materials):
@@ -323,7 +325,8 @@ class Integration(models.TransientModel):
                 currentCompany = self.env.company
                 bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
                                                                              ('active', '=', True)], limit=1)
-                bellonaCredentials.state = 'disconnect'
+                bellonaCredentials.connect_credentials()
+                self.importPrice()
         self.env.cr.commit()
 
     def updatePrice(self, odooProduct, product):
@@ -340,6 +343,33 @@ class Integration(models.TransientModel):
                 shipment.kbetr = product[0]['kbetr']
                 shipment.kpein = product[0]['kpein']
                 shipment.biriM_FIYAT = product[0]['biriM_FIYAT']
+
+        # Beloona Shipments
+
+    def importBellonaBom(self):
+        token = self.getCredentials()
+        url = self.getBaseURL() + "api/Material/SearchBOM"
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+        }
+        data = {
+            "material": "20ECT1R00500026"
+
+        }
+        payload = json.dumps(data)
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print( "response",response)
+        if response.status_code == 200:
+            boms = json.loads(response.content)
+            print("Boms", boms)
+            self.createBoms(boms)
+            self.env.cr.commit()
+        else:
+            currentCompany = self.env.company
+            bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
+                                                                         ('active', '=', True)], limit=1)
+            # bellonaCredentials.state = 'disconnect'
 
 class BeloonaShiment(models.Model):
     _name = 'bellona.shipments'
@@ -425,3 +455,12 @@ class BeloonaMaterial(models.Model):
     e_MODEL_E = fields.Char('e_MODEL_E')
     e_EXTWG_T = fields.Char('e_EXTWG_T')
     e_FLART_T = fields.Char('e_FLART_T')
+
+
+class BeloonaBOM(models.Model):
+    _name = 'bellona.bom'
+
+
+    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
+                                 default=lambda self: self.env.company)
+    matnr = fields.Char('matnr')
