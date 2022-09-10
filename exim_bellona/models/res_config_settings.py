@@ -120,7 +120,7 @@ class Integration(models.TransientModel):
             self.createShipments(shipments)
             self.env.cr.commit()
         else:
-            raise UserError(_('Error',response))
+            raise UserError(_('Coach of Error %s .', response))
 
     def createShipments(self, shipments):
         for shipment in shipments:
@@ -197,7 +197,7 @@ class Integration(models.TransientModel):
                 # print("Material response",products)
                 self.createMaterials(products)
             else:
-                raise UserError(_('Error',response))
+                raise UserError(_('Coach of Error %s .', response))
             self.env.cr.commit()
 
     def createMaterials(self, materials):
@@ -316,7 +316,7 @@ class Integration(models.TransientModel):
                 product = json.loads(response.content)
                 self.updatePrice(odooProduct, product)
             else:
-                raise UserError(_('Error', response))
+                raise UserError(_('Coach of Error %s .', response))
         self.env.cr.commit()
 
     def updatePrice(self, odooProduct, product):
@@ -365,7 +365,7 @@ class Integration(models.TransientModel):
             self.createBoms(boms)
             self.env.cr.commit()
         else:
-            raise UserError(_('Error', response))
+            raise UserError(_('Coach of Error %s .', response))
 
 class BeloonaShiment(models.Model):
     _name = 'bellona.shipments'

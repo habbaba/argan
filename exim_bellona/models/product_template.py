@@ -25,13 +25,13 @@ class PTInherit(models.Model):
         }
         payload = json.dumps(data)
         response = requests.request("POST", url, headers=headers, data=payload)
-        print("response",response)
+        # print("response",response)
         if response.status_code == 200:
             products = json.loads(response.content)
             # print("Material response", products)
             self.createMaterials(products)
         else:
-            raise UserError(_('Error',response))
+            raise UserError(_('Coach of Error %s .', response))
 
 
 
