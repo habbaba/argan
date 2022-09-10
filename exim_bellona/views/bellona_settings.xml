@@ -61,6 +61,8 @@
                                 <field name="kpein" optional="hide"/>
                                 <field name="konwa" optional="hide"/>
                                 <field name="biriM_FIYAT"/>
+                                           <field name="company_id"/>
+                                <field name="create_date"/>
                             </tree>
                         </field>
                     </page>
@@ -146,6 +148,8 @@
                                 <field name="kpein"/>
                                 <field name="konwa"/>
                                 <field name="biriM_FIYAT"/>
+                                           <field name="company_id"/>
+                                <field name="create_date"/>
                             </group>
                         </group>
                     </sheet>
@@ -208,6 +212,8 @@
                     <field name="kpein" optional="hide"/>
                     <field name="konwa" optional="hide"/>
                     <field name="biriM_FIYAT"/>
+                               <field name="company_id"/>
+                                <field name="create_date"/>
                 </tree>
             </field>
         </record>
@@ -253,6 +259,8 @@
                                 <field name="kpein"/>
                                 <field name="konwa"/>
                                 <field name="biriM_FIYAT"/>
+                                           <field name="company_id"/>
+                                <field name="create_date"/>
                             </group>
                         </group>
                     </sheet>
@@ -293,6 +301,8 @@
                     <field name="customerbarcode" optional="hide"/>
                     <field name="previouS_ORDER_POS" optional="hide"/>
                     <field name="producT_STOCK" optional="hide"/>
+                               <field name="company_id"/>
+                                <field name="create_date"/>
                 </tree>
             </field>
         </record>
