@@ -120,11 +120,7 @@ class Integration(models.TransientModel):
             self.createShipments(shipments)
             self.env.cr.commit()
         else:
-            currentCompany = self.env.company
-            bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
-                                                                         ('active', '=', True)], limit=1)
-            bellonaCredentials.connect_credentials()
-            self.importBellonaInventory()
+            raise UserError(_('Error',response))
 
     def createShipments(self, shipments):
         for shipment in shipments:
@@ -201,11 +197,7 @@ class Integration(models.TransientModel):
                 # print("Material response",products)
                 self.createMaterials(products)
             else:
-                currentCompany = self.env.company
-                bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
-                                                                             ('active', '=', True)], limit=1)
-                bellonaCredentials.connect_credentials()
-                self.importMaterials()
+                raise UserError(_('Error',response))
             self.env.cr.commit()
 
     def createMaterials(self, materials):
@@ -324,11 +316,7 @@ class Integration(models.TransientModel):
                 product = json.loads(response.content)
                 self.updatePrice(odooProduct, product)
             else:
-                currentCompany = self.env.company
-                bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
-                                                                             ('active', '=', True)], limit=1)
-                bellonaCredentials.connect_credentials()
-                self.importPrice()
+                raise UserError(_('Error', response))
         self.env.cr.commit()
 
     def updatePrice(self, odooProduct, product):
@@ -377,10 +365,7 @@ class Integration(models.TransientModel):
             self.createBoms(boms)
             self.env.cr.commit()
         else:
-            currentCompany = self.env.company
-            bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
-                                                                         ('active', '=', True)], limit=1)
-            # bellonaCredentials.state = 'disconnect'
+            raise UserError(_('Error', response))
 
 class BeloonaShiment(models.Model):
     _name = 'bellona.shipments'

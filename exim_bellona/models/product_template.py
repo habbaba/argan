@@ -5,7 +5,7 @@ import requests
 import base64
 import time
 from datetime import datetime, timedelta
-
+from odoo.exceptions import AccessError
 
 class PTInherit(models.Model):
     _inherit = 'product.template'
@@ -31,11 +31,10 @@ class PTInherit(models.Model):
             # print("Material response", products)
             self.createMaterials(products)
         else:
-            currentCompany = self.env.company
-            bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
-                                                                         ('active', '=', True)], limit=1)
-            bellonaCredentials.connect_credentials()
-            self.importMaterials()
+            raise UserError(_('Error',response))
+
+
+
         self.env.cr.commit()
 
     def createMaterials(self, materials):
