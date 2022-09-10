@@ -87,9 +87,9 @@
             <field name="name">Bellona Materials</field>
             <field name="model">bellona.material</field>
             <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
+                <form  string="Bellona Materials">
+                    <sheet  string="Bellona Materials">
+                        <group  string="Bellona Materials">
                             <group>
                                 <field name="matnr"/>
                                 <field name="meins"/>
@@ -214,12 +214,12 @@
 
 
         <record model="ir.ui.view" id="bellona_shipments_form_view">
-            <field name="name">Bellona Shipments</field>
+            <field name="name">Bellona Search Inventory</field>
             <field name="model">bellona.shipments</field>
             <field name="arch" type="xml">
-                <form string="Incoming Shipments">
-                    <sheet string="Incoming Shipments">
-                        <group string="Incoming Shipments">
+                <form string="Search Inventory">
+                    <sheet string="Search Inventory">
+                        <group string="Search Inventory">
                             <group>
                                 <field name="productcode"/>
                                 <field name="ordeR_QUANTITY"/>
@@ -264,7 +264,7 @@
             <field name="name">Search Inventory</field>
             <field name="model">bellona.shipments</field>
             <field name="arch" type="xml">
-                <tree string="Bellona Shipments">
+                <tree string="Search Inventory">
                     <field name="product_template"/>
                     <field name="saleS_ORDER" />
                     <field name="customerref"/>
@@ -318,7 +318,7 @@
 
         <menuitem id="bellona_root" web_icon="exim_bellona,static/description/icon.png" name="Bellona"/>
         <menuitem id="bellona_credentials_action_menu" parent="bellona_root" name="Credentials" action="bellona_credentials_action"/>
-        <menuitem id="bellona_incoming_shipements" parent="bellona_root" name="Shipments" action="bellona_shipments_action"/>
+        <menuitem id="bellona_incoming_shipements" parent="bellona_root" name="Search Inventory" action="bellona_shipments_action"/>
         <menuitem id="bellona_materials" parent="bellona_root" name="Bellona Materials" action="bellona_materials_action"/>
 
     </data>

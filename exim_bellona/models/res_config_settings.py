@@ -124,8 +124,8 @@ class Integration(models.TransientModel):
 
     def createShipments(self, shipments):
         for shipment in shipments:
-            shipment_obj = self.env['bellona.shipments'].search([('saleS_ORDER', '=', shipment['saleS_ORDER']),('previouS_ORDER', '=', shipment['previouS_ORDER']),('productref', '=', shipment['productref'])])
-            product_template = self.env['product.template'].search([('default_code', '=', shipment['productcode'])],limit=1)
+            shipment_obj = self.env['bellona.shipments'].search([('saleS_ORDER', '=', shipment['saleS_ORDER']),('previouS_ORDER', '=', shipment['previouS_ORDER']),('productref', '=', shipment['productref']),('company_id', '=', self.env.company.id)])
+            product_template = self.env['product.template'].search([('default_code', '=', shipment['productcode']),('company_id', '=', self.env.company.id)],limit=1)
             if not shipment_obj:
                 shipment_obj.create({
                     'productcode': shipment['productcode'],
@@ -184,7 +184,7 @@ class Integration(models.TransientModel):
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token,
         }
-        odooProducts = self.env['product.template'].search([('default_code', '!=', False)])
+        odooProducts = self.env['product.template'].search([('default_code', '!=', False),('company_id', '=', self.env.company.id)])
         for odooProduct in odooProducts:
             data = {
                 "matnr": odooProduct.default_code,
@@ -202,8 +202,8 @@ class Integration(models.TransientModel):
 
     def createMaterials(self, materials):
         for material in materials:
-            odooMaterials = self.env['bellona.material'].search([('matnr', '=', material['matnr'])])
-            odooProduct = self.env['product.template'].search([('default_code', '=', material['matnr'])])
+            odooMaterials = self.env['bellona.material'].search([('matnr', '=', material['matnr']),('company_id', '=', self.env.company.id)])
+            odooProduct = self.env['product.template'].search([('default_code', '=', material['matnr']),('company_id', '=', self.env.company.id)])
             if not odooMaterials:
                 odooMaterials = self.env['bellona.material'].create({
                     'matnr': material['matnr'],
@@ -308,7 +308,7 @@ class Integration(models.TransientModel):
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token,
         }
-        odooProducts = self.env['product.template'].search([('default_code', '!=', False)])
+        odooProducts = self.env['product.template'].search([('default_code', '!=', False),('company_id', '=', self.env.company.id)])
         for odooProduct in odooProducts:
             payload = json.dumps(odooProduct.default_code)
             response = requests.request("POST", url, headers=headers, data=payload)
@@ -323,8 +323,8 @@ class Integration(models.TransientModel):
         odooProduct.write({
             'list_price': product[0]['biriM_FIYAT']
         })
-        shipment_obj = self.env['bellona.shipments'].search([('productcode', '=', odooProduct.default_code)])
-        material_obj = self.env['bellona.material'].search([('matnr', '=', odooProduct.default_code)],limit=1)
+        shipment_obj = self.env['bellona.shipments'].search([('productcode', '=', odooProduct.default_code),('company_id', '=', self.env.company.id)])
+        material_obj = self.env['bellona.material'].search([('matnr', '=', odooProduct.default_code),('company_id', '=', self.env.company.id)],limit=1)
         if shipment_obj:
             for shipment in shipment_obj:
                 shipment.maktx = product[0]['maktx']

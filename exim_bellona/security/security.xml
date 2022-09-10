@@ -11,7 +11,7 @@
                 <field name="perm_unlink" eval="True"/>
         </record>
         <record id="exim_bellona_shipments" model="ir.rule">
-                <field name="name">Bellona shipments</field>
+                <field name="name">Bellona Inventory</field>
                 <field name="model_id" ref="exim_bellona.model_bellona_shipments"/>
                 <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
                 <field name="perm_read" eval="True"/>
