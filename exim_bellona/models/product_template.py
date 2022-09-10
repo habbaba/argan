@@ -136,3 +136,47 @@ class PTInherit(models.Model):
                 self.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
                 })
+            self.importPrice(material['matnr'])
+
+
+    def importPrice(self,code):
+        token = self.env['res.config.settings'].getCredentials()
+        url = self.env['res.config.settings'].getBaseURL() + "api/Material/SearchPrice"
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+        }
+        odooProducts = self.env['product.template'].search([('default_code', '=',code)])
+        for odooProduct in odooProducts:
+            payload = json.dumps(odooProduct.default_code)
+            response = requests.request("POST", url, headers=headers, data=payload)
+            if response.status_code == 200:
+                product = json.loads(response.content)
+                self.updatePrice(odooProduct, product)
+            else:
+                raise UserError(_('Coach of Error %s .', response.text))
+        self.env.cr.commit()
+
+    def updatePrice(self, odooProduct, product):
+        odooProduct.write({
+            'list_price': product[0]['biriM_FIYAT']
+        })
+        shipment_obj = self.env['bellona.shipments'].search([('productcode', '=', odooProduct.default_code)])
+        material_obj = self.env['bellona.material'].search([('matnr', '=', odooProduct.default_code)],limit=1)
+        if shipment_obj:
+            for shipment in shipment_obj:
+                shipment.maktx = product[0]['maktx']
+                shipment.datab = product[0]['datab']
+                shipment.datbi = product[0]['datbi']
+                shipment.konwa = product[0]['konwa']
+                shipment.kbetr = product[0]['kbetr']
+                shipment.kpein = product[0]['kpein']
+                shipment.biriM_FIYAT = product[0]['biriM_FIYAT']
+        if  material_obj:
+            material_obj.maktx = product[0]['maktx']
+            material_obj.datab = product[0]['datab']
+            material_obj.datbi = product[0]['datbi']
+            material_obj.konwa = product[0]['konwa']
+            material_obj.kbetr = product[0]['kbetr']
+            material_obj.kpein = product[0]['kpein']
+            material_obj.biriM_FIYAT = product[0]['biriM_FIYAT']
