@@ -13,7 +13,6 @@ class PTInherit(models.Model):
     bellona_material_ids = fields.Many2many('bellona.material', string='Bellona Materials')
 
     def importMaterials(self):
-        get_connect = self.env['bellona.credentials'].connect_credentials()
         token = self.env['res.config.settings'].getCredentials()
         url = self.env['res.config.settings'].getBaseURL() + "api/Material/SearchMaterial"
         headers = {
@@ -22,14 +21,14 @@ class PTInherit(models.Model):
         }
         data = {
             "matnr": self.default_code,
-            "date": "2013-01-01"
+             "date": "2013-01-01"
         }
         payload = json.dumps(data)
         response = requests.request("POST", url, headers=headers, data=payload)
         print("response",response)
         if response.status_code == 200:
             products = json.loads(response.content)
-            print("Material response", products)
+            # print("Material response", products)
             self.createMaterials(products)
         else:
             currentCompany = self.env.company
@@ -85,6 +84,7 @@ class PTInherit(models.Model):
                     'e_MODEL_E': material['e_MODEL_E'],
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
+                    'product_template': self.id,
                 })
                 self.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
@@ -132,6 +132,7 @@ class PTInherit(models.Model):
                     'e_MODEL_E': material['e_MODEL_E'],
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
+                    'product_template': self.id,
                 })
                 self.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]

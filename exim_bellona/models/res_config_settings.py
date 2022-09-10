@@ -116,7 +116,7 @@ class Integration(models.TransientModel):
         response = requests.request("POST", url, headers=headers, data=payload)
         if response.status_code == 200:
             shipments = json.loads(response.content)
-            print("import inventory",shipments)
+            # print("import inventory",shipments)
             self.createShipments(shipments)
             self.env.cr.commit()
         else:
@@ -198,7 +198,7 @@ class Integration(models.TransientModel):
             response = requests.request("POST", url, headers=headers, data=payload)
             if response.status_code == 200:
                 products = json.loads(response.content)
-                print("Material response",products)
+                # print("Material response",products)
                 self.createMaterials(products)
             else:
                 currentCompany = self.env.company
@@ -255,6 +255,7 @@ class Integration(models.TransientModel):
                     'e_MODEL_E': material['e_MODEL_E'],
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
+                    'product_template': odooProduct.id,
                 })
                 odooProduct.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
@@ -302,6 +303,7 @@ class Integration(models.TransientModel):
                     'e_MODEL_E': material['e_MODEL_E'],
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
+                    'product_template': odooProduct.id,
                 })
                 odooProduct.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
@@ -334,6 +336,7 @@ class Integration(models.TransientModel):
             'list_price': product[0]['biriM_FIYAT']
         })
         shipment_obj = self.env['bellona.shipments'].search([('productcode', '=', odooProduct.default_code)])
+        material_obj = self.env['bellona.material'].search([('matnr', '=', odooProduct.default_code)],limit=1)
         if shipment_obj:
             for shipment in shipment_obj:
                 shipment.maktx = product[0]['maktx']
@@ -343,6 +346,14 @@ class Integration(models.TransientModel):
                 shipment.kbetr = product[0]['kbetr']
                 shipment.kpein = product[0]['kpein']
                 shipment.biriM_FIYAT = product[0]['biriM_FIYAT']
+        if  material_obj:
+            material_obj.maktx = product[0]['maktx']
+            material_obj.datab = product[0]['datab']
+            material_obj.datbi = product[0]['datbi']
+            material_obj.konwa = product[0]['konwa']
+            material_obj.kbetr = product[0]['kbetr']
+            material_obj.kpein = product[0]['kpein']
+            material_obj.biriM_FIYAT = product[0]['biriM_FIYAT']
 
         # Beloona Shipments
 
@@ -359,10 +370,10 @@ class Integration(models.TransientModel):
         }
         payload = json.dumps(data)
         response = requests.request("POST", url, headers=headers, data=payload)
-        print( "response",response)
+        # print( "response",response)
         if response.status_code == 200:
             boms = json.loads(response.content)
-            print("Boms", boms)
+            # print("Boms", boms)
             self.createBoms(boms)
             self.env.cr.commit()
         else:
@@ -406,7 +417,6 @@ class BeloonaShiment(models.Model):
     biriM_FIYAT = fields.Char('biriM_FIYAT')
     konwa = fields.Char('konwa')
 
-
 class BeloonaMaterial(models.Model):
     _name = 'bellona.material'
 
@@ -448,13 +458,20 @@ class BeloonaMaterial(models.Model):
     zzbolG04 = fields.Char('zzbolG04')
     zzbolG03 = fields.Char('zzbolG03')
     zzbolG02 = fields.Char('zzbolG02')
-    maktx = fields.Char('maktx')
     e_EXTWG_E = fields.Char('e_EXTWG_E')
     e_FLART_E = fields.Char('e_FLART_E')
     e_UNITE_E = fields.Char('e_UNITE_E')
     e_MODEL_E = fields.Char('e_MODEL_E')
     e_EXTWG_T = fields.Char('e_EXTWG_T')
     e_FLART_T = fields.Char('e_FLART_T')
+    maktx = fields.Char('maktx')
+    datab = fields.Char('datab')
+    datbi = fields.Char('datbi')
+    kbetr = fields.Char('kbetr')
+    kpein = fields.Char('kpein')
+    biriM_FIYAT = fields.Char('biriM_FIYAT')
+    konwa = fields.Char('konwa')
+    product_template = fields.Many2one('product.template', 'Product Template')
 
 
 class BeloonaBOM(models.Model):
