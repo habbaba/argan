@@ -184,7 +184,7 @@ class Integration(models.TransientModel):
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token,
         }
-        odooProducts = self.env['product.template'].search([('default_code', '!=', False),('company_id', '=', self.env.company.id)],limit=1)
+        odooProducts = self.env['product.template'].search([('default_code', '!=', False),('company_id', '=', self.env.company.id)])
         for odooProduct in odooProducts:
             data = {
                 "matnr": odooProduct.default_code,
