@@ -159,7 +159,7 @@ class PTInherit(models.Model):
 
     def updatePrice(self, odooProduct, product):
         odooProduct.write({
-            'list_price': product[0]['biriM_FIYAT']
+            'standard_price': product[0]['biriM_FIYAT']
         })
         shipment_obj = self.env['bellona.shipments'].search([('productcode', '=', odooProduct.default_code)])
         material_obj = self.env['bellona.material'].search([('matnr', '=', odooProduct.default_code)],limit=1)
