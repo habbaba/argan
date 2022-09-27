@@ -203,7 +203,7 @@ class Integration(models.TransientModel):
     def createMaterials(self, materials):
         for material in materials:
             odooMaterials = self.env['bellona.material'].search([('matnr', '=', material['matnr']),('company_id', '=', self.env.company.id)])
-            odooProduct = self.env['product.template'].search([('default_code', '=', material['matnr']),('company_id', '=', self.env.company.id)],limit=1)
+            odooProduct = self.env['product.template'].search([('default_code', '=', material['matnr']),('company_id', '=', self.env.company.id)])
             if not odooMaterials:
                 odooMaterials = self.env['bellona.material'].create({
                     'matnr': material['matnr'],
@@ -247,7 +247,7 @@ class Integration(models.TransientModel):
                     'e_MODEL_E': material['e_MODEL_E'],
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
-                    'product_template': odooProduct.id,
+                  
                 })
                 odooProduct.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
@@ -295,7 +295,7 @@ class Integration(models.TransientModel):
                     'e_MODEL_E': material['e_MODEL_E'],
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
-                    'product_template': odooProduct.id,
+              
                 })
                 odooProduct.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
