@@ -124,7 +124,7 @@ class Integration(models.TransientModel):
 
     def createShipments(self, shipments):
         for shipment in shipments:
-            shipment_obj = self.env['bellona.shipments'].search([('saleS_ORDER', '=', shipment['saleS_ORDER']),('previouS_ORDER', '=', shipment['previouS_ORDER']),('productref', '=', shipment['productref']),('company_id', '=', self.env.company.id)])
+            shipment_obj = self.env['bellona.shipments'].search([('saleS_ORDER', '=', shipment['saleS_ORDER']),('saleS_ORDER_POSNR', '=', shipment['saleS_ORDER_POSNR']),('productref', '=', shipment['productref']),('company_id', '=', self.env.company.id)])
             product_template = self.env['product.template'].search([('default_code', '=', shipment['productcode']),('company_id', '=', self.env.company.id)],limit=1)
             if not shipment_obj:
                 shipment_obj.create({
