@@ -25,13 +25,13 @@ class PTInherit(models.Model):
         }
         payload = json.dumps(data)
         response = requests.request("POST", url, headers=headers, data=payload)
-        # print("response",response)
+        print("response",response)
         if response.status_code == 200:
             products = json.loads(response.content)
-            # print("Material response", products)
+            print("Material response", products)
             self.createMaterials(products)
         else:
-            raise UserError(_('Coach of Error %s .', response))
+            raise UserError(_('Error %s .', response))
 
 
 
@@ -180,3 +180,16 @@ class PTInherit(models.Model):
             material_obj.kbetr = product[0]['kbetr']
             material_obj.kpein = product[0]['kpein']
             material_obj.biriM_FIYAT = product[0]['biriM_FIYAT']
+
+
+class SaleOrderInh(models.Model):
+    _inherit = 'sale.order'
+
+    bellona_shipments = fields.Many2many('bellona.shipments', string='Bellona Shipments')
+
+
+
+class PurchaseOrderInh(models.Model):
+    _inherit = 'purchase.order'
+
+    bellona_shipments = fields.Many2many('bellona.shipments', string='Bellona Shipments')

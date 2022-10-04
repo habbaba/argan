@@ -32,7 +32,7 @@
     'version': '1.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['stock','sale'],
+    'depends': ['stock','sale','purchase'],
 
     # always loaded
     'data': [

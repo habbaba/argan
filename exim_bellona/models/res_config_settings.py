@@ -116,7 +116,7 @@ class Integration(models.TransientModel):
         response = requests.request("POST", url, headers=headers, data=payload)
         if response.status_code == 200:
             shipments = json.loads(response.content)
-            # print("import inventory",shipments)
+            print("import inventory")
             self.createShipments(shipments)
             self.env.cr.commit()
         else:
@@ -127,7 +127,7 @@ class Integration(models.TransientModel):
             shipment_obj = self.env['bellona.shipments'].search([('saleS_ORDER', '=', shipment['saleS_ORDER']),('saleS_ORDER_POSNR', '=', shipment['saleS_ORDER_POSNR']),('productref', '=', shipment['productref']),('company_id', '=', self.env.company.id)])
             product_template = self.env['product.template'].search([('default_code', '=', shipment['productcode']),('company_id', '=', self.env.company.id)],limit=1)
             if not shipment_obj:
-                shipment_obj.create({
+                shipment_obj = self.env['bellona.shipments'].create({
                     'productcode': shipment['productcode'],
                     'product_template': product_template.id,
                     'ordeR_QUANTITY': shipment['ordeR_QUANTITY'],
@@ -152,7 +152,7 @@ class Integration(models.TransientModel):
                 })
 
             else:
-                shipment_obj.write({
+                shipment_obj = self.env['bellona.shipments'].write({
                     'productcode': shipment['productcode'],
                     'product_template': product_template.id,
                     'ordeR_QUANTITY': shipment['ordeR_QUANTITY'],
@@ -175,7 +175,13 @@ class Integration(models.TransientModel):
                     'previouS_ORDER_POS': shipment['previouS_ORDER_POS'],
                     'producT_STOCK': shipment['producT_STOCK'],
                 })
-
+            print(shipment_obj.id)
+            purchase_order = self.env['purchase.order'].search([('name', '=', shipment['customerbarcode'])],limit=1)
+            if purchase_order:
+                sale_order = self.env['sale.order'].search([('name', '=', purchase_order.origin)], limit=1)
+                purchase_order.bellona_shipments=[(4,shipment_obj.id)]
+                if sale_order:
+                    sale_order.bellona_shipments = [(4,shipment_obj.id)]
     #Bellona Materials
     def importMaterials(self):
         token = self.getCredentials()
@@ -184,26 +190,30 @@ class Integration(models.TransientModel):
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token,
         }
-        odooProducts = self.env['product.template'].search([('default_code', '!=', False),('company_id', '=', self.env.company.id)])
+        odooProducts = self.env['product.template'].search([('default_code', '!=', False),('company_id', '=', self.env.company.id),("bellona_material_ids",'=',False)])
+
         for odooProduct in odooProducts:
+
             data = {
                 "matnr": odooProduct.default_code,
-                  "date": "2013-01-01"
+                  "date": "2022-05-01"
             }
             payload = json.dumps(data)
             response = requests.request("POST", url, headers=headers, data=payload)
+
             if response.status_code == 200:
                 products = json.loads(response.content)
                 # print("Material response",products)
                 self.createMaterials(products)
             else:
-                raise UserError(_('Coach of Error %s .', response))
+                raise UserError(_('Error %s .', response))
+
             self.env.cr.commit()
 
     def createMaterials(self, materials):
         for material in materials:
             odooMaterials = self.env['bellona.material'].search([('matnr', '=', material['matnr']),('company_id', '=', self.env.company.id)])
-            odooProduct = self.env['product.template'].search([('default_code', '=', material['matnr']),('company_id', '=', self.env.company.id)])
+            odooProduct = self.env['product.template'].search([('default_code', '=', material['matnr']),('company_id', '=', self.env.company.id)],limit=1)
             if not odooMaterials:
                 odooMaterials = self.env['bellona.material'].create({
                     'matnr': material['matnr'],
@@ -457,7 +467,6 @@ class BeloonaMaterial(models.Model):
     biriM_FIYAT = fields.Char('biriM_FIYAT')
     konwa = fields.Char('konwa')
     product_template = fields.Many2one('product.template', 'Product Template')
-
 
 class BeloonaBOM(models.Model):
     _name = 'bellona.bom'
