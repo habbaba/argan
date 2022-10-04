@@ -297,7 +297,6 @@
                     <field name="e_MODEL_E" optional="hide"/>
                     <field name="e_EXTWG_T" optional="hide"/>
                     <field name="e_FLART_T" optional="hide"/>
-
                     <field name="product_template" optional="hide"/>
                     <field name="maktx" optional="hide"/>
                     <field name="datab" optional="hide"/>
@@ -338,10 +337,8 @@
                     <field name="zbdT_URETICI" />
                     <field name="mvgR1" />
                     <field name="maktx" />
-
-
                 <group expand="0" string="Group By">
-                    <filter string="Customer Barcode" name="barcode" context="{'group_by':'customerbarcode'}" />
+                    <filter string="Material no" name="barcode" context="{'group_by':'matnr'}" />
                 </group>
             </search>
         </field>
