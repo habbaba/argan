@@ -175,7 +175,7 @@ class Integration(models.TransientModel):
                     'previouS_ORDER_POS': shipment['previouS_ORDER_POS'],
                     'producT_STOCK': shipment['producT_STOCK'],
                 })
-            print(shipment_obj.id)
+       
             purchase_order = self.env['purchase.order'].search([('name', '=', shipment['customerbarcode'])],limit=1)
             if purchase_order:
                 sale_order = self.env['sale.order'].search([('name', '=', purchase_order.origin)], limit=1)
