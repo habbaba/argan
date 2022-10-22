@@ -7,13 +7,13 @@ import time
 from datetime import datetime, timedelta
 from odoo.exceptions import AccessError
 
-class PTInherit(models.Model):
+class BeloonaPTInherit(models.Model):
     _inherit = 'product.template'
 
     bellona_material_ids = fields.Many2many('bellona.material', string='Bellona Materials')
 
-    def importMaterials(self):
-        token = self.env['res.config.settings'].getCredentials()
+    def importBellonaMaterials(self):
+        token = self.env['res.config.settings'].getBellonaCredentials()
         url = self.env['res.config.settings'].getBaseURL() + "api/Material/SearchMaterial"
         headers = {
             'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ class PTInherit(models.Model):
         if response.status_code == 200:
             products = json.loads(response.content)
             print("Material response", products)
-            self.createMaterials(products)
+            self.createBellonaMaterials(products)
         else:
             raise UserError(_('Error %s .', response))
 
@@ -37,7 +37,7 @@ class PTInherit(models.Model):
 
         self.env.cr.commit()
 
-    def createMaterials(self, materials):
+    def createBellonaMaterials(self, materials):
         for material in materials:
             odooMaterials = self.env['bellona.material'].search([('matnr', '=', material['matnr'])])
             if not odooMaterials:
@@ -140,7 +140,7 @@ class PTInherit(models.Model):
 
 
     def importPrice(self,code):
-        token = self.env['res.config.settings'].getCredentials()
+        token = self.env['res.config.settings'].getBellonaCredentials()
         url = self.env['res.config.settings'].getBaseURL() + "api/Material/SearchPrice"
         headers = {
             'Content-Type': 'application/json',
@@ -186,7 +186,6 @@ class SaleOrderInh(models.Model):
     _inherit = 'sale.order'
 
     bellona_shipments = fields.Many2many('bellona.shipments', string='Bellona Shipments')
-
 
 
 class PurchaseOrderInh(models.Model):

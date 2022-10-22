@@ -38,7 +38,7 @@
                                         </div>
                                         <div class="content-group">
                                             <div class="mt16">
-                                                <button name="importMaterials" string="Search Material" type="object" class="col-lg-5 o_light_label oe_highlight"/>
+                                                <button name="importBellonaMaterials" string="Search Material" type="object" class="col-lg-5 o_light_label oe_highlight"/>
                                             </div>
                                         </div>
                                     </div>

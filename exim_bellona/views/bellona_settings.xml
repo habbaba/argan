@@ -101,7 +101,7 @@
             <field name="inherit_id" ref="stock.product_template_form_view_procurement_button" />
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_update_quantity_on_hand']" position="after">
-                    <button string="Get Bellona Material" type="object" name="importMaterials"/>
+                    <button string="Get Bellona Material" type="object" name="importBellonaMaterials"/>
                 </xpath>
                 <notebook position='inside'>
                     <page name="bellona_materials" string="Bellona Materials">
@@ -174,7 +174,7 @@
                     <field name="company_id" />
                     <field name="token" invisible="1"/>
                     <field name="state" widget="badge" decoration-info="state == 'active'" decoration-danger="state == 'disconnect'" />
-                    <button name="connect_credentials" type="object" string="Connect"/>
+                    <button name="connect_bellona_credentials" type="object" string="Connect"/>
                 </tree>
             </field>
         </record>

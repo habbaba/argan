@@ -16,7 +16,7 @@ class Credentials(models.Model):
     state = fields.Selection([('active', 'Connected'), ('disconnect', 'Discounted')], string='Status',readonly=True)
 
 
-    def getCredentials(self):
+    def getBellonaCredentials(self):
         currentCompany = self.env.company
         bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
                                                                        ('active', '=', True)])
@@ -27,11 +27,11 @@ class Credentials(models.Model):
         else:
             return bellonaCredentials.username, bellonaCredentials.password
 
-    def connect_credentials(self):
+    def connect_bellona_credentials(self):
 
         settings = self.env['res.config.settings']
         url = settings.getBaseURL() + "api/Account"
-        username,  password = self.getCredentials()
+        username,  password = self.getBellonaCredentials()
         payload = json.dumps({
             "userName": username,
             "password": password

@@ -18,78 +18,78 @@ INTERVAL = [
 class Integration(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    importInventoryButton = fields.Boolean("Import Bellona Inventory")
-    importInventoryUnit = fields.Integer("Import Unit")
-    importInventoryInterval = fields.Selection(INTERVAL, "Import Interval", default='months')
-    importPriceButton = fields.Boolean("Import Price")
-    importPriceUnit = fields.Integer("Import Unit")
-    importPriceInterval = fields.Selection(INTERVAL, "Import Interval", default='months')
+    importInventoryButtonBellona = fields.Boolean("Import Bellona Inventory")
+    importInventoryUnitBellona = fields.Integer("Import Unit")
+    importInventoryIntervalBellona = fields.Selection(INTERVAL, "Import Interval", default='months')
+    importPriceButtonBellona = fields.Boolean("Import Price")
+    importPriceUnitBellona = fields.Integer("Import Unit")
+    importPriceIntervalBellona = fields.Selection(INTERVAL, "Import Interval", default='months')
 
-    def TurnOnAndOffSchedulers(self):
-        if self.importInventoryButton:
-            self.changeSettingsOfImportInventoryScheduler(True)
+    def TurnOnAndOffSchedulersBellona(self):
+        if self.importInventoryButtonBellona:
+            self.changeSettingsOfImportInventorySchedulerBellona(True)
 
-        if not self.importInventoryButton:
-            self.changeSettingsOfImportInventoryScheduler(False)
+        if not self.importInventoryButtonBellona:
+            self.changeBellonaSettingsOfImportInventoryScheduler(False)
 
-        if self.importPriceButton:
-            self.changeSettingsOfImportPriceScheduler(True)
+        if self.importPriceButtonBellona:
+            self.changeSettingsOfImportPriceSchedulerBellona(True)
 
-        if not self.importPriceButton:
-            self.changeSettingsOfImportPriceScheduler(False)
+        if not self.importPriceButtonBellona:
+            self.changeSettingsOfImportPriceSchedulerBellona(False)
 
-    def changeSettingsOfImportInventoryScheduler(self, state):
+    def changeSettingsOfImportInventorySchedulerBellona(self, state):
         scheduler = self.env['ir.cron'].search([('name', '=', 'Import Bellona Inventory')])
         if not scheduler:
             scheduler = self.env['ir.cron'].search([('name', '=', 'Import Bellona Inventory'),
                                                     ('active', '=', False)])
         scheduler.active = state
-        scheduler.interval_number = self.importInventoryUnit
-        scheduler.interval_type = self.importInventoryInterval
+        scheduler.interval_number = self.importInventoryUnitBellona
+        scheduler.interval_type = self.importInventoryIntervalBellona
 
-    def changeSettingsOfImportPriceScheduler(self, state):
+    def changeSettingsOfImportPriceSchedulerBellona(self, state):
         scheduler = self.env['ir.cron'].search([('name', '=', 'Import Price')])
         if not scheduler:
             scheduler = self.env['ir.cron'].search([('name', '=', 'Import Price'),
                                                     ('active', '=', False)])
         scheduler.active = state
-        scheduler.interval_number = self.importPriceUnit
-        scheduler.interval_type = self.importPriceInterval
+        scheduler.interval_number = self.importPriceUnitBellona
+        scheduler.interval_type = self.importPriceIntervalBellona
 
     def set_values(self):
         res = super(Integration, self).set_values()
-        self.env['ir.config_parameter'].set_param('exim_bellona.importInventoryButton', self.importInventoryButton)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importInventoryUnit', self.importInventoryUnit)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importInventoryInterval', self.importInventoryInterval)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importPriceButton', self.importPriceButton)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importPriceUnit', self.importPriceUnit)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importPriceInterval', self.importPriceInterval)
+        self.env['ir.config_parameter'].set_param('exim_bellona.importInventoryButtonBellona', self.importInventoryButtonBellona)
+        self.env['ir.config_parameter'].set_param('exim_bellona.importInventoryUnitBellona', self.importInventoryUnitBellona)
+        self.env['ir.config_parameter'].set_param('exim_bellona.importInventoryIntervalBellona', self.importInventoryIntervalBellona)
+        self.env['ir.config_parameter'].set_param('exim_bellona.importPriceButtonBellona', self.importPriceButtonBellona)
+        self.env['ir.config_parameter'].set_param('exim_bellona.importPriceUnitBellona', self.importPriceUnitBellona)
+        self.env['ir.config_parameter'].set_param('exim_bellona.importPriceIntervalBellona', self.importPriceIntervalBellona)
 
-        self.TurnOnAndOffSchedulers()
+        self.TurnOnAndOffSchedulersBellona()
         return res
 
     @api.model
     def get_values(self):
         res = super(Integration, self).get_values()
         icpsudo = self.env['ir.config_parameter'].sudo()
-        importInventoryButton = icpsudo.get_param('exim_bellona.importInventoryButton')
-        importInventoryUnit = icpsudo.get_param('exim_bellona.importInventoryUnit')
-        importInventoryInterval = icpsudo.get_param('exim_bellona.importInventoryInterval')
-        importPriceButton = icpsudo.get_param('exim_bellona.importPriceButton')
-        importPriceUnit = icpsudo.get_param('exim_bellona.importPriceUnit')
-        importPriceInterval = icpsudo.get_param('exim_bellona.importPriceInterval')
+        importInventoryButtonBellona = icpsudo.get_param('exim_bellona.importInventoryButtonBellona')
+        importInventoryUnitBellona = icpsudo.get_param('exim_bellona.importInventoryUnitBellona')
+        importInventoryIntervalBellona = icpsudo.get_param('exim_bellona.importInventoryIntervalBellona')
+        importPriceButtonBellona = icpsudo.get_param('exim_bellona.importPriceButtonBellona')
+        importPriceUnitBellona = icpsudo.get_param('exim_bellona.importPriceUnitBellona')
+        importPriceIntervalBellona = icpsudo.get_param('exim_bellona.importPriceIntervalBellona')
 
         res.update(
-            importInventoryButton=True if importInventoryButton == 'True' else False,
-            importPriceButton=True if importPriceButton == 'True' else False,
-            importInventoryUnit=importInventoryUnit,
-            importInventoryInterval=importInventoryInterval,
-            importPriceUnit=importPriceUnit,
-            importPriceInterval=importPriceInterval,
+            importInventoryButtonBellona=True if importInventoryButtonBellona == 'True' else False,
+            importPriceButtonBellona=True if importPriceButtonBellona == 'True' else False,
+            importInventoryUnitBellona=importInventoryUnitBellona,
+            importInventoryIntervalBellona=importInventoryIntervalBellona,
+            importPriceUnitBellona=importPriceUnitBellona,
+            importPriceIntervalBellona=importPriceIntervalBellona,
         )
         return res
 
-    def getCredentials(self):
+    def getBellonaCredentials(self):
         currentCompany = self.env.company
         bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
                                                                        ('active', '=', True), ('token', '!=', None)])
@@ -106,7 +106,7 @@ class Integration(models.TransientModel):
 
     #Beloona Shipments
     def importBellonaInventory(self):
-        token = self.getCredentials()
+        token = self.getBellonaCredentials()
         url = self.getBaseURL() + "api/Material/SearchInventory"
         headers = {
             'Content-Type': 'application/json',
@@ -116,11 +116,10 @@ class Integration(models.TransientModel):
         response = requests.request("POST", url, headers=headers, data=payload)
         if response.status_code == 200:
             shipments = json.loads(response.content)
-            print("import inventory")
             self.createShipments(shipments)
             self.env.cr.commit()
         else:
-            raise UserError(_('Coach of Error %s .', response))
+            raise UserError(_('Error %s .', response))
 
     def createShipments(self, shipments):
         for shipment in shipments:
@@ -183,8 +182,8 @@ class Integration(models.TransientModel):
                 if sale_order:
                     sale_order.bellona_shipments = [(4,shipment_obj.id)]
     #Bellona Materials
-    def importMaterials(self):
-        token = self.getCredentials()
+    def importBellonaMaterials(self):
+        token = self.getBellonaCredentials()
         url = self.getBaseURL() + "api/Material/SearchMaterial"
         headers = {
             'Content-Type': 'application/json',
@@ -204,13 +203,13 @@ class Integration(models.TransientModel):
             if response.status_code == 200:
                 products = json.loads(response.content)
                 # print("Material response",products)
-                self.createMaterials(products)
+                self.createBellonaMaterials(products)
             else:
                 raise UserError(_('Error %s .', response))
 
             self.env.cr.commit()
 
-    def createMaterials(self, materials):
+    def createBellonaMaterials(self, materials):
         for material in materials:
             odooMaterials = self.env['bellona.material'].search([('matnr', '=', material['matnr']),('company_id', '=', self.env.company.id)])
             odooProduct = self.env['product.template'].search([('default_code', '=', material['matnr']),('company_id', '=', self.env.company.id)],limit=1)
@@ -312,7 +311,7 @@ class Integration(models.TransientModel):
                 })
 
     def importPrice(self):
-        token = self.getCredentials()
+        token = self.getBellonaCredentials()
         url = self.getBaseURL() + "api/Material/SearchPrice"
         headers = {
             'Content-Type': 'application/json',
@@ -356,7 +355,7 @@ class Integration(models.TransientModel):
         # Beloona Shipments
 
     def importBellonaBom(self):
-        token = self.getCredentials()
+        token = self.getBellonaCredentials()
         url = self.getBaseURL() + "api/Material/SearchBOM"
         headers = {
             'Content-Type': 'application/json',
