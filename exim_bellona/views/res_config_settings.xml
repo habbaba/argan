@@ -83,21 +83,21 @@
                             <div class="row mt16 o_settings_container">
                                 <div class="col-12 col-lg-6 o_setting_box">
                                     <div class="o_setting_left_pane">
-                                        <field name="importInventoryButton" widget="boolean_toggle" />
+                                        <field name="importInventoryButtonBellona" widget="boolean_toggle" />
                                     </div>
                                     <div class="o_setting_right_pane">
                                         <span class="o_form_label">Import Bellona Inventory</span>
-                                        <div class="content-group" attrs="{'invisible':[('importInventoryButton','=',False)]}">
+                                        <div class="content-group" attrs="{'invisible':[('importInventoryButtonBellona','=',False)]}">
                                             <div class="mt16">
                                                 <span class="o_form_label">Import Bellona Inventory Scheduler Settings</span>
                                                 <div class="text-muted">
                                                     Here you will import inventory from Bellona to Odoo after clicking the button.
                                                 </div>
                                                 <div class="mt10">
-                                                    <label for="importInventoryUnit" string="Execute Every"/>
+                                                    <label for="importInventoryUnitBellona" string="Execute Every"/>
                                                     <div>
-                                                        <field name="importInventoryUnit" class="oe_inline"/>
-                                                        <field name="importInventoryInterval" class="oe_inline"/>
+                                                        <field name="importInventoryUnitBellona" class="oe_inline"/>
+                                                        <field name="importInventoryIntervalBellona" class="oe_inline"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -106,21 +106,21 @@
                                 </div>
                                 <div class="col-12 col-lg-6 o_setting_box">
                                     <div class="o_setting_left_pane">
-                                        <field name="importPriceButton" widget="boolean_toggle" />
+                                        <field name="importPriceButtonBellona" widget="boolean_toggle" />
                                     </div>
                                     <div class="o_setting_right_pane">
                                         <span class="o_form_label">Import Price</span>
-                                        <div class="content-group" attrs="{'invisible':[('importPriceButton','=',False)]}">
+                                        <div class="content-group" attrs="{'invisible':[('importPriceButtonBellona','=',False)]}">
                                             <div class="mt16">
                                                 <span class="o_form_label">Import Price Scheduler Settings</span>
                                                 <div class="text-muted">
                                                     Here you will import prices from Bellona to Odoo after clicking the button.
                                                 </div>
                                                 <div class="mt10">
-                                                    <label for="importPriceUnit" string="Execute Every"/>
+                                                    <label for="importPriceUnitBellona" string="Execute Every"/>
                                                     <div>
-                                                        <field name="importPriceUnit" class="oe_inline"/>
-                                                        <field name="importPriceInterval" class="oe_inline"/>
+                                                        <field name="importPriceUnitBellona" class="oe_inline"/>
+                                                        <field name="importPriceIntervalBellona" class="oe_inline"/>
                                                     </div>
                                                 </div>
                                             </div>
