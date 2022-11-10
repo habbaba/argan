@@ -13,13 +13,13 @@
                     <page name="istikbal_materials" string="Istikbal Materials">
                         <field name="material_ids" mode="tree">
                             <tree create="0" delete="1">
-                                <field name="materialNumber"      />
-                                <field name="bdtMaterialDesc"  />
-                                <field name="netWeight"  />
-                                <field name="grossWeight"  />
-                                <field name="numberExportContainer" />
-                                <field name="volum" />
-                                <field name="producerCode" />
+                                <field name="materialNumber"/>
+                                <field name="bdtMaterialDesc"/>
+                                <field name="netWeight"/>
+                                <field name="grossWeight"/>
+                                <field name="numberExportContainer"/>
+                                <field name="volum"/>
+                                <field name="producerCode"/>
                                 <field name="vmstd"  optional="show"/>
                                 <field name="vmsta"  optional="show"/>
                                 <field name="bdtKartela"  optional="show"/>

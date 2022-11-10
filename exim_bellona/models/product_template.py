@@ -13,29 +13,31 @@ class BeloonaPTInherit(models.Model):
     bellona_material_ids = fields.Many2many('bellona.material', string='Bellona Materials')
 
     def importBellonaMaterials(self):
-        token = self.env['res.config.settings'].getBellonaCredentials()
-        url = self.env['res.config.settings'].getBaseURL() + "api/Material/SearchMaterial"
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token,
-        }
-        data = {
-            "matnr": self.default_code,
-             "date": "2013-01-01"
-        }
-        payload = json.dumps(data)
-        response = requests.request("POST", url, headers=headers, data=payload)
-        print("response",response)
-        if response.status_code == 200:
-            products = json.loads(response.content)
-            print("Material response", products)
-            self.createBellonaMaterials(products)
-        else:
-            raise UserError(_('Error %s .', response))
+        try:
+            connect_bellona = self.env['res.config.settings'].connect_bellona_credentials()
+            token = self.env['res.config.settings'].getBellonaCredentials()
+            url = self.env['res.config.settings'].getBaseURL() + "api/Material/SearchMaterial"
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            }
+            data = {
+                "matnr": self.default_code,
+                 "date": "2013-01-01"
+            }
+            payload = json.dumps(data)
+            response = requests.request("POST", url, headers=headers, data=payload)
 
-
-
-        self.env.cr.commit()
+            if response.status_code == 200:
+                products = json.loads(response.content)
+                print("Material response", products)
+                self.createBellonaMaterials(products)
+            else:
+                raise UserError(_('Error %s .', response))
+            self.env.cr.commit()
+        except Exception as e:
+            if "Connection aborted" in str(e):
+                raise UserError(_('Error %s .', str(e)))
 
     def createBellonaMaterials(self, materials):
         for material in materials:
@@ -140,6 +142,7 @@ class BeloonaPTInherit(models.Model):
 
 
     def importPrice(self,code):
+        connect_bellona = self.env['res.config.settings'].connect_bellona_credentials()
         token = self.env['res.config.settings'].getBellonaCredentials()
         url = self.env['res.config.settings'].getBaseURL() + "api/Material/SearchPrice"
         headers = {

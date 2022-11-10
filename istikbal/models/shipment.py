@@ -6,8 +6,35 @@ import json
 from datetime import datetime
 
 
+
+class IncomingShipments(models.Model):
+    _name = 'istikbal.incoming.shipments'
+    _rec_name = 'producCode'
+    _order = "producCode"
+
+    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
+                                 default=lambda self: self.env.company)
+    producCode = fields.Char('Product Code')
+    packageEnum = fields.Char('packageNum')
+    bdtCode = fields.Char('bdtCode')
+    productRef = fields.Char('productRef')
+    maktx = fields.Char('maktx')
+    vrkme = fields.Char('vrkme')
+    lgort = fields.Char('lgort')
+    volum = fields.Char('volum')
+    audat = fields.Char('audat')
+    stawn = fields.Char('stawn')
+    quatity = fields.Char('quatity')
+    customerRef = fields.Char('customerRef')
+    customerBarCode = fields.Char('customerBarCode')
+    text = fields.Char('text')
+    quantity = fields.Char('Quantity')
+
+
 class Shipments(models.Model):
     _name = 'istikbal.shipments.header'
+    _rec_name = 'shipmentNumber'
+    _order = "shipmentNumber"
 
     disPactDate = fields.Char('disPactDate')
     containerNumber = fields.Char('Container Number')
@@ -23,11 +50,10 @@ class Shipments(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
 
-
-
-
 class ShipmentDetails(models.Model):
     _name = 'istikbal.shipments.details'
+    _rec_name = 'shipMentNumber'
+    _order = "shipMentNumber"
 
     shipment_id = fields.Many2one('istikbal.shipments.header')
     pakageEnum = fields.Char('Package Number')
@@ -54,29 +80,6 @@ class ShipmentDetails(models.Model):
     voleh = fields.Char('voleh')
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                 default=lambda self: self.env.company)
-
-class IncomingShipments(models.Model):
-    _name = 'istikbal.incoming.shipments'
-
-    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
-                                 default=lambda self: self.env.company)
-    producCode = fields.Char('Product Code')
-    packageEnum = fields.Char('packageNum')
-    bdtCode = fields.Char('bdtCode')
-    productRef  = fields.Char('productRef')
-    maktx = fields.Char('maktx')
-    vrkme = fields.Char('vrkme')
-    lgort = fields.Char('lgort')
-    volum  = fields.Char('volum')
-    audat=  fields.Char('audat')
-    stawn = fields.Char('stawn')
-    quatity = fields.Char('quatity')
-    customerRef = fields.Char('customerRef')
-    customerBarCode = fields.Char('customerBarCode')
-    text = fields.Char('text')
-    quantity = fields.Char('Quantity')
-
-    
 
 class SalesOrderAnalysis(models.Model):
     _name = 'istikbal.sales.order.analysis'

@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-        <record model="ir.actions.act_window" id="istikbal_shipments_action">
-            <field name="name">Istikbal Credentials</field>
-            <field name="res_model">istikbal.shipments.header</field>
-            <field name="view_mode">tree,form</field>
-        </record>
 
-        <record model="ir.ui.view" id="istikbal_shipments_tree_view">
+        <!-- Istikbal  Shipment Headers Tree view -->
+        <record model="ir.ui.view" id="istikbal_shipments_header_tree_view">
             <field name="name">Istikbal Shipments</field>
             <field name="model">istikbal.shipments.header</field>
             <field name="arch" type="xml">
                 <tree string="Istikbal Shipments">
                     <field name="shipmentNumber" />
                     <field name="invoiceNumber" />
-                    <field name="shipmentDate" />
+                    <field name="disPactDate" />
+                    <field name="containerNumber" optional="show"/>
                     <field name="truckPlate" />
-                    <field name="volum" />
-                    <field name="voleh" />
-                     <field name="company_id" />
+                    <field name="truckPlate2" optional="hide"/>
+                    <field name="shipmentDate" />
+                    <field name="volum" optional="hide"/>
+                    <field name="voleh" optional="hide"/>
+                    <field name="company_id" />
                     <field name="create_date" />
                 </tree>
             </field>
         </record>
-
-        <record model="ir.ui.view" id="istikbal_shipments_form_view">
-            <field name="name">Istikbal Shipments</field>
+        <!-- Istikbal Shipment Header Form view -->
+        <record model="ir.ui.view" id="istikbal_shipments_header_form_view">
+            <field name="name">Istikbal Shipment Headers</field>
             <field name="model">istikbal.shipments.header</field>
             <field name="arch" type="xml">
                 <form>
@@ -34,30 +33,46 @@
                             <group>
                                 <field name="shipmentNumber" />
                                 <field name="invoiceNumber" />
+                                <field name="disPactDate" />
                                 <field name="containerNumber" />
-                                <field name="shipmentDate" />
                             </group>
                             <group>
                                 <field name="truckPlate" />
-                                <field name="truckPlate2" />
-                                 <field name="volum" />
+                                <field name="truckPlate2"/>
+                                <field name="shipmentDate" />
+                                <field name="volum"/>
                                 <field name="voleh" />
                                 <field name="company_id" />
+                                <field name="create_date" />
                             </group>
                         </group>
                         <notebook>
                             <page name="istikbal_shipment_details" string="Details">
                                 <field name="detail_ids" mode="tree">
                                     <tree delete="1">
+                                        <field name="shipment_id" />
                                         <field name="pakageEnum" />
-                                        <field name="bdtCode"  optional="show"/>
+                                        <field name="bdtCode" optional="hide"/>
                                         <field name="productCode" />
-                                        <field name="orderReference"  optional="show"/>
-                                        <field name="customerOrderReference"  optional="show"/>
-                                        <field name="productName" />
-                                        <field name="productNameEN"  optional="hide"/>
-                                           <field name="quantity" />
-                                        <field name="volum" />
+                                        <field name="productPackage" optional="hide"/>
+                                        <field name="quantity" />
+                                        <field name="orderReference" />
+                                        <field name="bdtOrderNumber" optional="hide"/>
+                                        <field name="customerItemReference" />
+                                        <field name="company_id" optional="hide"/>
+                                        <field name="voleh" optional="hide"/>
+                                        <field name="zzbdtAmount" optional="hide"/>
+                                        <field name="gewei" optional="hide"/>
+                                        <field name="brgew" optional="hide"/>
+                                        <field name="mvgr3Desc" optional="hide"/>
+                                        <field name="inhalt" optional="hide"/>
+                                        <field name="customerItemCode" optional="hide"/>
+                                        <field name="customerOrderReference" optional="hide"/>
+                                        <field name="productName" optional="hide"/>
+                                        <field name="productNamePack" optional="hide"/>
+                                        <field name="productNameEN" optional="hide"/>
+                                        <field name="volum" optional="hide"/>
+                                        <field name="vrkme" optional="hide"/>
                                     </tree>
                                 </field>
                             </page>
@@ -67,9 +82,136 @@
             </field>
         </record>
 
+        <!-- Istikbal  Shipment  Header search view -->
+        <record id="istikbal_shipments_header_search" model="ir.ui.view">
+            <field name="name">istikbal.shipments.header.search.view</field>
+            <field name="model">istikbal.shipments.header</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="shipmentNumber" />
+                    <field name="invoiceNumber" />
+                    <field name="containerNumber" />
+                    <field name="shipmentDate" />
+                    <field name="truckPlate" />
+                    <field name="truckPlate2" />
+                    <field name="volum" />
+                    <field name="voleh" />
+                </search>
+            </field>
+        </record>
+
+        <!-- Istikbal  Shipment Header Action view -->
+        <record model="ir.actions.act_window" id="istikbal_shipments_action">
+            <field name="name">Istikbal Shipment Headers</field>
+            <field name="res_model">istikbal.shipments.header</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <!-- Istikbal  Shipment Details Tree view -->
+        <record model="ir.ui.view" id="istikbal_shipments_tree_view">
+            <field name="name">Istikbal Shipment Details</field>
+            <field name="model">istikbal.shipments.details</field>
+            <field name="arch" type="xml">
+                <tree string="Istikbal Shipments">
+                    <field name="shipMentNumber"/>
+                    <field name="pakageEnum"/>
+                    <field name="customerItemCode"/>
+                    <field name="customerOrderReference"/>
+                    <field name="productName"/>
+                    <field name="productCode"/>
+                    <field name="quantity"/>
+                    <field name="orderReference"/>
+                    <field name="bdtOrderNumber"/>
+                    <field name="customerItemReference"/>
+                    <field name="productPackage" optional="show"/>
+                    <field name="bdtCode" optional="show"/>
+                    <field name="company_id" optional="show"/>
+                    <field name="voleh" optional="show"/>
+                    <field name="zzbdtAmount" optional="show"/>
+                    <field name="gewei" optional="show"/>
+                    <field name="brgew" optional="show"/>
+                    <field name="mvgr3Desc" optional="show"/>
+                    <field name="inhalt" optional="hide"/>
+                    <field name="productNamePack" optional="hide"/>
+                    <field name="productNameEN" optional="hide"/>
+                    <field name="volum" optional="show"/>
+                    <field name="vrkme" optional="show"/>
+                    <field name="create_date"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Istikbal Shipment Details Form view -->
+        <record model="ir.ui.view" id="istikbal_shipments_form_view">
+            <field name="name">Istikbal Shipment Details</field>
+            <field name="model">istikbal.shipments.details</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="shipment_id" />
+                                <field name="pakageEnum" />
+                                <field name="shipMentNumber" />
+                                <field name="bdtCode" />
+                                <field name="productCode" />
+                                <field name="productPackage" />
+                                <field name="quantity" />
+                                <field name="orderReference" />
+                                <field name="bdtOrderNumber" />
+                                <field name="customerItemReference" />
+                                <field name="company_id" />
+                                <field name="voleh" />
+                            </group>
+                            <group>
+                                <field name="zzbdtAmount" />
+                                <field name="gewei" />
+                                <field name="brgew" />
+                                <field name="mvgr3Desc" />
+                                <field name="inhalt" />
+                                <field name="customerItemCode" />
+                                <field name="inhalt" />
+                                <field name="customerOrderReference" />
+                                <field name="productName" />
+                                <field name="productNamePack" />
+                                <field name="productNameEN" />
+                                <field name="volum" />
+                                <field name="vrkme" />
+                                <field name="create_date" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Istikbal  Shipment Details search view -->
+        <record id="istikbal_shipments_details_search" model="ir.ui.view">
+            <field name="name">Istikbal Shipment Details</field>
+            <field name="model">istikbal.shipments.details</field>
+            <field name="arch" type="xml">
+                <search>
+                     <field name="customerItemCode"/>
+                     <field name="customerOrderReference"/>
+                    <field name="pakageEnum"/>
+                    <field name="shipMentNumber"/>
+                    <field name="productCode"/>
+                    <field name="customerItemReference"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Istikbal  Shipment Detailsr Action view -->
+        <record model="ir.actions.act_window" id="istikbal_shipments_details_action">
+            <field name="name">Istikbal Shipment Details</field>
+            <field name="res_model">istikbal.shipments.details</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
         <!-- Istikbal Incoming Shipment  form view -->
         <record model="ir.ui.view" id="istikbal_incoming_shipments_form_view">
-            <field name="name">Istikbal Incoming Shipments</field>
+            <field name="name">Incoming Shipments</field>
             <field name="model">istikbal.incoming.shipments</field>
             <field name="arch" type="xml">
                 <form>
@@ -99,7 +241,7 @@
             </field>
         </record>
 
-                  <!-- Istikbal Tree view for get inventory  -->
+        <!-- Istikbal incoming shipment Tree view -->
         <record model="ir.ui.view" id="istikbal_incoming_shipments_tree_view">
             <field name="name">Istikbal GET Inventory Tree</field>
             <field name="model">istikbal.incoming.shipments</field>
@@ -118,13 +260,29 @@
                     <field name="audat" />
                     <field name="stawn" />
                     <field name="text" />
-                          <field name="company_id" />
+                    <field name="company_id" />
                     <field name="create_date" />
                 </tree>
             </field>
         </record>
 
-           <!-- Istikbal Action for get inventory  -->
+        <!-- Istikbal  Incoming Shipment search view -->
+        <record id="istikbal_incoming_shipments_search" model="ir.ui.view">
+            <field name="name">istikbal.incoming.shipments.search.view</field>
+            <field name="model">istikbal.incoming.shipments</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="customerRef" />
+                    <field name="producCode" />
+                    <field name="productRef" />
+                     <field name="packageEnum"/>
+                    <field name="maktx" />
+                </search>
+            </field>
+        </record>
+
+
+        <!-- Istikbal Action for get inventory  -->
         <record model="ir.actions.act_window" id="istikbal_incoming_shipments_action">
             <field name="name">Istikbal GET Inventory</field>
             <field name="res_model">istikbal.incoming.shipments</field>
@@ -132,7 +290,7 @@
             <field name="view_id" ref="istikbal.istikbal_incoming_shipments_tree_view"/>
         </record>
 
-         <!-- Istikbal GET Materials  -->
+        <!-- Istikbal GET Materials Form view -->
         <record model="ir.ui.view" id="istikbal_get_material_form_view">
             <field name="name">Istikbal GET Materials</field>
             <field name="model">istikbal.materials</field>
@@ -141,7 +299,7 @@
                     <sheet>
                         <group string="GET Material">
                             <group>
-                            <field name="materialNumber"/>
+                                <field name="materialNumber"/>
                                 <field name="bdtMaterialDesc"/>
                                 <field name="netWeight"/>
                                 <field name="grossWeight"/>
@@ -178,56 +336,74 @@
                                 <field name="zzbolG14"/>
                                 <field name="zzbolG15"/>
                                 <field name="fabric"/>
-                    <field name="company_id"/>
+                                <field name="company_id"/>
                             </group>
                         </group>
                     </sheet>
                 </form>
             </field>
         </record>
-
+        <!-- Istikbal GET Materials Tree view -->
         <record model="ir.ui.view" id="istikbal_get_material_tree_view">
             <field name="name">Istikbal GET Inventory Tree</field>
             <field name="model">istikbal.materials</field>
             <field name="arch" type="xml">
                 <tree string="Istikbal GET Material">
                     <field name="materialNumber"/>
-                                <field name="bdtMaterialDesc"/>
-                                <field name="netWeight"/>
-                                <field name="grossWeight"/>
-                                <field name="numberExportContainer"/>
-                                <field name="volum"/>
-                                <field name="producerCode"/>
-                                <field name="vmstd" optional="hide"/>
-                                <field name="vmsta" optional="hide"/>
-                                <field name="bdtKartela"  optional="hide"/>
-                                <field name="meins" optional="hide"/>
-                                <field name="ersda" optional="hide"/>
-                                <field name="productClass" optional="hide"/>
-                                <field name="productClassDef" optional="hide" />
-                                <field name="mtpos"  optional="hide"/>
-                                <field name="prodh"  optional="hide"/>
-                                <field name="vtext"   optional="hide"/>
-                                <field name="mvgr3"   optional="hide"/>
-                                <field name="zzbolG01"   optional="hide"/>
-                                <field name="zzbolG02"  optional="hide"/>
-                                <field name="zzbolG03"   optional="hide"/>
-                                <field name="zzbolG04"  optional="hide"/>
-                                <field name="zzbolG05" optional="hide"/>
-                                <field name="zzbolG06"   optional="hide"/>
-                                <field name="zzbolG07"  optional="hide"/>
-                                <field name="zzbolG08"  optional="hide"/>
-                                <field name="zzbolG09"   optional="hide"/>
-                                <field name="zzbolG10"   optional="hide"/>
-                                <field name="zzbolG11"   optional="hide"/>
-                                <field name="zzbolG12"   optional="hide"/>
-                                <field name="zzbolG13"   optional="hide"/>
-                                <field name="zzbolG14"  optional="hide"/>
-                                <field name="zzbolG15"    optional="hide"/>
-                                <field name="fabric"   optional="hide"/>
-                          <field name="company_id" />
+                    <field name="bdtMaterialDesc"/>
+                    <field name="netWeight"/>
+                    <field name="grossWeight"/>
+                    <field name="numberExportContainer"/>
+                    <field name="volum"/>
+                    <field name="producerCode"/>
+                    <field name="vmstd" optional="hide"/>
+                    <field name="vmsta" optional="hide"/>
+                    <field name="bdtKartela"  optional="hide"/>
+                    <field name="meins" optional="hide"/>
+                    <field name="ersda" optional="hide"/>
+                    <field name="productClass" optional="hide"/>
+                    <field name="productClassDef" optional="hide" />
+                    <field name="mtpos"  optional="hide"/>
+                    <field name="prodh"  optional="hide"/>
+                    <field name="vtext"   optional="hide"/>
+                    <field name="mvgr3"   optional="hide"/>
+                    <field name="zzbolG01"   optional="hide"/>
+                    <field name="zzbolG02"  optional="hide"/>
+                    <field name="zzbolG03"   optional="hide"/>
+                    <field name="zzbolG04"  optional="hide"/>
+                    <field name="zzbolG05" optional="hide"/>
+                    <field name="zzbolG06"   optional="hide"/>
+                    <field name="zzbolG07"  optional="hide"/>
+                    <field name="zzbolG08"  optional="hide"/>
+                    <field name="zzbolG09"   optional="hide"/>
+                    <field name="zzbolG10"   optional="hide"/>
+                    <field name="zzbolG11"   optional="hide"/>
+                    <field name="zzbolG12"   optional="hide"/>
+                    <field name="zzbolG13"   optional="hide"/>
+                    <field name="zzbolG14"  optional="hide"/>
+                    <field name="zzbolG15"    optional="hide"/>
+                    <field name="fabric"   optional="hide"/>
+                    <field name="company_id" />
                     <field name="create_date" />
                 </tree>
+            </field>
+        </record>
+
+        <!-- Istikbal  material search view -->
+        <record id="istikbal_materials_search" model="ir.ui.view">
+            <field name="name">istikbal.materials.search.view</field>
+            <field name="model">istikbal.materials</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="materialNumber"/>
+                    <field name="bdtMaterialDesc"/>
+                    <field name="producerCode"/>
+                    <field name="vmstd"/>
+                    <field name="vmsta"/>
+                    <field name="bdtKartela"/>
+                    <field name="productClass"/>
+                    <field name="productClassDef" />
+                </search>
             </field>
         </record>
 
@@ -236,20 +412,15 @@
             <field name="res_model">istikbal.materials</field>
             <field name="view_mode">tree,form</field>
         </record>
-
-
-         <record model="ir.actions.act_window" id="istikbal_saleorder_analysis_action">
+        <record model="ir.actions.act_window" id="istikbal_saleorder_analysis_action">
             <field name="name">Istikbal GET SaleOrder Analysis</field>
             <field name="res_model">istikbal.sales.order.analysis</field>
             <field name="view_mode">tree,form</field>
         </record>
-
         <menuitem id="istikbal_shipments_action_menu" parent="istikbal_root" name="GET Shipments" action="istikbal_shipments_action"/>
         <menuitem id="istikbal_incoming_shipments_action_menu" parent="istikbal_root" name="GET Inventory" action="istikbal_incoming_shipments_action"/>
         <menuitem id="istikbal_get_material_action_menu" parent="istikbal_root" name="GET Material" action="istikbal_material_action"/>
-        <menuitem id="istikbal_soa_action_menu" parent="istikbal_root" name="GET SaleOrder Analysis" action="istikbal_saleorder_analysis_action"/>
-
-
-
+        <!--        <menuitem id="istikbal_soa_action_menu" parent="istikbal_root" name="GET SaleOrder Analysis" action="istikbal_saleorder_analysis_action"/>-->
+        <menuitem id="istikbal_shiment_detail_menu" parent="istikbal_root" name="Shipment Details" action="istikbal_shipments_details_action"/>
     </data>
 </odoo>

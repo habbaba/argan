@@ -93,11 +93,13 @@ class Integration(models.TransientModel):
         currentCompany = self.env.company
         bellonaCredentials = self.env['bellona.credentials'].search([('company_id', '=', currentCompany.id),
                                                                        ('active', '=', True), ('token', '!=', None)])
+
         if len(bellonaCredentials.ids) > 1:
             raise ValidationError("Multiple Credentials are active for current company. Please select/active only one at a time.")
         elif len(bellonaCredentials.ids) == 0:
             raise ValidationError("No credential is assign to current company. Please go to Bellona->Credentials.")
         else:
+            bellonaCredentials.connect_bellona_credentials()
             return bellonaCredentials.token
 
     def getBaseURL(self):

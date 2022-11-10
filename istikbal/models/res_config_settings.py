@@ -132,26 +132,31 @@ class Integration(models.TransientModel):
             return istikbalCredentials.username, istikbalCredentials.password
 
     def importInventory(self):
-        username, password = self.getCredentials()
-        url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getinventory"
-        auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
-        headers = {
-            'Authorization': 'Basic ' + auth,
-        }
-        response = requests.request("GET", url, headers=headers)
-        if response.status_code == 200:
-            products = json.loads(response.content)
-            self.createIncomingShipment(products)
-            self.env.cr.commit()
-        else:
-            raise ValidationError("Error.",response)
+        try:
+            username, password = self.getCredentials()
+            url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getinventory"
+            auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
+            headers = {
+                'Authorization': 'Basic ' + auth,
+            }
+            response = requests.request("GET", url, headers=headers)
+            print(response, response.content)
+            if response.status_code == 200:
+                products = json.loads(response.content)
+                self.createIncomingShipment(products)
+                self.env.cr.commit()
+        except Exception as e:
+            if "Connection aborted" in str(e):
+                time.sleep(60)
+                self.importInventory()
 
     def createIncomingShipment(self, products):
         for product in products:
-            odooProduct = self.env['istikbal.incoming.shipments'].search([('producCode', '=', product['producCode']),('company_id', '=', self.env.company.id)])
-            if not odooProduct:
-                incoming_shipment = self.env['istikbal.incoming.shipments'].create(
-                    {'bdtCode': product['bdtCode'],
+            odooProduct = self.env['istikbal.incoming.shipments'].search([('producCode', '=', product['producCode'])])
+            if odooProduct:
+                incoming_shipment = self.env['istikbal.incoming.shipments'].write(
+                    {
+                     'bdtCode': product['bdtCode'],
                      'producCode': product['producCode'],
                      'quantity': product['quantity'],
                      'customerRef': product['customerRef'],
@@ -167,6 +172,25 @@ class Integration(models.TransientModel):
                      'company_id':self.env.company.id
                      })
 
+            else:
+                incoming_shipment = self.env['istikbal.incoming.shipments'].create(
+                    {
+                    'bdtCode': product['bdtCode'],
+                     'producCode': product['producCode'],
+                     'quantity': product['quantity'],
+                     'customerRef': product['customerRef'],
+                     'productRef': product['productRef'],
+                     'text': product['text'],
+                     'packageEnum': product['packageNum'],
+                     'maktx': product['maktx'],
+                     'vrkme': product['vrkme'],
+                     'lgort': product['lgort'],
+                     'volum': product['volum'],
+                     'audat': product['audat'],
+                     'stawn': product['stawn'],
+                     'company_id': self.env.company.id
+                     })
+
 
 
     def importMaterials(self):
@@ -180,12 +204,7 @@ class Integration(models.TransientModel):
                 headers = {
                     'Authorization': 'Basic ' + auth,
                 }
-                print("url",url)
-                print("auth",auth)
-                print("headers",headers)
-
                 response = requests.request("GET", url, headers=headers,timeout=60)
-                print("Material response",response.status_code)
                 if response.status_code == 200:
                     materials = json.loads(response.content)
                     if len(materials) > 0:
@@ -195,7 +214,9 @@ class Integration(models.TransientModel):
             self.createMaterials(allMaterials)
             self.env.cr.commit()
         except Exception as e:
-            print(e)
+            if "Connection aborted" in str(e):
+                time.sleep(60)
+                self.importMaterials()
 
     def createMaterials(self, materials):
         for material in materials:
@@ -292,25 +313,28 @@ class Integration(models.TransientModel):
                 })
 
     def importShipments(self):
-        username, password = self.getCredentials()
-        url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getshipments?getDetail=x"
-        auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
-        headers = {
-            'Authorization': 'Basic ' + auth,
-        }
+        try:
+            username, password = self.getCredentials()
+            url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getshipments?getDetail=x"
+            auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
+            headers = {
+                'Authorization': 'Basic ' + auth,
+            }
 
-        response = requests.request("GET", url, headers=headers)
-        print("shipmen response",response)
-        if response.status_code == 200:
-            shipmentsHeader = json.loads(response.content)['getShipmentsHeader']
-            shipmentsDetails = json.loads(response.content)['getShipmentsDetail']
-            self.createShipmentsHeader(shipmentsHeader)
-            self.createShipmentsDetails(shipmentsDetails)
-            self.env.cr.commit()
-        else:
-            raise ValidationError("Error.", response)
+            response = requests.request("GET", url, headers=headers)
 
-    def createShipmentsHeader(self, headers):
+            if response.status_code == 200:
+                shipmentsHeader = json.loads(response.content)['getShipmentsHeader']
+                shipmentsDetails = json.loads(response.content)['getShipmentsDetail']
+                self.createShipmentsHeader(shipmentsHeader,shipmentsDetails)
+                self.env.cr.commit()
+        except Exception as e:
+            if "Connection aborted" in str(e):
+                time.sleep(60)
+                self.importShipments()
+
+
+    def createShipmentsHeader(self, headers,shipmentsDetails):
         for header in headers:
             odooHeader = self.env['istikbal.shipments.header'].search([('shipmentNumber', '=', header['shipmentNumber'])])
             shipmentDate = datetime.strptime(header['shipmentDate'], '%Y-%m-%dT%H:%M:%S')
@@ -341,14 +365,44 @@ class Integration(models.TransientModel):
                     'voleh': header['volume'],
                     'company_id': self.env.company.id,
                 })
+        self.env.cr.commit()
+        self.createShipmentsDetails(shipmentsDetails)
 
     def createShipmentsDetails(self, details):
         for detail in details:
-            odooHeader = self.env['istikbal.shipments.header'].search([('shipmentNumber', '=', detail['shipmentNumber'])])
-            odooDetails = self.env['istikbal.shipments.details'].search([('shipMentNumber', '=', detail['shipmentNumber']),
-                                                                         ('pakageEnum', '=', detail['packageNum'])])
-            if not odooDetails:
-                self.env['istikbal.shipments.details'].create({
+            odooHeader = self.env['istikbal.shipments.header'].search([('shipmentNumber', '=', detail['shipmentNumber'])],limit=1)
+            odooDetails = self.env['istikbal.shipments.details'].search([('shipMentNumber', '=', detail['shipmentNumber']), ('pakageEnum', '=', detail['packageNum'])],limit=1)
+
+            if odooDetails:
+                odooDetails=self.env['istikbal.shipments.details'].write({
+                    'shipment_id': odooHeader.id,
+                    'pakageEnum': detail['packageNum'],
+                    'shipMentNumber': detail['shipmentNumber'],
+                    'bdtCode': detail['bdtCode'],
+                    'productCode': detail['productCode'],
+                    'productPackage': detail['productPackage'],
+                    'quantity': detail['quantity'],
+                    'orderReference': detail['orderReference'],
+                    'bdtOrderNumber': detail['bdtOrderNumber'],
+                    'customerItemReference': detail['customerItemReference'],
+                    'customerItemCode': detail['customerItemCode'],
+                    'customerOrderReference': detail['customerOrderReference'],
+                    'productName': detail['productName'],
+                    'productNamePack': detail['productNamePack'],
+                    'productNameEN': detail['productNameEN'],
+                    'volum': detail['volum'],
+                    'zzbdtAmount': detail['zzbdtAmount'],
+                    'vrkme': detail['vrkme'],
+                    'inhalt': detail['inhalt'],
+                    'mvgr3Desc': detail['mvgr3Desc'],
+                    'brgew': detail['brgew'],
+                    'gewei': detail['gewei'],
+                    'voleh': detail['voleh'],
+                    'company_id': self.env.company.id,
+                })
+
+            else:
+                odooDetails = self.env['istikbal.shipments.details'].create({
                     'shipment_id': odooHeader.id,
                     'pakageEnum': detail['packageNum'],
                     'shipMentNumber': detail['shipmentNumber'],
