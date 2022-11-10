@@ -6,6 +6,8 @@ from odoo.exceptions import AccessError
 
 class Credentials(models.Model):
     _name = 'bellona.credentials'
+    _description = "Bellona Credentials"
+    _rec_name = 'token'
 
     username = fields.Char('Username')
     password = fields.Char('Password')

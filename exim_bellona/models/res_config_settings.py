@@ -380,6 +380,8 @@ class Integration(models.TransientModel):
 
 class BeloonaShiment(models.Model):
     _name = 'bellona.shipments'
+    _description = "Bellona Shipments"
+    _rec_name = 'productcode'
 
 
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
@@ -415,6 +417,8 @@ class BeloonaShiment(models.Model):
 
 class BeloonaMaterial(models.Model):
     _name = 'bellona.material'
+    _description = "Bellona Material"
+    _rec_name = 'matnr'
 
 
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
@@ -471,6 +475,8 @@ class BeloonaMaterial(models.Model):
 
 class BeloonaBOM(models.Model):
     _name = 'bellona.bom'
+    _description = "Bellona Bom"
+    _rec_name = 'matnr'
 
 
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,

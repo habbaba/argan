@@ -9,6 +9,7 @@ from datetime import datetime
 
 class IncomingShipments(models.Model):
     _name = 'istikbal.incoming.shipments'
+    _description = "Istikbal incoming shipments"
     _rec_name = 'producCode'
     _order = "producCode"
 
@@ -33,6 +34,7 @@ class IncomingShipments(models.Model):
 
 class Shipments(models.Model):
     _name = 'istikbal.shipments.header'
+    _description = "Istikbal shipment Headers"
     _rec_name = 'shipmentNumber'
     _order = "shipmentNumber"
 
@@ -52,6 +54,7 @@ class Shipments(models.Model):
 
 class ShipmentDetails(models.Model):
     _name = 'istikbal.shipments.details'
+    _description = "Istikbal Shipment Details"
     _rec_name = 'shipMentNumber'
     _order = "shipMentNumber"
 
@@ -83,6 +86,7 @@ class ShipmentDetails(models.Model):
 
 class SalesOrderAnalysis(models.Model):
     _name = 'istikbal.sales.order.analysis'
+    _description = "Istikbal Sale order Analysis"
 
     
     

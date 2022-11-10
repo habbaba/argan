@@ -19,6 +19,7 @@
     # for the full list
     'category': 'Uncategorized',
     'version': '1.5',
+    'license': 'OPL-1',
 
     # any module necessary for this one to work correctly
     'depends': ['stock','sale','purchase'],

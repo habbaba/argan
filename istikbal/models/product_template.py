@@ -143,6 +143,7 @@ class InheritPT(models.Model):
 
 class Materials(models.Model):
     _name = 'istikbal.materials'
+    _description = "Istikbal Materials"
     _rec_name = 'materialNumber'
     _order = "materialNumber"
 

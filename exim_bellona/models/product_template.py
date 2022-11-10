@@ -14,7 +14,6 @@ class BeloonaPTInherit(models.Model):
 
     def importBellonaMaterials(self):
         try:
-            connect_bellona = self.env['res.config.settings'].connect_bellona_credentials()
             token = self.env['res.config.settings'].getBellonaCredentials()
             url = self.env['res.config.settings'].getBaseURL() + "api/Material/SearchMaterial"
             headers = {
@@ -142,7 +141,6 @@ class BeloonaPTInherit(models.Model):
 
 
     def importPrice(self,code):
-        connect_bellona = self.env['res.config.settings'].connect_bellona_credentials()
         token = self.env['res.config.settings'].getBellonaCredentials()
         url = self.env['res.config.settings'].getBaseURL() + "api/Material/SearchPrice"
         headers = {
@@ -189,7 +187,6 @@ class SaleOrderInh(models.Model):
     _inherit = 'sale.order'
 
     bellona_shipments = fields.Many2many('bellona.shipments', string='Bellona Shipments')
-
 
 class PurchaseOrderInh(models.Model):
     _inherit = 'purchase.order'
