@@ -1,0 +1,137 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="bellona_setting_form_view">
+            <field name="name">res.config.settings.bellona_settings</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('settings')]" position="inside">
+                    <div class="app_settings_block" data-string="Bellona" string="Bellona" data-key="exim_bellona">
+
+                        <div id="manual-import">
+                            <h2>Manual Import Utility</h2>
+                            <div class="row mt16 o_settings_container">
+                                <div class="col-12 col-lg-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label">Search Inventory</span>
+                                        <span class="fa fa-lg fa-cube" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                                        <div class="text-muted">
+                                            Here you will search inventory from Bellona after clicking the button.
+                                        </div>
+                                        <div class="content-group">
+                                            <div class="mt16">
+                                                <button name="importBellonaInventory" string="Search Inventory" type="object" class="col-lg-5 o_light_label oe_highlight"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label">Search Material</span>
+                                        <span class="fa fa-lg fa-cube" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                                        <div class="text-muted">
+                                            Here you will search materials of products from Bellona after clicking the button.
+                                        </div>
+                                        <div class="content-group">
+                                            <div class="mt16">
+                                                <button name="importMaterials" string="Search Material" type="object" class="col-lg-5 o_light_label oe_highlight"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label">Search Price</span>
+                                        <span class="fa fa-lg fa-cube" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                                        <div class="text-muted">
+                                            Here you will search price from Bellona after clicking the button.
+                                        </div>
+                                        <div class="content-group">
+                                            <div class="mt16">
+                                                <button name="importPrice" string="Search Price" type="object" class="col-lg-5 o_light_label oe_highlight"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-lg-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label">Search BOM</span>
+                                        <span class="fa fa-lg fa-cube" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                                        <div class="text-muted">
+                                            Here you will search BOM from Bellona after clicking the button.
+                                        </div>
+                                        <div class="content-group">
+                                            <div class="mt16">
+                                                <button name="importBellonaBom" string="Search BOM" type="object" class="col-lg-5 o_light_label oe_highlight"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="scheduler-export">
+                            <h2>Scheduler Import Utility</h2>
+                            <div class="row mt16 o_settings_container">
+                                <div class="col-12 col-lg-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                        <field name="importInventoryButton" widget="boolean_toggle" />
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label">Import Bellona Inventory</span>
+                                        <div class="content-group" attrs="{'invisible':[('importInventoryButton','=',False)]}">
+                                            <div class="mt16">
+                                                <span class="o_form_label">Import Bellona Inventory Scheduler Settings</span>
+                                                <div class="text-muted">
+                                                    Here you will import inventory from Bellona to Odoo after clicking the button.
+                                                </div>
+                                                <div class="mt10">
+                                                    <label for="importInventoryUnit" string="Execute Every"/>
+                                                    <div>
+                                                        <field name="importInventoryUnit" class="oe_inline"/>
+                                                        <field name="importInventoryInterval" class="oe_inline"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                        <field name="importPriceButton" widget="boolean_toggle" />
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label">Import Price</span>
+                                        <div class="content-group" attrs="{'invisible':[('importPriceButton','=',False)]}">
+                                            <div class="mt16">
+                                                <span class="o_form_label">Import Price Scheduler Settings</span>
+                                                <div class="text-muted">
+                                                    Here you will import prices from Bellona to Odoo after clicking the button.
+                                                </div>
+                                                <div class="mt10">
+                                                    <label for="importPriceUnit" string="Execute Every"/>
+                                                    <div>
+                                                        <field name="importPriceUnit" class="oe_inline"/>
+                                                        <field name="importPriceInterval" class="oe_inline"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
