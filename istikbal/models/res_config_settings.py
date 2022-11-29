@@ -176,7 +176,7 @@ class Integration(models.TransientModel):
             else:
                 incoming_shipment = self.env['istikbal.incoming.shipments'].create(
                     {
-                    'bdtCode': product['bdtCode'],
+                   
                       'customerBarCode': product['customerBarcode'],
                      'producCode': product['producCode'],
                      'quantity': product['quantity'],
