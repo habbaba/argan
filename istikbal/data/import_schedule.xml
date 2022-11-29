@@ -4,9 +4,9 @@
         <field name="name">Import Istikbal GET Inventory</field>
         <field name="model_id" ref="model_res_config_settings"/>
         <field name="state">code</field>
-        <field name="active">1</field>
+        <field name="active">0</field>
         <field name="code">model.importInventory()</field>
-        <field name="interval_number">1</field>
+        <field name="interval_number">6</field>
         <field name="interval_type">hours</field>
         <field name="numbercall">-1</field>
     </record>
@@ -18,7 +18,7 @@
         <field name="state">code</field>
         <field name="active">1</field>
         <field name="code">model.importShipments()</field>
-        <field name="interval_number">1</field>
+        <field name="interval_number">6</field>
         <field name="interval_type">hours</field>
         <field name="numbercall">-1</field>
     </record>

@@ -218,8 +218,8 @@
                     <sheet>
                         <group string="Incoming shipment details">
                             <group>
+                                 <field name="customerBarCode"/>
                                 <field name="customerRef" />
-                                <field name="customerBarCode"/>
                                 <field name="producCode" />
                                 <field name="bdtCode" />
                                 <field name="productRef" />
@@ -248,7 +248,7 @@
             <field name="model">istikbal.incoming.shipments</field>
             <field name="arch" type="xml">
                 <tree string="Istikbal Shipments">
-                       <field name="customerBarCode"/>
+                      <field name="customerBarCode"/>
                     <field name="customerRef" />
                     <field name="producCode" />
                     <field name="bdtCode"  optional="hide"/>
@@ -274,7 +274,7 @@
             <field name="model">istikbal.incoming.shipments</field>
             <field name="arch" type="xml">
                 <search>
-                       <field name="customerBarCode"/>
+                      <field name="customerBarCode"/>
                     <field name="customerRef" />
                     <field name="producCode" />
                     <field name="productRef" />

@@ -191,14 +191,14 @@ class Materials(models.Model):
 class IstikbalSaleOrderInh(models.Model):
     _inherit = 'sale.order'
 
-    istikbal_shipments = fields.Many2many('istikbal.shipments.details', string='Istikbal Shipments')
+    istikbal_shipments = fields.Many2many('istikbal.incoming.shipments', string='Istikbal Shipments')
 
 
 
 class IstikbalPurchaseOrderInh(models.Model):
     _inherit = 'purchase.order'
 
-    istikbal_shipments = fields.Many2many('istikbal.shipments.details', string='Istikbal Shipments')
+    istikbal_shipments = fields.Many2many('istikbal.incoming.shipments', string='Istikbal Shipments')
 
     
     

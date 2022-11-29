@@ -157,7 +157,7 @@ class Integration(models.TransientModel):
                 incoming_shipment = self.env['istikbal.incoming.shipments'].write(
                     {
                      'bdtCode': product['bdtCode'],
-                      'customerBarCode': product['customerBarcode'],
+                     'customerBarCode': product['customerBarcode'],
                      'producCode': product['producCode'],
                      'quantity': product['quantity'],
                      'customerRef': product['customerRef'],
@@ -176,8 +176,8 @@ class Integration(models.TransientModel):
             else:
                 incoming_shipment = self.env['istikbal.incoming.shipments'].create(
                     {
-                   
-                      'customerBarCode': product['customerBarcode'],
+                    'bdtCode': product['bdtCode'],
+                     'customerBarCode': product['customerBarcode'],
                      'producCode': product['producCode'],
                      'quantity': product['quantity'],
                      'customerRef': product['customerRef'],
@@ -192,8 +192,10 @@ class Integration(models.TransientModel):
                      'stawn': product['stawn'],
                      'company_id': self.env.company.id
                      })
-
-
+            purchase_order = self.env['purchase.order'].search([('name', '=',   incoming_shipment['customerBarCode'])],limit=1)
+            purchase_order.write({
+                    'istikbal_shipments': [[4, incoming_shipment.id]]
+                })
 
     def importMaterials(self):
         try:
