@@ -157,7 +157,7 @@ class Integration(models.TransientModel):
                 incoming_shipment = self.env['istikbal.incoming.shipments'].write(
                     {
                      'bdtCode': product['bdtCode'],
-                            'customerBarCode': product['customerBarCode'],
+                      'customerBarCode': product['customerBarcode'],
                      'producCode': product['producCode'],
                      'quantity': product['quantity'],
                      'customerRef': product['customerRef'],
@@ -177,7 +177,7 @@ class Integration(models.TransientModel):
                 incoming_shipment = self.env['istikbal.incoming.shipments'].create(
                     {
                     'bdtCode': product['bdtCode'],
-                            'customerBarCode': product['customerBarCode'],
+                      'customerBarCode': product['customerBarcode'],
                      'producCode': product['producCode'],
                      'quantity': product['quantity'],
                      'customerRef': product['customerRef'],
