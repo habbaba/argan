@@ -153,7 +153,7 @@ class Integration(models.TransientModel):
     def createIncomingShipment(self, products):
         for product in products:
             try:
-                odooProduct = self.env['istikbal.incoming.shipments'].search([('producCode', '=', product['producCode'])])
+                odooProduct = self.env['istikbal.incoming.shipments'].search([('producCode', '=', product['producCode']),('customerBarCode', '=', product['customerBarcode'])])
                 if odooProduct:
                     odooProduct = self.env['istikbal.incoming.shipments'].write(
                         {
