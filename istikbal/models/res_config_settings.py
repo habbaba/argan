@@ -154,7 +154,7 @@ class Integration(models.TransientModel):
         for product in products:
             odooProduct = self.env['istikbal.incoming.shipments'].search([('producCode', '=', product['producCode'])])
             if odooProduct:
-                incoming_shipment = self.env['istikbal.incoming.shipments'].write(
+                odooProduct = self.env['istikbal.incoming.shipments'].write(
                     {
                      'bdtCode': product['bdtCode'],
                      'customerBarCode': product['customerBarcode'],
@@ -174,7 +174,7 @@ class Integration(models.TransientModel):
                      })
 
             else:
-                incoming_shipment = self.env['istikbal.incoming.shipments'].create(
+                odooProduct = self.env['istikbal.incoming.shipments'].create(
                     {
                     'bdtCode': product['bdtCode'],
                      'customerBarCode': product['customerBarcode'],
@@ -192,9 +192,9 @@ class Integration(models.TransientModel):
                      'stawn': product['stawn'],
                      'company_id': self.env.company.id
                      })
-            purchase_order = self.env['purchase.order'].search([('name', '=',   incoming_shipment['customerBarCode'])],limit=1)
+            purchase_order = self.env['purchase.order'].search([('name', '=',   odooProduct['customerBarCode'])],limit=1)
             purchase_order.write({
-                    'istikbal_shipments': [[4, incoming_shipment.id]]
+                    'istikbal_shipments': [[4, odooProduct.id]]
                 })
 
     def importMaterials(self):
