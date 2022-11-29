@@ -192,10 +192,14 @@ class Integration(models.TransientModel):
                      'stawn': product['stawn'],
                      'company_id': self.env.company.id
                      })
-            purchase_order = self.env['purchase.order'].search([('name', '=',   odooProduct['customerBarCode'])],limit=1)
+            purchase_order = self.env['purchase.order'].search([('name', '=',   odooProduct.customerBarCode)],limit=1)
+            sale_order = self.env['sale.order'].search([('name', '=', purchase_order.origin)],limit=1)
             purchase_order.write({
                     'istikbal_shipments': [[4, odooProduct.id]]
                 })
+            sale_order.write({
+                'istikbal_shipments': [[4, odooProduct.id]]
+            })
 
     def importMaterials(self):
         try:

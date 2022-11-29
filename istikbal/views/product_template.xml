@@ -54,7 +54,38 @@
             </field>
         </record>
 
+         <record model="ir.ui.view" id="istikbal_sale_order_order_view_inherit">
+            <field name="name">sale.order.view.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">
+               <xpath expr="//page[@name='other_information']" position="after">
+                    <page name="istikbal_shipments" string="Istikabal Shipments">
+                        <field name="istikbal_shipments" mode="tree">
+                            <tree create="1" edit="1"  delete="1">
+                                <field name="customerBarCode"/>
+                                <field name="customerRef" />
+                                <field name="producCode" />
+                                <field name="bdtCode"  optional="hide"/>
+                                <field name="productRef" optional="hide"/>
+                                <field name="maktx" optional="hide"/>
+                                <field name="packageEnum"  optional="hide"/>
+                                <field name="vrkme"  optional="hide"/>
+                                <field name="lgort" optional="hide"/>
+                                <field name="volum" optional="hide"/>
+                                <field name="quantity" />
+                                <field name="audat" />
+                                <field name="stawn" optional="hide"/>
+                                <field name="text" optional="hide"/>
+                                <field name="company_id" optional="hide"/>
+                                <field name="create_date" optional="hide"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
 
+            </field>
+        </record>
 
         <record model="ir.ui.view" id="istikbal_purchase_order_view_inherit">
             <field name="name">purchase.view.inherit</field>
