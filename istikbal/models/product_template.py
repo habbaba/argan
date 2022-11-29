@@ -197,7 +197,7 @@ class IstikbalSaleOrderInh(models.Model):
     def compute_the_shipments(self):
         for i in self:
             shipments = self.env['purchase.order'].search([('origin', '=', i.name)])
-            i.istikbal_shipments=i.istikbal_shipments
+            i.istikbal_shipments=shipments.istikbal_shipments
 
 
 
