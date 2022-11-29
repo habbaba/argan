@@ -191,14 +191,25 @@ class Materials(models.Model):
 class IstikbalSaleOrderInh(models.Model):
     _inherit = 'sale.order'
 
-    istikbal_shipments = fields.Many2many('istikbal.incoming.shipments', string='Istikbal Shipments')
+    istikbal_shipments = fields.Many2many('istikbal.incoming.shipments', string='Istikbal Shipments',compute="compute_the_shipments")
+
+
+    def compute_the_shipments(self):
+        for i in self:
+            shipments = self.env['purchase.order'].search([('origin', '=', i.name)])
+            i.istikbal_shipments=i.istikbal_shipments
 
 
 
 class IstikbalPurchaseOrderInh(models.Model):
     _inherit = 'purchase.order'
 
-    istikbal_shipments = fields.Many2many('istikbal.incoming.shipments', string='Istikbal Shipments')
+    istikbal_shipments = fields.Many2many('istikbal.incoming.shipments', string='Istikbal Shipments',compute="compute_the_shipments")
+
+    def compute_the_shipments(self):
+        for i in self:
+            shipments = self.env['istikbal.incoming.shipments'].search([('customerBarCode', '=', i.name)])
+            i.istikbal_shipments=shipments.ids
 
     
     
