@@ -152,54 +152,57 @@ class Integration(models.TransientModel):
 
     def createIncomingShipment(self, products):
         for product in products:
-            odooProduct = self.env['istikbal.incoming.shipments'].search([('producCode', '=', product['producCode'])])
-            if odooProduct:
-                odooProduct = self.env['istikbal.incoming.shipments'].write(
-                    {
-                     'bdtCode': product['bdtCode'],
-                     'customerBarCode': product['customerBarcode'],
-                     'producCode': product['producCode'],
-                     'quantity': product['quantity'],
-                     'customerRef': product['customerRef'],
-                     'productRef': product['productRef'],
-                     'text': product['text'],
-                     'packageEnum': product['packageNum'],
-                     'maktx': product['maktx'],
-                     'vrkme':product['vrkme'],
-                     'lgort': product['lgort'],
-                     'volum': product['volum'],
-                     'audat': product['audat'],
-                     'stawn': product['stawn'],
-                     'company_id':self.env.company.id
-                     })
+            try:
+                odooProduct = self.env['istikbal.incoming.shipments'].search([('producCode', '=', product['producCode'])])
+                if odooProduct:
+                    odooProduct = self.env['istikbal.incoming.shipments'].write(
+                        {
+                         'bdtCode': product['bdtCode'],
+                         'customerBarCode': product['customerBarcode'],
+                         'producCode': product['producCode'],
+                         'quantity': product['quantity'],
+                         'customerRef': product['customerRef'],
+                         'productRef': product['productRef'],
+                         'text': product['text'],
+                         'packageEnum': product['packageNum'],
+                         'maktx': product['maktx'],
+                         'vrkme':product['vrkme'],
+                         'lgort': product['lgort'],
+                         'volum': product['volum'],
+                         'audat': product['audat'],
+                         'stawn': product['stawn'],
+                         'company_id':self.env.company.id
+                         })
 
-            else:
-                odooProduct = self.env['istikbal.incoming.shipments'].create(
-                    {
-                    'bdtCode': product['bdtCode'],
-                     'customerBarCode': product['customerBarcode'],
-                     'producCode': product['producCode'],
-                     'quantity': product['quantity'],
-                     'customerRef': product['customerRef'],
-                     'productRef': product['productRef'],
-                     'text': product['text'],
-                     'packageEnum': product['packageNum'],
-                     'maktx': product['maktx'],
-                     'vrkme': product['vrkme'],
-                     'lgort': product['lgort'],
-                     'volum': product['volum'],
-                     'audat': product['audat'],
-                     'stawn': product['stawn'],
-                     'company_id': self.env.company.id
-                     })
-            purchase_order = self.env['purchase.order'].search([('name', '=',   odooProduct.customerBarCode)],limit=1)
-            sale_order = self.env['sale.order'].search([('name', '=', purchase_order.origin)],limit=1)
-            purchase_order.write({
+                else:
+                    odooProduct = self.env['istikbal.incoming.shipments'].create(
+                        {
+                        'bdtCode': product['bdtCode'],
+                         'customerBarCode': product['customerBarcode'],
+                         'producCode': product['producCode'],
+                         'quantity': product['quantity'],
+                         'customerRef': product['customerRef'],
+                         'productRef': product['productRef'],
+                         'text': product['text'],
+                         'packageEnum': product['packageNum'],
+                         'maktx': product['maktx'],
+                         'vrkme': product['vrkme'],
+                         'lgort': product['lgort'],
+                         'volum': product['volum'],
+                         'audat': product['audat'],
+                         'stawn': product['stawn'],
+                         'company_id': self.env.company.id
+                         })
+                purchase_order = self.env['purchase.order'].search([('name', '=',   odooProduct.customerBarCode)],limit=1)
+                sale_order = self.env['sale.order'].search([('name', '=', purchase_order.origin)],limit=1)
+                purchase_order.write({
+                        'istikbal_shipments': [[4, odooProduct.id]]
+                    })
+                sale_order.write({
                     'istikbal_shipments': [[4, odooProduct.id]]
                 })
-            sale_order.write({
-                'istikbal_shipments': [[4, odooProduct.id]]
-            })
+            except Exception as e:
+                raise UserError(_('Error %s .', str(e)))
 
     def importMaterials(self):
         try:
