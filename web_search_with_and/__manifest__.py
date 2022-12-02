@@ -3,12 +3,17 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 {
-    "name": "Use AND conditions to seacrh",
-    "version": "13.0.1.0.0",
-    "author": "Versada UAB, ACSONE SA/NV, Odoo Community Association (OCA)",
+    "name": "Use AND conditions on omnibar search",
+    "version": "15.0.1.0.0",
+    "author": "Versada UAB, ACSONE SA/NV, Serincloud, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "category": "web",
     "website": "https://github.com/OCA/web",
     "depends": ["web"],
-    "data": ["data/data.xml"],
+    "assets": {
+        "web.assets_backend": [
+            "/web_search_with_and/static/src/js/control_panel_model_extension.js",
+            "/web_search_with_and/static/src/js/search_bar.js",
+        ],
+    },
 }
