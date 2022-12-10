@@ -2,24 +2,6 @@
     <data>
 
 
-        <record model="ir.ui.view" id="bellona_log_notes_tree_view">
-            <field name="name">Bellona Log Notes</field>
-            <field name="model">bellona.log.notes</field>
-            <field name="arch" type="xml">
-                <tree editable="bottom">
-                    <field name="error"/>
-                </tree>
-            </field>
-        </record>
-        <record model="ir.actions.act_window" id="bellona_log_notes_list_action">
-            <field name="name">Bellona Log Notes</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">bellona.log.notes</field>
-        </record>
-        <menuitem id="bellona_netvisor_log_notes_menu" parent="sale.sale_menu_root" name="Bellona Log Notes" action="bellona_log_notes_list_action"/>
-
-
-
         <record model="ir.ui.view" id="bellona_setting_form_view">
             <field name="name">res.config.settings.bellona_settings</field>
             <field name="model">res.config.settings</field>

@@ -474,10 +474,30 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+
+
+
+        <record model="ir.ui.view" id="bellona_log_notes_tree_view">
+            <field name="name">Bellona Log Notes</field>
+            <field name="model">bellona.log.notes</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom">
+                    <field name="error"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="bellona_log_notes_list_action">
+            <field name="name">Bellona Log Notes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bellona.log.notes</field>
+        </record>
+        
+
         <menuitem id="bellona_root" web_icon="exim_bellona,static/description/icon.png" name="Bellona"/>
-        <menuitem id="bellona_credentials_action_menu" parent="bellona_root" name="Credentials" action="bellona_credentials_action"/>
-        <menuitem id="bellona_incoming_shipements" parent="bellona_root" name="Search Inventory" action="bellona_shipments_action"/>
-        <menuitem id="bellona_materials" parent="bellona_root" name="Bellona Materials" action="bellona_materials_action"/>
+        <menuitem id="bellona_credentials_action_menu" parent="bellona_root" sequence="1" name="Credentials" action="bellona_credentials_action"/>
+        <menuitem id="bellona_incoming_shipements" parent="bellona_root" sequence="2" name="Search Inventory" action="bellona_shipments_action"/>
+        <menuitem id="bellona_materials" parent="bellona_root" sequence="3" name="Bellona Materials" action="bellona_materials_action"/>
+        <menuitem id="bellona_netvisor_log_notes_menu" parent="bellona_root" sequence="4" name="Bellona Errors" action="bellona_log_notes_list_action"/>
 
     </data>
 </odoo>
