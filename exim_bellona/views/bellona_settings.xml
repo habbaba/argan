@@ -491,7 +491,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">bellona.log.notes</field>
         </record>
-        
+
 
         <menuitem id="bellona_root" web_icon="exim_bellona,static/description/icon.png" name="Bellona"/>
         <menuitem id="bellona_credentials_action_menu" parent="bellona_root" sequence="1" name="Credentials" action="bellona_credentials_action"/>
