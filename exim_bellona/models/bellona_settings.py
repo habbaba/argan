@@ -54,3 +54,32 @@ class Credentials(models.Model):
             })
         else:
             bellonaCredentials.state = 'disconnect'
+
+
+
+
+
+    def ConnectBellonaScheduler(self):
+        bellona_company = self.env['bellona.credentials'].search([])
+        for company in bellona_company:
+            settings = self.env['res.config.settings']
+            url = settings.getBaseURL() + "api/Account"
+            username=company.username
+            password = company.password
+            payload = json.dumps({
+                "userName": username,
+                "password": password
+            })
+            headers = {
+                'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+            if response.status_code == 200:
+                company.state='active'
+                response = json.loads(response.text)
+                company.write({
+                    'token': response['value']
+                })
+            else:
+                company.state = 'disconnect'
