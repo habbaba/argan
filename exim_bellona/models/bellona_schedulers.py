@@ -42,7 +42,7 @@ class Integration(models.TransientModel):
                 self.env.cr.commit()
             else:
                 log_notes = self.env["bellona.log.notes"].sudo().create(
-                    {"error": "shipment"+company.company_id.name + ": " + str(response)})
+                    {"error": "shipment"+company.company_id.name + ": " + str(response.text)})
 
     def createShipmentsScheduler(self, shipments,company_id):
         for shipment in shipments:
