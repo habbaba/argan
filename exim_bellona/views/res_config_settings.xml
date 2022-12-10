@@ -1,5 +1,25 @@
 <odoo>
     <data>
+
+
+        <record model="ir.ui.view" id="bellona_log_notes_tree_view">
+            <field name="name">Bellona Log Notes</field>
+            <field name="model">bellona.log.notes</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom">
+                    <field name="error"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="bellona_log_notes_list_action">
+            <field name="name">Bellona Log Notes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bellona.log.notes</field>
+        </record>
+        <menuitem id="bellona_netvisor_log_notes_menu" parent="sale.sale_menu_root" name="Bellona Log Notes" action="bellona_log_notes_list_action"/>
+
+
+
         <record model="ir.ui.view" id="bellona_setting_form_view">
             <field name="name">res.config.settings.bellona_settings</field>
             <field name="model">res.config.settings</field>
@@ -72,57 +92,6 @@
                                         <div class="content-group">
                                             <div class="mt16">
                                                 <button name="importBellonaBom" string="Search BOM" type="object" class="col-lg-5 o_light_label oe_highlight"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="scheduler-export">
-                            <h2>Scheduler Import Utility</h2>
-                            <div class="row mt16 o_settings_container">
-                                <div class="col-12 col-lg-6 o_setting_box">
-                                    <div class="o_setting_left_pane">
-                                        <field name="importInventoryButtonBellona" widget="boolean_toggle" />
-                                    </div>
-                                    <div class="o_setting_right_pane">
-                                        <span class="o_form_label">Import Bellona Inventory</span>
-                                        <div class="content-group" attrs="{'invisible':[('importInventoryButtonBellona','=',False)]}">
-                                            <div class="mt16">
-                                                <span class="o_form_label">Import Bellona Inventory Scheduler Settings</span>
-                                                <div class="text-muted">
-                                                    Here you will import inventory from Bellona to Odoo after clicking the button.
-                                                </div>
-                                                <div class="mt10">
-                                                    <label for="importInventoryUnitBellona" string="Execute Every"/>
-                                                    <div>
-                                                        <field name="importInventoryUnitBellona" class="oe_inline"/>
-                                                        <field name="importInventoryIntervalBellona" class="oe_inline"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6 o_setting_box">
-                                    <div class="o_setting_left_pane">
-                                        <field name="importPriceButtonBellona" widget="boolean_toggle" />
-                                    </div>
-                                    <div class="o_setting_right_pane">
-                                        <span class="o_form_label">Import Price</span>
-                                        <div class="content-group" attrs="{'invisible':[('importPriceButtonBellona','=',False)]}">
-                                            <div class="mt16">
-                                                <span class="o_form_label">Import Price Scheduler Settings</span>
-                                                <div class="text-muted">
-                                                    Here you will import prices from Bellona to Odoo after clicking the button.
-                                                </div>
-                                                <div class="mt10">
-                                                    <label for="importPriceUnitBellona" string="Execute Every"/>
-                                                    <div>
-                                                        <field name="importPriceUnitBellona" class="oe_inline"/>
-                                                        <field name="importPriceIntervalBellona" class="oe_inline"/>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

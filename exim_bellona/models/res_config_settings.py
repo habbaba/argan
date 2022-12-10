@@ -18,76 +18,6 @@ INTERVAL = [
 class Integration(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    importInventoryButtonBellona = fields.Boolean("Import Bellona Inventory")
-    importInventoryUnitBellona = fields.Integer("Import Unit")
-    importInventoryIntervalBellona = fields.Selection(INTERVAL, "Import Interval", default='months')
-    importPriceButtonBellona = fields.Boolean("Import Price")
-    importPriceUnitBellona = fields.Integer("Import Unit")
-    importPriceIntervalBellona = fields.Selection(INTERVAL, "Import Interval", default='months')
-
-    def TurnOnAndOffSchedulersBellona(self):
-        if self.importInventoryButtonBellona:
-            self.changeSettingsOfImportInventorySchedulerBellona(True)
-
-        if not self.importInventoryButtonBellona:
-            self.changeBellonaSettingsOfImportInventoryScheduler(False)
-
-        if self.importPriceButtonBellona:
-            self.changeSettingsOfImportPriceSchedulerBellona(True)
-
-        if not self.importPriceButtonBellona:
-            self.changeSettingsOfImportPriceSchedulerBellona(False)
-
-    def changeSettingsOfImportInventorySchedulerBellona(self, state):
-        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Bellona Inventory')])
-        if not scheduler:
-            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Bellona Inventory'),
-                                                    ('active', '=', False)])
-        scheduler.active = state
-        scheduler.interval_number = self.importInventoryUnitBellona
-        scheduler.interval_type = self.importInventoryIntervalBellona
-
-    def changeSettingsOfImportPriceSchedulerBellona(self, state):
-        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Price')])
-        if not scheduler:
-            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Price'),
-                                                    ('active', '=', False)])
-        scheduler.active = state
-        scheduler.interval_number = self.importPriceUnitBellona
-        scheduler.interval_type = self.importPriceIntervalBellona
-
-    def set_values(self):
-        res = super(Integration, self).set_values()
-        self.env['ir.config_parameter'].set_param('exim_bellona.importInventoryButtonBellona', self.importInventoryButtonBellona)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importInventoryUnitBellona', self.importInventoryUnitBellona)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importInventoryIntervalBellona', self.importInventoryIntervalBellona)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importPriceButtonBellona', self.importPriceButtonBellona)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importPriceUnitBellona', self.importPriceUnitBellona)
-        self.env['ir.config_parameter'].set_param('exim_bellona.importPriceIntervalBellona', self.importPriceIntervalBellona)
-
-        self.TurnOnAndOffSchedulersBellona()
-        return res
-
-    @api.model
-    def get_values(self):
-        res = super(Integration, self).get_values()
-        icpsudo = self.env['ir.config_parameter'].sudo()
-        importInventoryButtonBellona = icpsudo.get_param('exim_bellona.importInventoryButtonBellona')
-        importInventoryUnitBellona = icpsudo.get_param('exim_bellona.importInventoryUnitBellona')
-        importInventoryIntervalBellona = icpsudo.get_param('exim_bellona.importInventoryIntervalBellona')
-        importPriceButtonBellona = icpsudo.get_param('exim_bellona.importPriceButtonBellona')
-        importPriceUnitBellona = icpsudo.get_param('exim_bellona.importPriceUnitBellona')
-        importPriceIntervalBellona = icpsudo.get_param('exim_bellona.importPriceIntervalBellona')
-
-        res.update(
-            importInventoryButtonBellona=True if importInventoryButtonBellona == 'True' else False,
-            importPriceButtonBellona=True if importPriceButtonBellona == 'True' else False,
-            importInventoryUnitBellona=importInventoryUnitBellona,
-            importInventoryIntervalBellona=importInventoryIntervalBellona,
-            importPriceUnitBellona=importPriceUnitBellona,
-            importPriceIntervalBellona=importPriceIntervalBellona,
-        )
-        return res
 
     def getBellonaCredentials(self):
         currentCompany = self.env.company
@@ -377,6 +307,11 @@ class Integration(models.TransientModel):
             self.env.cr.commit()
         else:
             raise UserError(_('Coach of Error %s .', response))
+
+
+
+
+
 
 class BeloonaShiment(models.Model):
     _name = 'bellona.shipments'
