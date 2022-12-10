@@ -42,7 +42,7 @@ class Integration(models.TransientModel):
                             {"error": "shipments" + company.company_id.name + ": " + response})
                 except Exception as e:
                     log_notes = self.env["istikbal.log.notes"].sudo().create(
-                        {"error": "importInventory" + company.company_id.name + ": " + response})
+                        {"error": "importInventory" + company.company_id.name + ": " + str(e)})
 
     def createIncomingShipmentScheduler(self, products,company_id):
         for product in products:
@@ -118,7 +118,7 @@ class Integration(models.TransientModel):
                 self.env.cr.commit()
             except Exception as e:
                 log_notes = self.env["istikbal.log.notes"].sudo().create(
-                    {"error": "importInventory" + company.company_id.name + ": " + response})
+                    {"error": "importInventory" + company.company_id.name + ": " + str(e)})
 
 
     def createMaterialsScheduler(self, materials,company_id):
