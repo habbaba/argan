@@ -420,10 +420,36 @@
             <field name="res_model">istikbal.sales.order.analysis</field>
             <field name="view_mode">tree,form</field>
         </record>
+
+
+
+
+
+        <record model="ir.ui.view" id="istikbal_log_notes_tree_view">
+            <field name="name">Istikabl Log Notes</field>
+            <field name="model">istikbal.log.notes</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom">
+                    <field name="error"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="istikbal_log_notes_list_action">
+            <field name="name">Istikbal Log Notes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">istikbal.log.notes</field>
+        </record>
+
+
         <menuitem id="istikbal_shipments_action_menu" parent="istikbal_root" name="GET Shipments" action="istikbal_shipments_action"/>
         <menuitem id="istikbal_incoming_shipments_action_menu" parent="istikbal_root" name="GET Inventory" action="istikbal_incoming_shipments_action"/>
         <menuitem id="istikbal_get_material_action_menu" parent="istikbal_root" name="GET Material" action="istikbal_material_action"/>
         <!--        <menuitem id="istikbal_soa_action_menu" parent="istikbal_root" name="GET SaleOrder Analysis" action="istikbal_saleorder_analysis_action"/>-->
         <menuitem id="istikbal_shiment_detail_menu" parent="istikbal_root" name="Shipment Details" action="istikbal_shipments_details_action"/>
+
+         <menuitem id="bellona_netvisor_log_notes_menu" parent="istikbal_root" sequence="4" name="Istikbal Errors" action="istikbal_log_notes_list_action"/>
+
+
+
     </data>
 </odoo>

@@ -41,9 +41,8 @@ class InheritPT(models.Model):
             else:
                 raise UserError(_("Please add product info code."))
         except Exception as e:
-            if "Connection aborted" in str(e):
-                time.sleep(60)
-                self.get_material()
+           raise str(e)
+
 
 
 

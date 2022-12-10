@@ -5,3 +5,4 @@ access_istikbal_shipments_header,access.istikbal.shipments.header,model_istikbal
 access_istikbal_shipments_details,access.istikbal.shipments.details,model_istikbal_shipments_details,base.group_user,1,1,1,1
 access_istikbal_incoming_shipments,access.istikbal.incoming.shipments,model_istikbal_incoming_shipments,base.group_user,1,1,1,1
 access_istikbal_sales_order_analysis,access.istikbal_sales_order_analysis,model_istikbal_sales_order_analysis,base.group_user,1,1,1,1
+access_istikbal_log_notes,istikbal_log_notes_istikbal_log_notes,model_istikbal_log_notes,base.group_user,1,1,1,1

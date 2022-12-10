@@ -19,137 +19,32 @@ class Integration(models.TransientModel):
     _inherit = 'res.config.settings'
 
 
-    importInventoryButton = fields.Boolean("Import Inventory")
-    importInventoryUnit = fields.Integer("Import Unit")
-    importInventoryInterval = fields.Selection(INTERVAL, "Import Interval", default='months')
+    def importInventoryScheduler(self):
 
-    importMaterialsButton = fields.Boolean("Import Materials")
-    importMaterialsUnit = fields.Integer("Import Unit")
-    importMaterialsInterval = fields.Selection(INTERVAL, "Import Materials", default='months')
+            istikbal_company = self.env['istikbal.credentials'].search([])
+            for company in istikbal_company:
+                try:
+                    username = company.username
+                    password = company.password
+                    company_id = company.company_id.id
+                    url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getinventory"
+                    auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
+                    headers = {
+                        'Authorization': 'Basic ' + auth,
+                    }
+                    response = requests.request("GET", url, headers=headers)
+                    if response.status_code == 200:
+                        products = json.loads(response.content)
+                        self.createIncomingShipmentScheduler(products,company_id)
+                        self.env.cr.commit()
+                    else:
+                        log_notes = self.env["istikbal.log.notes"].sudo().create(
+                            {"error": "shipments" + company.company_id.name + ": " + response})
+                except Exception as e:
+                    log_notes = self.env["istikbal.log.notes"].sudo().create(
+                        {"error": "importInventory" + company.company_id.name + ": " + response})
 
-    importShipmentsButton = fields.Boolean("Import Shipments")
-    importShipmentsUnit = fields.Integer("Import Unit")
-    importShipmentsInterval = fields.Selection(INTERVAL, "Import Shipments", default='months')
-
-    def TurnOnAndOffSchedulers(self):
-        if self.importInventoryButton:
-            self.changeSettingsOfImportInventoryScheduler(True)
-
-        if not self.importInventoryButton:
-            self.changeSettingsOfImportInventoryScheduler(False)
-
-        if self.importMaterialsButton:
-            self.changeSettingsOfImportMaterialsScheduler(True)
-
-        if not self.importMaterialsButton:
-            self.changeSettingsOfImportMaterialsScheduler(False)
-
-        if self.importShipmentsButton:
-            self.changeSettingsOfImportShipmentsScheduler(True)
-
-        if not self.importShipmentsButton:
-            self.changeSettingsOfImportShipmentsScheduler(False)
-
-    def changeSettingsOfImportInventoryScheduler(self, state):
-        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Inventory')])
-        if not scheduler:
-            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Inventory'),
-                                                    ('active', '=', False)])
-        scheduler.active = state
-        scheduler.interval_number = self.importInventoryUnit
-        scheduler.interval_type = self.importInventoryInterval
-
-    def changeSettingsOfImportMaterialsScheduler(self, state):
-        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Materials')])
-        if not scheduler:
-            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Materials'),
-                                                    ('active', '=', False)])
-        scheduler.active = state
-        scheduler.interval_number = self.importMaterialsUnit
-        scheduler.interval_type = self.importMaterialsInterval
-
-    def changeSettingsOfImportShipmentsScheduler(self, state):
-        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Shipments')])
-        if not scheduler:
-            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Shipments'),
-                                                    ('active', '=', False)])
-        scheduler.active = state
-        scheduler.interval_number = self.importShipmentsUnit
-        scheduler.interval_type = self.importShipmentsInterval
-
-    def set_values(self):
-        res = super(Integration, self).set_values()
-        self.env['ir.config_parameter'].set_param('istikbal.importInventoryButton', self.importInventoryButton)
-        self.env['ir.config_parameter'].set_param('istikbal.importInventoryUnit', self.importInventoryUnit)
-        self.env['ir.config_parameter'].set_param('istikbal.importInventoryInterval', self.importInventoryInterval)
-        self.env['ir.config_parameter'].set_param('istikbal.importMaterialsButton', self.importMaterialsButton)
-        self.env['ir.config_parameter'].set_param('istikbal.importMaterialsUnit', self.importMaterialsUnit)
-        self.env['ir.config_parameter'].set_param('istikbal.importMaterialsInterval', self.importMaterialsInterval)
-        self.env['ir.config_parameter'].set_param('istikbal.importShipmentsButton', self.importShipmentsButton)
-        self.env['ir.config_parameter'].set_param('istikbal.importShipmentsUnit', self.importShipmentsUnit)
-        self.env['ir.config_parameter'].set_param('istikbal.importShipmentsInterval', self.importShipmentsInterval)
-
-        self.TurnOnAndOffSchedulers()
-        return res
-
-    @api.model
-    def get_values(self):
-        res = super(Integration, self).get_values()
-        icpsudo = self.env['ir.config_parameter'].sudo()
-        importInventoryButton = icpsudo.get_param('istikbal.importInventoryButton')
-        importInventoryUnit = icpsudo.get_param('istikbal.importInventoryUnit')
-        importInventoryInterval = icpsudo.get_param('istikbal.importInventoryInterval')
-        importMaterialsButton = icpsudo.get_param('istikbal.importMaterialsButton')
-        importMaterialsUnit = icpsudo.get_param('istikbal.importMaterialsUnit')
-        importMaterialsInterval = icpsudo.get_param('istikbal.importMaterialsInterval')
-        importShipmentsButton = icpsudo.get_param('istikbal.importShipmentsButton')
-        importShipmentsUnit = icpsudo.get_param('istikbal.importShipmentsUnit')
-        importShipmentsInterval = icpsudo.get_param('istikbal.importShipmentsInterval')
-
-        res.update(
-            importInventoryButton=True if importInventoryButton == 'True' else False,
-            importMaterialsButton=True if importMaterialsButton == 'True' else False,
-            importShipmentsButton=True if importShipmentsButton == 'True' else False,
-            importInventoryUnit=importInventoryUnit,
-            importInventoryInterval=importInventoryInterval,
-            importMaterialsUnit=importMaterialsUnit,
-            importMaterialsInterval=importMaterialsInterval,
-            importShipmentsUnit=importShipmentsUnit,
-            importShipmentsInterval=importShipmentsInterval,
-        )
-        return res
-
-
-    def getCredentials(self):
-        currentCompany = self.env.company
-        istikbalCredentials = self.env['istikbal.credentials'].search([('company_id', '=', currentCompany.id),
-                                                                       ('active', '=', True)])
-        if len(istikbalCredentials.ids) > 1:
-            raise ValidationError("Multiple Credentials are active for current company. Please select/active only one at a time.")
-        elif len(istikbalCredentials.ids) == 0:
-            raise ValidationError("No credential is assign to current company. Please go to Istikbal/Credentials.")
-        else:
-            return istikbalCredentials.username, istikbalCredentials.password
-
-    def importInventory(self):
-        try:
-            username, password = self.getCredentials()
-            url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getinventory"
-            auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
-            headers = {
-                'Authorization': 'Basic ' + auth,
-            }
-            response = requests.request("GET", url, headers=headers)
-            print(response, response.content)
-            if response.status_code == 200:
-                products = json.loads(response.content)
-                self.createIncomingShipment(products)
-                self.env.cr.commit()
-        except Exception as e:
-            raise str(e)
-
-
-    def createIncomingShipment(self, products):
+    def createIncomingShipmentScheduler(self, products,company_id):
         for product in products:
             try:
                 odooProduct = self.env['istikbal.incoming.shipments'].search([('producCode', '=', product['producCode']),('customerBarCode', '=', product['customerBarcode'])])
@@ -170,7 +65,6 @@ class Integration(models.TransientModel):
                          'volum': product['volum'],
                          'audat': product['audat'],
                          'stawn': product['stawn'],
-                         'company_id':self.env.company.id
                          })
 
                 else:
@@ -190,36 +84,44 @@ class Integration(models.TransientModel):
                          'volum': product['volum'],
                          'audat': product['audat'],
                          'stawn': product['stawn'],
-                         'company_id': self.env.company.id
+                         'company_id': company_id
                          })
 
             except Exception as e:
-                raise UserError(_('Error %s .', str(e)))
+                log_notes = self.env["istikbal.log.notes"].sudo().create(
+                    {"error": "CreateInventory" + str(e)})
 
-    def importMaterials(self):
-        try:
-            username, password = self.getCredentials()
-            odooProducts = self.env['product.template'].search([('default_code', '!=', False)],limit=500)
-            allMaterials = []
-            for odooProduct in odooProducts:
-                url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + odooProduct.default_code
-                auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
-                headers = {
-                    'Authorization': 'Basic ' + auth,
-                }
-                response = requests.request("GET", url, headers=headers,timeout=60)
-                if response.status_code == 200:
-                    materials = json.loads(response.content)
-                    if len(materials) > 0:
-                        allMaterials.extend(materials)
-                else:
-                    raise ValidationError("Error.", response)
-            self.createMaterials(allMaterials)
-            self.env.cr.commit()
-        except Exception as e:
-           raise str(e)
+    def importMaterialsScheduler(self):
+        istikbal_company = self.env['istikbal.credentials'].search([])
+        for company in istikbal_company:
+            try:
+                username = company.username
+                password = company.password
+                company_id = company.company_id.id
+                odooProducts = self.env['product.template'].search([('default_code', '!=', False)])
+                allMaterials = []
+                for odooProduct in odooProducts:
+                    url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getmaterial?materialNumber=" + odooProduct.default_code
+                    auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
+                    headers = {
+                        'Authorization': 'Basic ' + auth,
+                    }
+                    response = requests.request("GET", url, headers=headers,timeout=60)
+                    if response.status_code == 200:
+                        materials = json.loads(response.content)
+                        if len(materials) > 0:
+                            allMaterials.extend(materials)
+                    else:
+                        log_notes = self.env["istikbal.log.notes"].sudo().create(
+                            {"error": "shipments" + company.company_id.name + ": " + response})
+                self.createMaterialsScheduler(allMaterials,company_id)
+                self.env.cr.commit()
+            except Exception as e:
+                log_notes = self.env["istikbal.log.notes"].sudo().create(
+                    {"error": "importInventory" + company.company_id.name + ": " + response})
 
-    def createMaterials(self, materials):
+
+    def createMaterialsScheduler(self, materials,company_id):
         for material in materials:
             odooMaterials = self.env['istikbal.materials'].search([('materialNumber', '=', material['materialNumber'])])
             if odooMaterials:
@@ -261,7 +163,7 @@ class Integration(models.TransientModel):
                     'zzbolG14': material['zzbolG14'],
                     'zzbolG15': material['zzbolG15'],
                     'fabric': material['fabric'],
-                    'company_id': self.env.company.id,
+                    'company_id': company_id,
                 })
             else:
                 odooMaterials = self.env['istikbal.materials'].create({
@@ -302,7 +204,7 @@ class Integration(models.TransientModel):
                     'zzbolG14': material['zzbolG14'],
                     'zzbolG15': material['zzbolG15'],
                     'fabric': material['fabric'],
-                    'company_id': self.env.company.id,
+                    'company_id':company_id,
                 })
             odooProduct = self.env['product.template'].search(
                 [('default_code', '=', material['materialNumber'])])
@@ -313,27 +215,35 @@ class Integration(models.TransientModel):
                     'material_ids': [[4, odooMaterials.id]]
                 })
 
-    def importShipments(self):
-        try:
-            username, password = self.getCredentials()
-            url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getshipments?getDetail=x"
-            auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
-            headers = {
-                'Authorization': 'Basic ' + auth,
-            }
+    def importShipmentsScheduler(self):
+        istikbal_company = self.env['istikbal.credentials'].search([])
+        for company in istikbal_company:
+            try:
+                username = company.username
+                password = company.password
+                company_id = company.company_id.id
+                url = "https://b2bapi.istikbal.com.tr/api/v1.0/data/getshipments?getDetail=x"
+                auth = str(base64.b64encode((str(username) + ':' + str(password)).encode()), 'utf-8')
+                headers = {
+                    'Authorization': 'Basic ' + auth,
+                }
 
-            response = requests.request("GET", url, headers=headers)
+                response = requests.request("GET", url, headers=headers)
 
-            if response.status_code == 200:
-                shipmentsHeader = json.loads(response.content)['getShipmentsHeader']
-                shipmentsDetails = json.loads(response.content)['getShipmentsDetail']
-                self.createShipmentsHeader(shipmentsHeader,shipmentsDetails)
-                self.env.cr.commit()
-        except Exception as e:
-            raise str(e)
+                if response.status_code == 200:
+                    shipmentsHeader = json.loads(response.content)['getShipmentsHeader']
+                    shipmentsDetails = json.loads(response.content)['getShipmentsDetail']
+                    self.createShipmentsHeaderScheduler(shipmentsHeader,shipmentsDetails,company_id)
+                    self.env.cr.commit()
+                else:
+                    log_notes = self.env["istikbal.log.notes"].sudo().create(
+                        {"error": "shipments" + company.company_id.name + ": " + response})
+            except Exception as e:
+                log_notes = self.env["istikbal.log.notes"].sudo().create(
+                    {"error": "shipments" + company.company_id.name + ": " + response})
 
 
-    def createShipmentsHeader(self, headers,shipmentsDetails):
+    def createShipmentsHeaderScheduler(self, headers,shipmentsDetails,company_id):
         for header in headers:
             odooHeader = self.env['istikbal.shipments.header'].search([('shipmentNumber', '=', header['shipmentNumber'])])
             shipmentDate = datetime.strptime(header['shipmentDate'], '%Y-%m-%dT%H:%M:%S')
@@ -348,7 +258,7 @@ class Integration(models.TransientModel):
                     'shipmentNumber': header['shipmentNumber'],
                     'volum': header['volume'],
                     'voleh': header['volume'],
-                    'company_id': self.env.company.id,
+                    'company_id': company_id,
                 })
 
             else:
@@ -362,12 +272,12 @@ class Integration(models.TransientModel):
                     'shipmentNumber': header['shipmentNumber'],
                     'volum': header['volume'],
                     'voleh': header['volume'],
-                    'company_id': self.env.company.id,
+                    'company_id': company_id,
                 })
         self.env.cr.commit()
-        self.createShipmentsDetails(shipmentsDetails)
+        self.createShipmentsDetailsScheduler(shipmentsDetails,company_id)
 
-    def createShipmentsDetails(self, details):
+    def createShipmentsDetailsScheduler(self, details,company_id):
         for detail in details:
             odooHeader = self.env['istikbal.shipments.header'].search([('shipmentNumber', '=', detail['shipmentNumber'])],limit=1)
             odooDetails = self.env['istikbal.shipments.details'].search([('shipMentNumber', '=', detail['shipmentNumber']), ('pakageEnum', '=', detail['packageNum'])],limit=1)
@@ -397,7 +307,7 @@ class Integration(models.TransientModel):
                     'brgew': detail['brgew'],
                     'gewei': detail['gewei'],
                     'voleh': detail['voleh'],
-                    'company_id': self.env.company.id,
+                    'company_id': company_id,
                 })
 
             else:
@@ -425,7 +335,7 @@ class Integration(models.TransientModel):
                     'brgew': detail['brgew'],
                     'gewei': detail['gewei'],
                     'voleh': detail['voleh'],
-                    'company_id': self.env.company.id,
+                    'company_id': company_id,
                 })
 
     def importSaleOrderAnalysis(self):
