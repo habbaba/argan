@@ -10,8 +10,8 @@ class SaleOrderInh(models.Model):
         t = self.validity_date
         return {
             'state': 'sale',
-            # 'date_order': fields.Datetime.now()
-            'date_order':  datetime.datetime(t.year, t.month, t.day)
+            'date_order': self.date_order
+           
         }
 
 
