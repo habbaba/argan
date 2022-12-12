@@ -111,7 +111,8 @@ class Integration(models.TransientModel):
                     purchase_order.bellona_shipments = [(4, shipment_obj.id)]
                     if sale_order:
                         sale_order.bellona_shipments = [(4, shipment_obj.id)]
-                log_notes = self.env["bellona.log.notes"].sudo().create(
+                if count>0:
+                    log_notes = self.env["bellona.log.notes"].sudo().create(
                     {"error": "shipments imported" + str(count)})
             except Exception as e:
                 log_notes = self.env["bellona.log.notes"].sudo().create(
