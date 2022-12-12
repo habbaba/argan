@@ -115,7 +115,7 @@ class Integration(models.TransientModel):
             except Exception as e:
                 log_notes = self.env["bellona.log.notes"].sudo().create(
                     {"error": "shipments creation error" + str(e)})
-        if count>0:
+        if count:
                 log_notes = self.env["bellona.log.notes"].sudo().create(
                 {"error": "shipments imported" + str(count)})
 
