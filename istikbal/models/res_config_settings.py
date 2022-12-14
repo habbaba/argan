@@ -19,107 +19,6 @@ class Integration(models.TransientModel):
     _inherit = 'res.config.settings'
 
 
-    importInventoryButton = fields.Boolean("Import Inventory")
-    importInventoryUnit = fields.Integer("Import Unit")
-    importInventoryInterval = fields.Selection(INTERVAL, "Import Interval", default='months')
-
-    importMaterialsButton = fields.Boolean("Import Materials")
-    importMaterialsUnit = fields.Integer("Import Unit")
-    importMaterialsInterval = fields.Selection(INTERVAL, "Import Materials", default='months')
-
-    importShipmentsButton = fields.Boolean("Import Shipments")
-    importShipmentsUnit = fields.Integer("Import Unit")
-    importShipmentsInterval = fields.Selection(INTERVAL, "Import Shipments", default='months')
-
-    def TurnOnAndOffSchedulers(self):
-        if self.importInventoryButton:
-            self.changeSettingsOfImportInventoryScheduler(True)
-
-        if not self.importInventoryButton:
-            self.changeSettingsOfImportInventoryScheduler(False)
-
-        if self.importMaterialsButton:
-            self.changeSettingsOfImportMaterialsScheduler(True)
-
-        if not self.importMaterialsButton:
-            self.changeSettingsOfImportMaterialsScheduler(False)
-
-        if self.importShipmentsButton:
-            self.changeSettingsOfImportShipmentsScheduler(True)
-
-        if not self.importShipmentsButton:
-            self.changeSettingsOfImportShipmentsScheduler(False)
-
-    def changeSettingsOfImportInventoryScheduler(self, state):
-        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Inventory')])
-        if not scheduler:
-            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Inventory'),
-                                                    ('active', '=', False)])
-        scheduler.active = state
-        scheduler.interval_number = self.importInventoryUnit
-        scheduler.interval_type = self.importInventoryInterval
-
-    def changeSettingsOfImportMaterialsScheduler(self, state):
-        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Materials')])
-        if not scheduler:
-            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Materials'),
-                                                    ('active', '=', False)])
-        scheduler.active = state
-        scheduler.interval_number = self.importMaterialsUnit
-        scheduler.interval_type = self.importMaterialsInterval
-
-    def changeSettingsOfImportShipmentsScheduler(self, state):
-        scheduler = self.env['ir.cron'].search([('name', '=', 'Import Shipments')])
-        if not scheduler:
-            scheduler = self.env['ir.cron'].search([('name', '=', 'Import Shipments'),
-                                                    ('active', '=', False)])
-        scheduler.active = state
-        scheduler.interval_number = self.importShipmentsUnit
-        scheduler.interval_type = self.importShipmentsInterval
-
-    def set_values(self):
-        res = super(Integration, self).set_values()
-        self.env['ir.config_parameter'].set_param('istikbal.importInventoryButton', self.importInventoryButton)
-        self.env['ir.config_parameter'].set_param('istikbal.importInventoryUnit', self.importInventoryUnit)
-        self.env['ir.config_parameter'].set_param('istikbal.importInventoryInterval', self.importInventoryInterval)
-        self.env['ir.config_parameter'].set_param('istikbal.importMaterialsButton', self.importMaterialsButton)
-        self.env['ir.config_parameter'].set_param('istikbal.importMaterialsUnit', self.importMaterialsUnit)
-        self.env['ir.config_parameter'].set_param('istikbal.importMaterialsInterval', self.importMaterialsInterval)
-        self.env['ir.config_parameter'].set_param('istikbal.importShipmentsButton', self.importShipmentsButton)
-        self.env['ir.config_parameter'].set_param('istikbal.importShipmentsUnit', self.importShipmentsUnit)
-        self.env['ir.config_parameter'].set_param('istikbal.importShipmentsInterval', self.importShipmentsInterval)
-
-        self.TurnOnAndOffSchedulers()
-        return res
-
-    @api.model
-    def get_values(self):
-        res = super(Integration, self).get_values()
-        icpsudo = self.env['ir.config_parameter'].sudo()
-        importInventoryButton = icpsudo.get_param('istikbal.importInventoryButton')
-        importInventoryUnit = icpsudo.get_param('istikbal.importInventoryUnit')
-        importInventoryInterval = icpsudo.get_param('istikbal.importInventoryInterval')
-        importMaterialsButton = icpsudo.get_param('istikbal.importMaterialsButton')
-        importMaterialsUnit = icpsudo.get_param('istikbal.importMaterialsUnit')
-        importMaterialsInterval = icpsudo.get_param('istikbal.importMaterialsInterval')
-        importShipmentsButton = icpsudo.get_param('istikbal.importShipmentsButton')
-        importShipmentsUnit = icpsudo.get_param('istikbal.importShipmentsUnit')
-        importShipmentsInterval = icpsudo.get_param('istikbal.importShipmentsInterval')
-
-        res.update(
-            importInventoryButton=True if importInventoryButton == 'True' else False,
-            importMaterialsButton=True if importMaterialsButton == 'True' else False,
-            importShipmentsButton=True if importShipmentsButton == 'True' else False,
-            importInventoryUnit=importInventoryUnit,
-            importInventoryInterval=importInventoryInterval,
-            importMaterialsUnit=importMaterialsUnit,
-            importMaterialsInterval=importMaterialsInterval,
-            importShipmentsUnit=importShipmentsUnit,
-            importShipmentsInterval=importShipmentsInterval,
-        )
-        return res
-
-
     def getCredentials(self):
         currentCompany = self.env.company
         istikbalCredentials = self.env['istikbal.credentials'].search([('company_id', '=', currentCompany.id),
@@ -146,8 +45,7 @@ class Integration(models.TransientModel):
                 self.createIncomingShipment(products)
                 self.env.cr.commit()
         except Exception as e:
-            raise str(e)
-
+            raise UserError(_('Error.', str(e)))
 
     def createIncomingShipment(self, products):
         for product in products:
@@ -194,7 +92,7 @@ class Integration(models.TransientModel):
                          })
 
             except Exception as e:
-                raise UserError(_('Error %s .', str(e)))
+                raise UserError(_('Error.', str(e)))
 
     def importMaterials(self):
         try:
@@ -217,7 +115,7 @@ class Integration(models.TransientModel):
             self.createMaterials(allMaterials)
             self.env.cr.commit()
         except Exception as e:
-           raise str(e)
+           raise UserError(_('Error.', str(e)))
 
     def createMaterials(self, materials):
         for material in materials:
@@ -330,7 +228,7 @@ class Integration(models.TransientModel):
                 self.createShipmentsHeader(shipmentsHeader,shipmentsDetails)
                 self.env.cr.commit()
         except Exception as e:
-            raise str(e)
+             raise UserError(_('Error.', str(e)))
 
 
     def createShipmentsHeader(self, headers,shipmentsDetails):
