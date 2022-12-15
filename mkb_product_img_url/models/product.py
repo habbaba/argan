@@ -12,7 +12,7 @@ class ProductTemplateInherit(models.Model):
 
     image_url = fields.Char(string='Image URL')
 
-    @api.onchange('image_url')
+    @api.onchange('image_url','default_code')
     def get_image_from_url(self):
         """This method mainly use to get image from the url"""
         image = False
@@ -64,7 +64,7 @@ class ProductProductInherit(models.Model):
 
     image_url = fields.Char(string='Image URL')
 
-    @api.onchange('image_url')
+    @api.onchange('image_url','default_code')
     def get_image_from_url(self):
         """This method mainly use to get image from the url"""
         image = img = False
