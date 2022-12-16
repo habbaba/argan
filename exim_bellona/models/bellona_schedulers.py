@@ -41,8 +41,7 @@ class Integration(models.TransientModel):
                 self.createShipmentsScheduler(shipments,company_id)
                 self.env.cr.commit()
             else:
-                log_notes = self.env["bellona.log.notes"].sudo().create(
-                    "shipment"+str(company.company_id.name) + ": " + str(response)})
+                log_notes = self.env["bellona.log.notes"].sudo().create({"shipment"+str(company.company_id.name) + ": " + str(response)})
 
     def createShipmentsScheduler(self, shipments,company_id):
         count=0
