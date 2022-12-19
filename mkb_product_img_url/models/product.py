@@ -15,7 +15,7 @@ class ProductTemplateInherit(models.Model):
 
     def compute_the_image_url(self):
         for i in self:
-            i.image_url='https://sapservices.boydak.net/fabric/material/'+i.default_code
+            i.image_url='https://sapservices.boydak.net/fabric/material/'+str(i.default_code)
 
 
 class ProductProductInherit(models.Model):
@@ -25,4 +25,4 @@ class ProductProductInherit(models.Model):
 
     def compute_the_image_url(self):
         for i in self:
-            i.image_url = 'https://sapservices.boydak.net/fabric/material/' + i.default_code
+            i.image_url = 'https://sapservices.boydak.net/fabric/material/' + str(i.default_code)
