@@ -11,12 +11,12 @@
                     <field name="shipmentNumber" />
                     <field name="invoiceNumber" />
                     <field name="disPactDate" />
-                    <field name="containerNumber" optional="show"/>
+                    <field name="containerNumber"/>
                     <field name="truckPlate" />
-                    <field name="truckPlate2" optional="hide"/>
+                    <field name="truckPlate2" />
                     <field name="shipmentDate" />
-                    <field name="volum" optional="hide"/>
-                    <field name="voleh" optional="hide"/>
+                    <field name="volum" />
+                    <field name="voleh" />
                     <field name="company_id" />
                     <field name="create_date" />
                 </tree>
