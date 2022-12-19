@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
             <field name="detailed_type" position="after">
-                <field name="image_url"/>
+                <field name="image_url" widget="url"/>
             </field>
 
         </field>
@@ -18,7 +18,7 @@
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
             <field name="detailed_type" position="after">
-                <field name="image_url"/>
+                <field name="image_url" widget="url"/>
             </field>
         </field>
     </record>
