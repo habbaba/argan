@@ -39,7 +39,7 @@ class Integration(models.TransientModel):
                         self.env.cr.commit()
                     else:
                         if 'Connection aborted' not in str(e):
-                        l   og_notes = self.env["istikbal.log.notes"].sudo().create(
+                            log_notes = self.env["istikbal.log.notes"].sudo().create(
                             {'Import Inventory {}{}'.format(company.company_id.name, str(response.text))})
                 except Exception as e:
                     if 'Connection aborted' not in str(e):
