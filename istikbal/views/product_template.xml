@@ -82,36 +82,36 @@
                             </tree>
                         </field>
                     </page>
-                    <page name="istikbal_shp_details" string="Istikbal Shipment Details">
-                        <field name="istikbal_shp_details" mode="tree">
-                            <tree create="1" edit="1"  delete="1">
-                                <field name="shipMentNumber"/>
-                                <field name="pakageEnum"/>
-                                <field name="customerItemCode"/>
-                                <field name="customerOrderReference"/>
-                                <field name="productName"/>
-                                <field name="productCode"/>
-                                <field name="quantity"/>
-                                <field name="orderReference"/>
-                                <field name="bdtOrderNumber"/>
-                                <field name="customerItemReference"/>
-                                <field name="productPackage" optional="show"/>
-                                <field name="bdtCode" optional="show"/>
-                                <field name="company_id" optional="show"/>
-                                <field name="voleh" optional="show"/>
-                                <field name="zzbdtAmount" optional="show"/>
-                                <field name="gewei" optional="show"/>
-                                <field name="brgew" optional="show"/>
-                                <field name="mvgr3Desc" optional="show"/>
-                                <field name="inhalt" optional="hide"/>
-                                <field name="productNamePack" optional="hide"/>
-                                <field name="productNameEN" optional="hide"/>
-                                <field name="volum" optional="show"/>
-                                <field name="vrkme" optional="show"/>
-                                <field name="create_date"/>
-                            </tree>
-                        </field>
-                    </page>
+<!--                    <page name="istikbal_shp_details" string="Istikbal Shipment Details">-->
+<!--                        <field name="istikbal_shp_details" mode="tree">-->
+<!--                            <tree create="1" edit="1"  delete="1">-->
+<!--                                <field name="shipMentNumber"/>-->
+<!--                                <field name="pakageEnum"/>-->
+<!--                                <field name="customerItemCode"/>-->
+<!--                                <field name="customerOrderReference"/>-->
+<!--                                <field name="productName"/>-->
+<!--                                <field name="productCode"/>-->
+<!--                                <field name="quantity"/>-->
+<!--                                <field name="orderReference"/>-->
+<!--                                <field name="bdtOrderNumber"/>-->
+<!--                                <field name="customerItemReference"/>-->
+<!--                                <field name="productPackage" optional="show"/>-->
+<!--                                <field name="bdtCode" optional="show"/>-->
+<!--                                <field name="company_id" optional="show"/>-->
+<!--                                <field name="voleh" optional="show"/>-->
+<!--                                <field name="zzbdtAmount" optional="show"/>-->
+<!--                                <field name="gewei" optional="show"/>-->
+<!--                                <field name="brgew" optional="show"/>-->
+<!--                                <field name="mvgr3Desc" optional="show"/>-->
+<!--                                <field name="inhalt" optional="hide"/>-->
+<!--                                <field name="productNamePack" optional="hide"/>-->
+<!--                                <field name="productNameEN" optional="hide"/>-->
+<!--                                <field name="volum" optional="show"/>-->
+<!--                                <field name="vrkme" optional="show"/>-->
+<!--                                <field name="create_date"/>-->
+<!--                            </tree>-->
+<!--                        </field>-->
+<!--                    </page>-->
                 </xpath>
 
             </field>
@@ -145,36 +145,36 @@
                             </tree>
                         </field>
                     </page>
-                    <page name="istikbal_shp_details" string="Istikbal Shipment Details">
-                        <field name="istikbal_shp_details" mode="tree">
-                            <tree create="1" edit="1"  delete="1">
-                                <field name="shipMentNumber"/>
-                                <field name="pakageEnum"/>
-                                <field name="customerItemCode"/>
-                                <field name="customerOrderReference"/>
-                                <field name="productName"/>
-                                <field name="productCode"/>
-                                <field name="quantity"/>
-                                <field name="orderReference"/>
-                                <field name="bdtOrderNumber"/>
-                                <field name="customerItemReference"/>
-                                <field name="productPackage" optional="show"/>
-                                <field name="bdtCode" optional="show"/>
-                                <field name="company_id" optional="show"/>
-                                <field name="voleh" optional="show"/>
-                                <field name="zzbdtAmount" optional="show"/>
-                                <field name="gewei" optional="show"/>
-                                <field name="brgew" optional="show"/>
-                                <field name="mvgr3Desc" optional="show"/>
-                                <field name="inhalt" optional="hide"/>
-                                <field name="productNamePack" optional="hide"/>
-                                <field name="productNameEN" optional="hide"/>
-                                <field name="volum" optional="show"/>
-                                <field name="vrkme" optional="show"/>
-                                <field name="create_date"/>
-                            </tree>
-                        </field>
-                    </page>
+<!--                    <page name="istikbal_shp_details" string="Istikbal Shipment Details">-->
+<!--                        <field name="istikbal_shp_details" mode="tree">-->
+<!--                            <tree create="1" edit="1"  delete="1">-->
+<!--                                <field name="shipMentNumber"/>-->
+<!--                                <field name="pakageEnum"/>-->
+<!--                                <field name="customerItemCode"/>-->
+<!--                                <field name="customerOrderReference"/>-->
+<!--                                <field name="productName"/>-->
+<!--                                <field name="productCode"/>-->
+<!--                                <field name="quantity"/>-->
+<!--                                <field name="orderReference"/>-->
+<!--                                <field name="bdtOrderNumber"/>-->
+<!--                                <field name="customerItemReference"/>-->
+<!--                                <field name="productPackage" optional="show"/>-->
+<!--                                <field name="bdtCode" optional="show"/>-->
+<!--                                <field name="company_id" optional="show"/>-->
+<!--                                <field name="voleh" optional="show"/>-->
+<!--                                <field name="zzbdtAmount" optional="show"/>-->
+<!--                                <field name="gewei" optional="show"/>-->
+<!--                                <field name="brgew" optional="show"/>-->
+<!--                                <field name="mvgr3Desc" optional="show"/>-->
+<!--                                <field name="inhalt" optional="hide"/>-->
+<!--                                <field name="productNamePack" optional="hide"/>-->
+<!--                                <field name="productNameEN" optional="hide"/>-->
+<!--                                <field name="volum" optional="show"/>-->
+<!--                                <field name="vrkme" optional="show"/>-->
+<!--                                <field name="create_date"/>-->
+<!--                            </tree>-->
+<!--                        </field>-->
+<!--                    </page>-->
                 </xpath>
 
             </field>
