@@ -82,8 +82,7 @@
                             </tree>
                         </field>
                     </page>
-                    
-                     <page name="istikbal_shp_details" string="Istikbal Shipment Details">
+                    <page name="istikbal_shp_details" string="Istikbal Shipment Details">
                         <field name="istikbal_shp_details" mode="tree">
                             <tree create="1" edit="1"  delete="1">
                                 <field name="shipMentNumber"/>
@@ -113,7 +112,6 @@
                             </tree>
                         </field>
                     </page>
-
                 </xpath>
 
             </field>
@@ -147,7 +145,7 @@
                             </tree>
                         </field>
                     </page>
-                                        <page name="istikbal_shp_details" string="Istikbal Shipment Details">
+                    <page name="istikbal_shp_details" string="Istikbal Shipment Details">
                         <field name="istikbal_shp_details" mode="tree">
                             <tree create="1" edit="1"  delete="1">
                                 <field name="shipMentNumber"/>
@@ -173,7 +171,7 @@
                                 <field name="productNameEN" optional="hide"/>
                                 <field name="volum" optional="show"/>
                                 <field name="vrkme" optional="show"/>
-                                <field name="create_date"/>
+
                             </tree>
                         </field>
                     </page>
