@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-
+<!-- 
         <!-- Istikbal  Shipment Headers Tree view -->
-        <record model="ir.ui.view" id="istikbal_shipments_header_tree_view">
+<!--         <record model="ir.ui.view" id="istikbal_shipments_header_tree_view">
             <field name="name">Istikbal Shipments</field>
             <field name="model">istikbal.shipments.header</field>
-            <field name="arch" type="xml">
+            <field name="arch" type="xml"> -->
                 <tree string="Istikbal Shipments">
                     <field name="shipmentNumber" />
                     <field name="invoiceNumber" />
@@ -21,7 +21,7 @@
                     <field name="create_date" /> -->
                 </tree>
             </field>
-        </record>
+        </record> -->
         <!-- Istikbal Shipment Header Form view -->
         <record model="ir.ui.view" id="istikbal_shipments_header_form_view">
             <field name="name">Istikbal Shipment Headers</field>
