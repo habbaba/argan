@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
+    <data><record model="ir.ui.view" id="istikbal_shipments_header_tree_view">
+            <field name="name">Istikbal Shipment Headers</field>
+            <field name="model">istikbal.shipments.header</field>
+            <field name="arch" type="xml">
+                <tree>
+           
+                                <field name="shipmentNumber" />
+                                <field name="invoiceNumber" />
+                                <field name="disPactDate" />
+                                <field name="containerNumber" />
+                    
+                                <field name="truckPlate" />
+                                <field name="truckPlate2"/>
+                                <field name="shipmentDate" />
+                                <field name="volum"/>
+                                <field name="voleh" />
+                                <field name="company_id" />
+                                <field name="create_date" />
+                </tree>
+            </field>
+        </record>
+        
         <record model="ir.ui.view" id="istikbal_shipments_header_form_view">
             <field name="name">Istikbal Shipment Headers</field>
             <field name="model">istikbal.shipments.header</field>
@@ -82,7 +103,7 @@
         <record model="ir.actions.act_window" id="istikbal_shipments_action">
             <field name="name">Istikbal Shipment Headers</field>
             <field name="res_model">istikbal.shipments.header</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,form</field>
         </record>
 
 
