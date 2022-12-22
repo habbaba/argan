@@ -38,10 +38,12 @@ class Integration(models.TransientModel):
                         self.createIncomingShipmentScheduler(products,company_id)
                         self.env.cr.commit()
                     else:
-                        log_notes = self.env["istikbal.log.notes"].sudo().create(
+                        if 'Connection aborted' not in str(e):
+                        l   og_notes = self.env["istikbal.log.notes"].sudo().create(
                             {'Import Inventory {}{}'.format(company.company_id.name, str(response.text))})
                 except Exception as e:
-                    log_notes = self.env["istikbal.log.notes"].sudo().create(
+                    if 'Connection aborted' not in str(e):
+                        log_notes = self.env["istikbal.log.notes"].sudo().create(
                         {'Import Inventory {}{}'.format(company.company_id.name, str(e))})
 
     def createIncomingShipmentScheduler(self, products,company_id):
@@ -117,7 +119,8 @@ class Integration(models.TransientModel):
                 self.createMaterialsScheduler(allMaterials,company_id)
                 self.env.cr.commit()
             except Exception as e:
-                log_notes = self.env["istikbal.log.notes"].sudo().create(
+                if 'Connection aborted' not in str(e):
+                    log_notes = self.env["istikbal.log.notes"].sudo().create(
                     {'Import Material {}{}'.format(company.company_id.name, str(e))})
 
 
@@ -236,10 +239,12 @@ class Integration(models.TransientModel):
                     self.createShipmentsHeaderScheduler(shipmentsHeader,shipmentsDetails,company_id)
                     self.env.cr.commit()
                 else:
-                    log_notes = self.env["istikbal.log.notes"].sudo().create(
+                    if 'Connection aborted' not in str(e):
+                        log_notes = self.env["istikbal.log.notes"].sudo().create(
                         {'Import Shipments {}{}'.format(company.company_id.name, str(response))})
             except Exception as e:
-                log_notes = self.env["istikbal.log.notes"].sudo().create(
+                if 'Connection aborted' not in str(e):
+                    log_notes = self.env["istikbal.log.notes"].sudo().create(
                     {'Import Shipments {}{}'.format(company.company_id.name, str(e))})
 
 
