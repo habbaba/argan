@@ -44,8 +44,10 @@ class Integration(models.TransientModel):
                 products = json.loads(response.content)
                 self.createIncomingShipment(products)
                 self.env.cr.commit()
+            else:
+                raise UserError(_('Please wait server is buy.', str(response)))
         except Exception as e:
-            raise UserError(_('Error.', str(e)))
+            raise UserError(_('Please wait server is buy.', str(e)))
 
     def createIncomingShipment(self, products):
         for product in products:
@@ -227,6 +229,8 @@ class Integration(models.TransientModel):
                 shipmentsDetails = json.loads(response.content)['getShipmentsDetail']
                 self.createShipmentsHeader(shipmentsHeader,shipmentsDetails)
                 self.env.cr.commit()
+            else:    
+                raise UserError(_('Please wait server is buy.', str(response)))
         except Exception as e:
              raise UserError(_('Error.', str(e)))
 
