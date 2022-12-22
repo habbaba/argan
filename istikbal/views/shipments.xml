@@ -111,14 +111,14 @@
             <field name="model">istikbal.shipments.details</field>
             <field name="arch" type="xml">
                 <tree string="Istikbal Shipments" default_order="create_date desc">
-                    <field name="shipMentNumber"/>
+
                     <field name="pakageEnum"/>
                     <field name="customerItemCode"/>
                     <field name="customerOrderReference"/>
                     <field name="productName"/>
                     <field name="productCode"/>
                     <field name="quantity"/>
-                    <field name="orderReference"/>
+                    <field name="orderReference" optional="show"/>
                     <field name="bdtOrderNumber"/>
                     <field name="customerItemReference"/>
                     <field name="productPackage" optional="show"/>

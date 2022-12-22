@@ -45,7 +45,7 @@ class Integration(models.TransientModel):
                 self.createIncomingShipment(products)
                 self.env.cr.commit()
             else:
-                raise UserError(_('Please wait server is buy.', str(response)))
+                raise UserError(_('Please wait server is buy.', str(response.text)))
         except Exception as e:
             raise UserError(_('Please wait server is buy.', str(e)))
 
@@ -113,7 +113,7 @@ class Integration(models.TransientModel):
                     if len(materials) > 0:
                         allMaterials.extend(materials)
                 else:
-                    raise ValidationError("Error.", response)
+                    raise UserError(_('Error.', str(response.text)))
             self.createMaterials(allMaterials)
             self.env.cr.commit()
         except Exception as e:
@@ -230,9 +230,9 @@ class Integration(models.TransientModel):
                 self.createShipmentsHeader(shipmentsHeader,shipmentsDetails)
                 self.env.cr.commit()
             else:    
-                raise UserError(_('Please wait server is buy.', str(response)))
+                raise UserError(_('Please wait server is buy.', str(response.text)))
         except Exception as e:
-             raise UserError(_('Error.', str(e)))
+             raise UserError(_('Please wait server is buy.', str(e)))
 
 
     def createShipmentsHeader(self, headers,shipmentsDetails):
