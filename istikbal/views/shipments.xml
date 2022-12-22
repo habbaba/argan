@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-
-        <!-- Istikbal Shipment Header Form view -->
         <record model="ir.ui.view" id="istikbal_shipments_header_form_view">
             <field name="name">Istikbal Shipment Headers</field>
             <field name="model">istikbal.shipments.header</field>
@@ -26,7 +24,7 @@
                                 <field name="create_date" />
                             </group>
                         </group>
-<!--                         <notebook>
+                           <notebook>
                             <page name="istikbal_shipment_details" string="Details">
                                 <field name="detail_ids" mode="tree">
                                     <tree delete="1">
@@ -56,7 +54,7 @@
                                     </tree>
                                 </field>
                             </page>
-                        </notebook> -->
+                        </notebook>
                     </sheet>
                 </form>
             </field>
