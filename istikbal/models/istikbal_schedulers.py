@@ -38,8 +38,7 @@ class Integration(models.TransientModel):
                         self.createIncomingShipmentScheduler(products,company_id)
                         self.env.cr.commit()
                     else:
-                        if 'Connection aborted' not in str(e):
-                            log_notes = self.env["istikbal.log.notes"].sudo().create(
+                        log_notes = self.env["istikbal.log.notes"].sudo().create(
                             {'Import Inventory {}{}'.format(company.company_id.name, str(response.text))})
                 except Exception as e:
                     if 'Connection aborted' not in str(e):
@@ -90,8 +89,9 @@ class Integration(models.TransientModel):
                          })
 
             except Exception as e:
-                log_notes = self.env["istikbal.log.notes"].sudo().create(
-                    {'Create Inventory {}'.format(str(e))})
+                if 'Connection aborted' not in str(e):
+                    log_notes = self.env["istikbal.log.notes"].sudo().create(
+                        {'Create Inventory {}'.format(str(e))})
 
     def importMaterialsScheduler(self):
         istikbal_company = self.env['istikbal.credentials'].search([])
@@ -115,13 +115,13 @@ class Integration(models.TransientModel):
                             allMaterials.extend(materials)
                     else:
                         log_notes = self.env["istikbal.log.notes"].sudo().create(
-                            {'Import Material {}{}'.format(company.company_id.name, str(response))})
+                            {'Import Material {}{}'.format(company.company_id.name, str(response.text))})
                 self.createMaterialsScheduler(allMaterials,company_id)
                 self.env.cr.commit()
             except Exception as e:
                 if 'Connection aborted' not in str(e):
                     log_notes = self.env["istikbal.log.notes"].sudo().create(
-                    {'Import Material {}{}'.format(company.company_id.name, str(e))})
+                        {'Import Material {}{}'.format(company.company_id.name, str(e))})
 
 
     def createMaterialsScheduler(self, materials,company_id):
@@ -239,13 +239,12 @@ class Integration(models.TransientModel):
                     self.createShipmentsHeaderScheduler(shipmentsHeader,shipmentsDetails,company_id)
                     self.env.cr.commit()
                 else:
-                    if 'Connection aborted' not in str(e):
                         log_notes = self.env["istikbal.log.notes"].sudo().create(
-                        {'Import Shipments {}{}'.format(company.company_id.name, str(response))})
+                            {'Import Shipments {}{}'.format(company.company_id.name, str(response.text))})
             except Exception as e:
                 if 'Connection aborted' not in str(e):
                     log_notes = self.env["istikbal.log.notes"].sudo().create(
-                    {'Import Shipments {}{}'.format(company.company_id.name, str(e))})
+                        {'Import Shipments {}{}'.format(company.company_id.name, str(e))})
 
 
     def createShipmentsHeaderScheduler(self, headers,shipmentsDetails,company_id):
