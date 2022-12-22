@@ -39,7 +39,7 @@ class Integration(models.TransientModel):
                         self.env.cr.commit()
                     else:
                         log_notes = self.env["istikbal.log.notes"].sudo().create(
-                            {"error": "shipments" + company.company_id.name + ": " + response})
+                            {"error": "shipments" + company.company_id.name + ": " + str(response)})
                 except Exception as e:
                     log_notes = self.env["istikbal.log.notes"].sudo().create(
                         {"error": "importInventory" + company.company_id.name + ": " + str(e)})
