@@ -39,10 +39,10 @@ class Integration(models.TransientModel):
                         self.env.cr.commit()
                     else:
                         log_notes = self.env["istikbal.log.notes"].sudo().create(
-                            {"error": "shipments" + company.company_id.name + ": " + str(response.text)})
+                            {'Import Inventory {}{}'.format(company.company_id.name, str(response.text))})
                 except Exception as e:
                     log_notes = self.env["istikbal.log.notes"].sudo().create(
-                        {"error": "importInventory" + company.company_id.name + ": " + str(e)})
+                        {'Import Inventory {}{}'.format(company.company_id.name, str(e))})
 
     def createIncomingShipmentScheduler(self, products,company_id):
         for product in products:
@@ -89,7 +89,7 @@ class Integration(models.TransientModel):
 
             except Exception as e:
                 log_notes = self.env["istikbal.log.notes"].sudo().create(
-                    {"error": "CreateInventory" + str(e)})
+                    {'Create Inventory {}'.format(str(e))})
 
     def importMaterialsScheduler(self):
         istikbal_company = self.env['istikbal.credentials'].search([])
@@ -113,12 +113,12 @@ class Integration(models.TransientModel):
                             allMaterials.extend(materials)
                     else:
                         log_notes = self.env["istikbal.log.notes"].sudo().create(
-                            {"error": "shipments" + company.company_id.name + ": " + response})
+                            {'Import Material {}{}'.format(company.company_id.name, str(response))})
                 self.createMaterialsScheduler(allMaterials,company_id)
                 self.env.cr.commit()
             except Exception as e:
                 log_notes = self.env["istikbal.log.notes"].sudo().create(
-                    {"error": "importInventory" + company.company_id.name + ": " + str(e)})
+                    {'Import Material {}{}'.format(company.company_id.name, str(e))})
 
 
     def createMaterialsScheduler(self, materials,company_id):
@@ -237,10 +237,10 @@ class Integration(models.TransientModel):
                     self.env.cr.commit()
                 else:
                     log_notes = self.env["istikbal.log.notes"].sudo().create(
-                        {"error": "shipments" + company.company_id.name + ": " + response})
+                        {'Import Shipments {}{}'.format(company.company_id.name, str(response))})
             except Exception as e:
                 log_notes = self.env["istikbal.log.notes"].sudo().create(
-                    {"error": "shipments" + company.company_id.name + ": " + response})
+                    {'Import Shipments {}{}'.format(company.company_id.name, str(e))})
 
 
     def createShipmentsHeaderScheduler(self, headers,shipmentsDetails,company_id):
