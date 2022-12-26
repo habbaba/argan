@@ -59,6 +59,10 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form" />
             <field name="arch" type="xml">
+                 <xpath expr="//field[@name='payment_term_id']" position="after">
+                                <field name="tag_ids"/>
+                 </xpath>
+
                 <xpath expr="//page[@name='other_information']" position="after">
                     <page name="istikbal_shipments" string="Istikbal Inventory">
                         <field name="istikbal_shipments" mode="tree">

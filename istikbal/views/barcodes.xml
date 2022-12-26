@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="action_report_istikbal_barcode" model="ir.actions.report">
+            <field name="name">Istikbal Barcodes</field>
+            <field name="model">istikbal.shipments.details</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">istikbal.report_istikbal_barcode</field>
+            <field name="report_file">istikbal.report_istikbal_barcode</field>
+            <field name="print_report_name">'Istikbal Report'</field>
+            <field name="binding_model_id" ref="model_istikbal_shipments_details"/>
+            <field name="binding_type">report</field>
+        </record>
+
+
+
+
+        <template id="report_istikbal_barcode">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <p t-field="o.qr_image" t-options="{'widget': 'image'}" style="width: 200px; height: 200px;margin-left:30px"/>
+                            <span t-field="o.productCode" style="margin-left:50px"/>
+                            <br></br>
+                        </div>
+                        <div>
+                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.pakageEnum, 600, 100)" style="width:300px;height:50px;" alt="Barcode"/> <br></br>
+                            <span t-field="o.pakageEnum" style="margin-left:50px"/>
+                        </div>
+
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

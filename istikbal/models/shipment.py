@@ -4,6 +4,12 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
 import json
 from datetime import datetime
+import qrcode
+import base64
+from io import BytesIO
+from odoo import models, fields, api
+from odoo.http import request
+from odoo import exceptions, _
 
 
 
@@ -83,6 +89,24 @@ class ShipmentDetails(models.Model):
     voleh = fields.Char('voleh')
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                 default=lambda self: self.env.company)
+
+    qr_image = fields.Binary("QR Code", compute='_generate_qr_code')
+
+
+    def _generate_qr_code(self):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=20,
+            border=4,
+        )
+        qr.add_data(self.productCode )
+        qr.make(fit=True)
+        img = qr.make_image()
+        temp = BytesIO()
+        img.save(temp, format="PNG")
+        qr_img = base64.b64encode(temp.getvalue())
+        self.qr_image=qr_img
 
 class SalesOrderAnalysis(models.Model):
     _name = 'istikbal.sales.order.analysis'

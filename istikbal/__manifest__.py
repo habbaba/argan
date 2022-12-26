@@ -33,5 +33,6 @@
         'views/istikbal_settings.xml',
         'views/product_template.xml',
         'views/shipments.xml',
+        'views/barcodes.xml',
     ],
 }
