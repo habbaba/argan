@@ -198,39 +198,39 @@ class IstikbalSaleOrderInh(models.Model):
             shipments = self.env['purchase.order'].search([('origin', '=', i.name)])
             i.istikbal_shipments=shipments.istikbal_shipments
             i.istikbal_shp_details=shipments.istikbal_shp_details
-            if shipments:
-                tags = self.env['crm.tag'].search([('name', '=', "bestellt")])
-                if not tags:
-                    tags = self.env['crm.tag'].create({'name': "bestellt"})
+#             if shipments:
+#                 tags = self.env['crm.tag'].search([('name', '=', "bestellt")])
+#                 if not tags:
+#                     tags = self.env['crm.tag'].create({'name': "bestellt"})
 
-                i.tag_ids = tags.ids
+#                 i.tag_ids = tags.ids
 
-            if i.istikbal_shipments:
-                if not i.istikbal_shp_details:
-                    tags= self.env['crm.tag'].search([('name', '=', "Production")])
-                    if not tags:
-                        tags = self.env['crm.tag'].create({'name': "Production"})
+#             if i.istikbal_shipments:
+#                 if not i.istikbal_shp_details:
+#                     tags= self.env['crm.tag'].search([('name', '=', "Production")])
+#                     if not tags:
+#                         tags = self.env['crm.tag'].create({'name': "Production"})
 
-                    i.tag_ids= tags.ids
+#                     i.tag_ids= tags.ids
 
-            if i.istikbal_shipments and i.istikbal_shp_details:
-                    tags = self.env['crm.tag'].search([('name', '=', "On Truck")])
-                    if not tags:
-                        tags = self.env['crm.tag'].create({'name': "On Truck"})
+#             if i.istikbal_shipments and i.istikbal_shp_details:
+#                     tags = self.env['crm.tag'].search([('name', '=', "On Truck")])
+#                     if not tags:
+#                         tags = self.env['crm.tag'].create({'name': "On Truck"})
 
-                    i.tag_ids = tags.ids
+#                     i.tag_ids = tags.ids
 
-            for k in i.picking_ids:
-                if k.state=="done":
-                    tags = self.env['crm.tag'].search([('name', '=', "GG")])
-                    if not tags:
-                        tags = self.env['crm.tag'].create({'name': "GG"})
-                    i.tag_ids = tags.ids
-                if k.state=="assigned":
-                    tags = self.env['crm.tag'].search([('name', '=', "LB")])
-                    if not tags:
-                        tags = self.env['crm.tag'].create({'name': "LB"})
-                    i.tag_ids = tags.ids
+#             for k in i.picking_ids:
+#                 if k.state=="done":
+#                     tags = self.env['crm.tag'].search([('name', '=', "GG")])
+#                     if not tags:
+#                         tags = self.env['crm.tag'].create({'name': "GG"})
+#                     i.tag_ids = tags.ids
+#                 if k.state=="assigned":
+#                     tags = self.env['crm.tag'].search([('name', '=', "LB")])
+#                     if not tags:
+#                         tags = self.env['crm.tag'].create({'name': "LB"})
+#                     i.tag_ids = tags.ids
 
 
 
