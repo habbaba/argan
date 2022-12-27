@@ -135,7 +135,7 @@ class Integration(models.TransientModel):
             today = fields.Date.today()
             date = today - timedelta(days=3)
             data = {
-                "date": date
+                "date": str(date)
             }
             payload = json.dumps(data)
             response = requests.request("POST", url, headers=headers, data=payload)
