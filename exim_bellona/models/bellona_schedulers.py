@@ -151,12 +151,14 @@ class Integration(models.TransientModel):
 
 
     def createBellonaMaterialsScheduler(self, materials, company_id):
+        count=0
         for material in materials:
             odooMaterials = self.env['bellona.material'].search(
                 [('matnr', '=', material['matnr']), ('company_id', '=', company_id)], limit=1)
             odooProduct = self.env['product.template'].search(
                 [('default_code', '=', material['matnr']), ('company_id', '=', company_id)], limit=1)
             if not odooMaterials:
+                count = count + 1
                 odooMaterials = self.env['bellona.material'].sudo().create({
                     'matnr': material['matnr'],
                     'meins': material['meins'],
@@ -253,6 +255,8 @@ class Integration(models.TransientModel):
                 odooProduct.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
                 })
+        log_notes = self.env["bellona.log.notes"].sudo().create(
+                    {"error": "Material imported" + str(count)})
 
     
     def importPriceScheduler(self):
