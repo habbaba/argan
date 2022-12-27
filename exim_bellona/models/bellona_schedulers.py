@@ -55,7 +55,7 @@ class Integration(models.TransientModel):
                 if not shipment_obj:
                     shipment_obj = self.env['bellona.shipments'].sudo().create({
                         'productcode': shipment['productcode'],
-                        'product_template': product_template.id,
+                        'product_template': product_template.id if product_template else False,
                         'ordeR_QUANTITY': shipment['ordeR_QUANTITY'],
                         'stocK_QUANTITY': shipment['stocK_QUANTITY'],
                         'customerref': shipment['customerref'],
@@ -82,7 +82,7 @@ class Integration(models.TransientModel):
                 else:
                     shipment_obj = self.env['bellona.shipments'].write({
                         'productcode': shipment['productcode'],
-                        'product_template': product_template.id,
+                        'product_template': product_template.id if product_template else False,
                         'ordeR_QUANTITY': shipment['ordeR_QUANTITY'],
                         'stocK_QUANTITY': shipment['stocK_QUANTITY'],
                         'customerref': shipment['customerref'],
@@ -114,7 +114,7 @@ class Integration(models.TransientModel):
 
             except Exception as e:
                 log_notes = self.env["bellona.log.notes"].sudo().create(
-                    {"error": "shipments creation error" + str(e)})
+                    {"error": "shipments creation error" + shipment['saleS_ORDER']+str(e)})
         if count:
             log_notes = self.env["bellona.log.notes"].sudo().create(
                 {"error": "shipments imported" + str(count)})
