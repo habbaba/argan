@@ -145,7 +145,7 @@ class Integration(models.TransientModel):
                 self.createBellonaMaterialsScheduler(products, company_id)
             else:
                 log_notes = self.env["bellona.log.notes"].sudo().create(
-                    {"error": "Material" + company.company_id.name + ": " + response})
+                    {"error": "Material" + company.company_id.name + ": " + str(response)})
 
         self.env.cr.commit()
 
