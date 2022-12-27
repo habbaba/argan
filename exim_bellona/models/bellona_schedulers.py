@@ -18,8 +18,6 @@ INTERVAL = [
 class Integration(models.TransientModel):
     _inherit = 'res.config.settings'
 
-
-
     def getBaseURL(self):
         return "https://eximapi.bellona.com.tr/"
 
@@ -38,17 +36,19 @@ class Integration(models.TransientModel):
             response = requests.request("POST", url, headers=headers, data=payload)
             if response.status_code == 200:
                 shipments = json.loads(response.content)
-                self.createShipmentsScheduler(shipments,company_id)
+                self.createShipmentsScheduler(shipments, company_id)
                 self.env.cr.commit()
             else:
-                log_notes = self.env["bellona.log.notes"].sudo().create({"shipment"+str(company.company_id.name) + ": " + str(response)})
+                log_notes = self.env["bellona.log.notes"].sudo().create(
+                    {"shipment" + str(company.company_id.name) + ": " + str(response)})
 
-    def createShipmentsScheduler(self, shipments,company_id):
-        count=0
+    def createShipmentsScheduler(self, shipments, company_id):
+        count = 0
         for shipment in shipments:
             try:
                 shipment_obj = self.env['bellona.shipments'].search([('saleS_ORDER', '=', shipment['saleS_ORDER']), (
-                'saleS_ORDER_POSNR', '=', shipment['saleS_ORDER_POSNR']), ('productref', '=', shipment['productref']),
+                    'saleS_ORDER_POSNR', '=', shipment['saleS_ORDER_POSNR']),
+                                                                     ('productref', '=', shipment['productref']),
                                                                      ('company_id', '=', company_id)])
                 product_template = self.env['product.template'].search(
                     [('default_code', '=', shipment['productcode']), ('company_id', '=', company_id)], limit=1)
@@ -75,9 +75,9 @@ class Integration(models.TransientModel):
                         'customerbarcode': shipment['customerbarcode'],
                         'previouS_ORDER_POS': shipment['previouS_ORDER_POS'],
                         'producT_STOCK': shipment['producT_STOCK'],
-                        'company_id':company_id
+                        'company_id': company_id
                     })
-                    count=count+1
+                    count = count + 1
 
                 else:
                     shipment_obj = self.env['bellona.shipments'].write({
@@ -104,18 +104,19 @@ class Integration(models.TransientModel):
                         'producT_STOCK': shipment['producT_STOCK'],
                     })
 
-                purchase_order = self.env['purchase.order'].search([('name', '=', shipment['customerbarcode'])], limit=1)
+                purchase_order = self.env['purchase.order'].search([('name', '=', shipment['customerbarcode'])],
+                                                                   limit=1)
                 if purchase_order:
                     sale_order = self.env['sale.order'].search([('name', '=', purchase_order.origin)], limit=1)
                     purchase_order.bellona_shipments = [(4, shipment_obj.id)]
                     if sale_order:
                         sale_order.bellona_shipments = [(4, shipment_obj.id)]
-            
+
             except Exception as e:
                 log_notes = self.env["bellona.log.notes"].sudo().create(
                     {"error": "shipments creation error" + str(e)})
         if count:
-                log_notes = self.env["bellona.log.notes"].sudo().create(
+            log_notes = self.env["bellona.log.notes"].sudo().create(
                 {"error": "shipments imported" + str(count)})
 
     # Bellona Materials
@@ -139,19 +140,20 @@ class Integration(models.TransientModel):
             payload = json.dumps(data)
             response = requests.request("POST", url, headers=headers, data=payload)
 
-                if response.status_code == 200:
-                    products = json.loads(response.content)
-                    self.createBellonaMaterialsScheduler(products,company_id)
-                else:
-                    log_notes = self.env["bellona.log.notes"].sudo().create(
-                        {"error": "Material"+company.company_id.name + ": " + response})
+            if response.status_code == 200:
+                products = json.loads(response.content)
+                self.createBellonaMaterialsScheduler(products, company_id)
+            else:
+                log_notes = self.env["bellona.log.notes"].sudo().create(
+                    {"error": "Material" + company.company_id.name + ": " + response})
 
-            self.env.cr.commit()
+        self.env.cr.commit()
 
-    def createBellonaMaterialsScheduler(self, materials,company_id):
+
+    def createBellonaMaterialsScheduler(self, materials, company_id):
         for material in materials:
             odooMaterials = self.env['bellona.material'].search(
-                [('matnr', '=', material['matnr']), ('company_id', '=', company_id)],limit=1)
+                [('matnr', '=', material['matnr']), ('company_id', '=', company_id)], limit=1)
             odooProduct = self.env['product.template'].search(
                 [('default_code', '=', material['matnr']), ('company_id', '=', company_id)], limit=1)
             if not odooMaterials:
@@ -198,7 +200,7 @@ class Integration(models.TransientModel):
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
                     'company_id': company_id
-
+    
                 })
                 odooProduct.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
@@ -246,41 +248,46 @@ class Integration(models.TransientModel):
                     'e_MODEL_E': material['e_MODEL_E'],
                     'e_EXTWG_T': material['e_EXTWG_T'],
                     'e_FLART_T': material['e_FLART_T'],
-
+    
                 })
                 odooProduct.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
                 })
 
+    
     def importPriceScheduler(self):
         bellona_company = self.env['bellona.credentials'].search([])
         for company in bellona_company:
-
+    
             token = company.token
-            company_id=company.company_id.id
+            company_id = company.company_id.id
             url = self.getBaseURL() + "api/Material/SearchPrice"
             headers = {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token,
             }
-            odooProducts = self.env['product.template'].search([('default_code', '!=', False), ('company_id', '=', company_id)])
+            odooProducts = self.env['product.template'].search(
+                [('default_code', '!=', False), ('company_id', '=', company_id)])
             for odooProduct in odooProducts:
                 payload = json.dumps(odooProduct.default_code)
                 response = requests.request("POST", url, headers=headers, data=payload)
                 if response.status_code == 200:
                     product = json.loads(response.content)
-                    self.updatePriceScheduler(odooProduct, product,company_id)
+                    self.updatePriceScheduler(odooProduct, product, company_id)
                 else:
-                    log_notes=self.env["bellona.log.notes"].sudo().create({"error":"Price"+company.company_id.name+ ": "+response})
+                    log_notes = self.env["bellona.log.notes"].sudo().create(
+                        {"error": "Price" + company.company_id.name + ": " + response})
         self.env.cr.commit()
-
-    def updatePriceScheduler(self, odooProduct, product,company_id):
+    
+    
+    def updatePriceScheduler(self, odooProduct, product, company_id):
         odooProduct.write({
             'standard_price': product[0]['biriM_FIYAT']
         })
-        shipment_obj = self.env['bellona.shipments'].search([('productcode', '=', odooProduct.default_code), ('company_id', '=', company_id)],limit=1)
+        shipment_obj = self.env['bellona.shipments'].search(
+            [('productcode', '=', odooProduct.default_code), ('company_id', '=', company_id)], limit=1)
         material_obj = self.env['bellona.material'].search(
-            [('matnr', '=', odooProduct.default_code), ('company_id', '=',company_id)], limit=1)
+            [('matnr', '=', odooProduct.default_code), ('company_id', '=', company_id)], limit=1)
         if shipment_obj:
             for shipment in shipment_obj:
                 shipment.maktx = product[0]['maktx']
