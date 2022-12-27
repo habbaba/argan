@@ -255,8 +255,7 @@ class Integration(models.TransientModel):
                 odooProduct.write({
                     'bellona_material_ids': [[4, odooMaterials.id]]
                 })
-        log_notes = self.env["bellona.log.notes"].sudo().create(
-                    {"error": "Material imported" + str(count)})
+        
 
     
     def importPriceScheduler(self):
