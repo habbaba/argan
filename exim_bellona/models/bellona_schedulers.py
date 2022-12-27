@@ -130,17 +130,14 @@ class Integration(models.TransientModel):
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token,
             }
-            odooProducts = self.env['product.template'].search([('default_code', '!=', False), ('company_id', '=', company_id),
-                 ("bellona_material_ids", '=', False)],limit=1)
 
-            for odooProduct in odooProducts:
-
-                data = {
-                    "matnr": odooProduct.default_code,
-                    "date": "2022-07-01"
-                }
-                payload = json.dumps(data)
-                response = requests.request("POST", url, headers=headers, data=payload)
+            today = fields.Datetime.today()
+            date = today - timedelta(days=3)
+            data = {
+                "date": date
+            }
+            payload = json.dumps(data)
+            response = requests.request("POST", url, headers=headers, data=payload)
 
                 if response.status_code == 200:
                     products = json.loads(response.content)
