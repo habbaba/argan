@@ -121,25 +121,24 @@ class Integration(models.TransientModel):
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token,
         }
-        odooProducts = self.env['product.template'].search([('default_code', '!=', False),('company_id', '=', self.env.company.id),("bellona_material_ids",'=',False)])
+        
 
-        for odooProduct in odooProducts:
+     
+        data = {
 
-            data = {
-                "matnr": odooProduct.default_code,
-                  "date": "2022-05-01"
-            }
-            payload = json.dumps(data)
-            response = requests.request("POST", url, headers=headers, data=payload)
+              "date": "2022-10-01"
+        }
+        payload = json.dumps(data)
+        response = requests.request("POST", url, headers=headers, data=payload)
 
-            if response.status_code == 200:
-                products = json.loads(response.content)
-                # print("Material response",products)
-                self.createBellonaMaterials(products)
-            else:
-                raise UserError(_('Error %s .', response))
+        if response.status_code == 200:
+            products = json.loads(response.content)
+            # print("Material response",products)
+            self.createBellonaMaterials(products)
+        else:
+            raise UserError(_('Error %s .', response))
 
-            self.env.cr.commit()
+        self.env.cr.commit()
 
     def createBellonaMaterials(self, materials):
         for material in materials:
