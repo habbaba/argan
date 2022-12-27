@@ -132,7 +132,7 @@ class Integration(models.TransientModel):
                 'Authorization': 'Bearer ' + token,
             }
 
-            today = fields.Datetime.today()
+            today = fields.Date.today()
             date = today - timedelta(days=3)
             data = {
                 "date": date
