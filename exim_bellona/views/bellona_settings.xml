@@ -255,7 +255,7 @@
             <field name="name">Bellona Materials</field>
             <field name="model">bellona.material</field>
             <field name="arch" type="xml">
-                <tree string="Bellona Materials">
+                <tree string="Bellona Materials"  default_order="create_date desc">
                     <field name="matnr"/>
                     <field name="meins"/>
                     <field name="ersda"/>
@@ -398,7 +398,7 @@
             <field name="name">Search Inventory</field>
             <field name="model">bellona.shipments</field>
             <field name="arch" type="xml">
-                <tree string="Search Inventory">
+                <tree string="Search Inventory"  default_order="create_date desc">
                     <field name="product_template"/>
                     <field name="saleS_ORDER" />
                     <field name="customerref"/>
