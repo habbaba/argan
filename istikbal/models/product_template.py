@@ -20,6 +20,11 @@ class InheritPT(models.Model):
     material_ids = fields.Many2many('istikbal.materials', string='Istikbal Materials')
     company_ids = fields.Many2many('res.company', string='Companies',
                                    domain=lambda self: [('id', 'in', self.env.companies.ids)])
+    @api.model
+    def create(self, vals):
+        program = super(InheritPT, self).create(vals)
+        program.company_ids=[]
+        return program
 
 
     def get_material(self):
