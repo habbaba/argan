@@ -18,6 +18,8 @@ class InheritPT(models.Model):
 
     syncedIstikbal = fields.Boolean('Synced Istikbal', default=False)
     material_ids = fields.Many2many('istikbal.materials', string='Istikbal Materials')
+    company_ids = fields.Many2many('res.company', string='Companies',
+                                   domain=lambda self: [('id', 'in', self.env.companies.ids)])
 
 
     def get_material(self):
