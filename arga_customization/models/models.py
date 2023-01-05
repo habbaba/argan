@@ -10,7 +10,7 @@ class SaleOrderInh(models.Model):
     total_qty = fields.Float('Total Storable Qty', compute='_compute_total_qty')
     remaining_qty = fields.Float('Not Available', compute='_compute_total_qty')
 
-    @api.depends("order_line.product_id","order_line.product_uom_qty")
+    
     def _compute_total_qty(self):
         total = 0
         remain_total = 0
