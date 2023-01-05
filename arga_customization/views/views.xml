@@ -7,15 +7,15 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                   <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
-                        <field name="available" string="Available Qty" invisible="1"/>
-                        <field name="remaining_qty" string="Not Available"/>
+                        <field name="available"  invisible="1"/>
+                        <field name="remaining_qty"/>
                   </xpath>
 
 
                 <xpath expr="//field[@name='order_line']" position="after">
                     <group>
                     <group>
-                    <field name="total_qty" string="Total Qty"/>
+                    <field name="total_qty" />
                     <field name="remaining_qty"/>
                     </group>
                     </group>
