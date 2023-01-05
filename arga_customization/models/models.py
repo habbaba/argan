@@ -8,8 +8,9 @@ class SaleOrderInh(models.Model):
     _inherit = 'sale.order'
 
     total_qty = fields.Float('Total Storable Qty', compute='_compute_total_qty')
-    remaining_qty = fields.Float('Amount due', compute='_compute_total_qty')
+    remaining_qty = fields.Float('Not Available', compute='_compute_total_qty')
 
+    @api.depends("order_line.product_id","order_line.product_uom_qty")
     def _compute_total_qty(self):
         total = 0
         remain_total = 0
@@ -27,7 +28,7 @@ class SaleOrderLineInh(models.Model):
     _inherit = 'sale.order.line'
 
     available = fields.Float('Available Qty', compute='_compute_total_qty')
-    remaining_qty = fields.Float('Remaining', compute='_compute_total_qty')
+    remaining_qty = fields.Float('Not Available', compute='_compute_total_qty')
 
     @api.depends("product_id")
     def _compute_total_qty(self):
@@ -48,7 +49,7 @@ class StockPickingInh(models.Model):
     _inherit = 'stock.picking'
 
     invoice_total = fields.Float('Invoice Total', compute='_compute_total_amt')
-    remaining_amt = fields.Float('Remaining', compute='_compute_total_amt')
+    remaining_amt = fields.Float('Amount due', compute='_compute_total_amt')
 
 
     def _compute_total_amt(self):
