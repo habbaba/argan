@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_arga_transport_arga_transport,arga_transport.arga_transport,model_arga_transport,,1,1,1,1
