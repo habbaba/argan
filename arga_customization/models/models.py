@@ -58,6 +58,6 @@ class StockPickingInh(models.Model):
             invoices=sum(self.env['account.move'].search([("invoice_origin",'=',i.origin)]).mapped("amount_residual"))
             i.invoice_total= sale_order.amount_total
             if invoices ==sale_order.amount_total:
-                i.remaining_amt=  invoices
+                i.remaining_amt=  0
             else:
                 i.remaining_amt = invoices
