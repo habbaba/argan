@@ -7,8 +7,8 @@ import datetime
 class SaleOrderInh(models.Model):
     _inherit = 'sale.order'
 
-    total_qty = fields.Float('Total Qty', compute='_compute_total_qty')
-    remaining_qty = fields.Float('Remaining', compute='_compute_total_qty')
+    total_qty = fields.Float('Total Storable Qty', compute='_compute_total_qty')
+    remaining_qty = fields.Float('Amount due', compute='_compute_total_qty')
 
     def _compute_total_qty(self):
         total = 0
