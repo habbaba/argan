@@ -48,7 +48,7 @@ class SaleOrderLineInh(models.Model):
 class StockPickingInh(models.Model):
     _inherit = 'stock.picking'
 
-    invoice_total = fields.Float('Invoice Total', compute='_compute_total_amt')
+    invoice_total = fields.Float('Sale Order Total', compute='_compute_total_amt')
     remaining_amt = fields.Float('Amount due', compute='_compute_total_amt')
 
 
@@ -57,7 +57,7 @@ class StockPickingInh(models.Model):
             sale_order=self.env['sale.order'].search([("name",'=',i.origin)],limit=1)
             invoices=sum(self.env['account.move'].search([("invoice_origin",'=',i.origin)]).mapped("amount_residual"))
             i.invoice_total= sale_order.amount_total
-            if invoices ==sale_order.amount_total:
-                i.remaining_amt=  0
-            else:
-                i.remaining_amt = invoices
+            if invoices >0:
+                i.remaining_amt=  invoices
+            if invoices ==0:
+                i.remaining_amt = sale_order.amount_total
