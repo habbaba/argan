@@ -54,10 +54,12 @@ class StockPickingInh(models.Model):
 
     def _compute_total_amt(self):
         for i in self:
+            invoice_total=self.env['account.move'].search([("invoice_origin",'=',i.origin)])
             sale_order=self.env['sale.order'].search([("name",'=',i.origin)],limit=1)
             invoices=sum(self.env['account.move'].search([("invoice_origin",'=',i.origin)]).mapped("amount_residual"))
             i.invoice_total= sale_order.amount_total
+            i.remaining_amt = sale_order.amount_total
             if invoices >0:
                 i.remaining_amt=  invoices
-            if invoices ==0:
+            if not invoice_total:
                 i.remaining_amt = sale_order.amount_total
