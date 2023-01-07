@@ -12,16 +12,18 @@ class SaleOrderInh(models.Model):
 
     
     def _compute_total_qty(self):
-        total = 0
-        remain_total = 0
-        self.remaining_qty = 0
-        for i in self.order_line:
+        for k in self:
+            total = 0
+            remain_total = 0
+            k.remaining_qty = 0
+            k.total_qty=0
+            for i in k.order_line:
 
-            if i.product_id.detailed_type=="product":
-                remain_total=remain_total+i.remaining_qty
-                total=total+i.product_uom_qty
-            self.total_qty=total
-            self.remaining_qty = remain_total
+                if i.product_id.detailed_type=="product":
+                    remain_total=remain_total+i.remaining_qty
+                    total=total+i.product_uom_qty
+                k.total_qty=total
+                k.remaining_qty = remain_total
 
 
 class SaleOrderLineInh(models.Model):
@@ -33,6 +35,8 @@ class SaleOrderLineInh(models.Model):
     @api.depends("product_id")
     def _compute_total_qty(self):
         for i in self:
+            i.remaining_qty=0
+            i.available=0
             quant_ids = self.env['stock.quant'].sudo().search([('product_id', '=', i.product_id.id), ('location_id.usage', '=', 'internal')]).mapped("quantity")
             total=sum(quant_ids)
             i.available=total
@@ -54,6 +58,7 @@ class StockPickingInh(models.Model):
 
     def _compute_total_amt(self):
         for i in self:
+            i.invoice_total=0
             invoice_total=self.env['account.move'].search([("invoice_origin",'=',i.origin)])
             sale_order=self.env['sale.order'].search([("name",'=',i.origin)],limit=1)
             invoices=sum(self.env['account.move'].search([("invoice_origin",'=',i.origin)]).mapped("amount_residual"))
