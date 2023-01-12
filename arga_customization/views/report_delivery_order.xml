@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_quotation_wh_document" inherit_id="stock.report_delivery_document">
+
+        <xpath expr="//div[@name='div_sched_date']" position="replace">
+            <div class="col-auto" name="div_sched_date">
+                <strong>Shipping Date:</strong>
+                <p t-field="o.delivery_date"/>
+            </div>
+        </xpath>
+    </template>
+
+
+</odoo>
