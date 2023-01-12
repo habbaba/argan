@@ -26,15 +26,16 @@ class SaleOrderInh(models.Model):
             rec.total_open_amount = due
 
     def _compute_total_qty(self):
-        for k in self:
             total = 0
             remain_total = 0
-            for i in k.order_line:
+            self.remaining_qty=0
+            self.total_qty
+            for i in self.order_line:
                 if i.product_id.detailed_type=="product":
                     remain_total=remain_total+i.remaining_qty
                     total=total+i.product_uom_qty
-                k.total_qty=total
-                k.remaining_qty = remain_total
+                self.total_qty=total
+                self.remaining_qty = remain_total
 
     # def _prepare_confirmation_values(self):
     #     return {
