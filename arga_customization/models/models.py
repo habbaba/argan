@@ -62,7 +62,7 @@ class SaleOrderLineInh(models.Model):
                  ('picking_id.state', '=', 'assigned')]).mapped('product_uom_qty'))
             qty_out = sum(self.env['stock.move'].search(
                 [('picking_type_id.code', '=', 'outgoing'), ('product_id', '=', rec.product_id.id),
-                 ('picking_id.state', '=', 'assigned')]).mapped('product_uom_qty'))
+                 ('picking_id.state', 'in', ['assigned','waiting'])]).mapped('product_uom_qty'))
             rec.qty_in = qty_in
             rec.qty_out = qty_out
 
