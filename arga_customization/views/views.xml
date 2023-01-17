@@ -29,7 +29,7 @@
                 <xpath expr="//field[@name='order_line']" position="after">
                     <group>
                     <group>
-                    <field name="total_qty" string="Total Qty"/>
+                    <field name="total_qty" />
                     <field name="remaining_qty"/>
                     </group>
                     </group>
