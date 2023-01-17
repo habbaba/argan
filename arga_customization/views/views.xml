@@ -35,7 +35,7 @@
                     </group>
                 </xpath>
 
-                        <xpath expr="//field[@name='date_order']" position="after">
+                        <xpath expr="//field[@name='validity_date']" position="before">
                         <field name="delivery_date"/>
                   </xpath>
             </field>
