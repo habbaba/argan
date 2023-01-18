@@ -29,6 +29,8 @@ class SaleOrderInh(models.Model):
         for k in self:
             total = 0
             remain_total = 0
+            k.total_qty=total
+            k.remaining_qty = remain_total
             for i in k.order_line:
                 if i.product_id.detailed_type=="product":
                     remain_total=remain_total+i.remaining_qty
