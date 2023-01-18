@@ -14,12 +14,12 @@
                     </group>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']" position="after">
-                        <field name="number"/>
+                        <field name="number" width=".3"/>
                   </xpath>
 
                   <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
-                        <field name="available" string="Available Qty" />
-                        <field name="remaining_qty" string="Not Available" invisible="1"/>
+                        <field name="available"  />
+                        <field name="remaining_qty"  invisible="1"/>
                         <field name="qty_in"/>
                         <field name="qty_out"/>
                         <field name="free_qty"/>
@@ -29,13 +29,13 @@
                 <xpath expr="//field[@name='order_line']" position="after">
                     <group>
                     <group>
-                    <field name="total_qty" />
+                    <field name="total_qty"/>
                     <field name="remaining_qty"/>
                     </group>
                     </group>
                 </xpath>
 
-                        <xpath expr="//field[@name='validity_date']" position="before">
+                        <xpath expr="//field[@name='date_order']" position="after">
                         <field name="delivery_date"/>
                   </xpath>
             </field>
