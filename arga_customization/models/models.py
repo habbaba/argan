@@ -169,7 +169,7 @@ class PurchaseOrderInh(models.Model):
 
     def _compute_sale_order(self):
         for rec in self:
-            sale_order=self.env['sale.order'].search([("name",'=',self.origin)],limit=1).id
+            sale_order=self.env['sale.order'].search([("name",'=',rec.origin)],limit=1).id
             rec.sale_order=sale_order
            
 
