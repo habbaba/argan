@@ -64,12 +64,8 @@ class SaleOrderLineInh(models.Model):
                 rec.remaining_qty = rec.product_uom_qty - rec.available
             else:
                 rec.remaining_qty = 0
-            qty_in = sum(self.env['stock.move'].search(
-                [('picking_type_id.code', '=', 'incoming'), ('product_id', '=', rec.product_id.id),
-                 ('picking_id.state', '=', 'assigned')]).mapped('product_uom_qty'))
-            qty_out = sum(self.env['stock.move'].search(
-                [('picking_type_id.code', '=', 'outgoing'), ('product_id', '=', rec.product_id.id),
-                 ('picking_id.state', '=', 'assigned')]).mapped('product_uom_qty'))
+            qty_in = rec.product_id.incoming_qty
+            qty_out = rec.purchased_product_qty
             rec.qty_in = qty_in
             rec.qty_out = qty_out
 
