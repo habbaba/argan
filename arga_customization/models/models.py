@@ -157,6 +157,20 @@ class CalendarEvent(models.Model):
     _inherit = "calendar.event"
 
     picking_id = fields.Many2one('stock.picking', "Picking")
+    
+    
+
+class PurchaseOrderInh(models.Model):
+    _inherit = 'purchase.order'
+
+
+    sale_order = fields.Many2one('sale.order', compute='_compute_sale_order')
+
+
+    def _compute_sale_order(self):
+        for rec in self:
+            rec.sale_order=sale_order=self.env['sale.order'].search([("name",'=',self.origin)],limit=1).id
+           
 
 
 
