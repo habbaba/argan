@@ -65,7 +65,7 @@ class SaleOrderLineInh(models.Model):
             else:
                 rec.remaining_qty = 0
             qty_in = rec.product_id.incoming_qty
-            qty_out = rec.outgoing_qty
+            qty_out = 0
             rec.qty_in = qty_in
             rec.qty_out = qty_out
 
