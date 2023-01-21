@@ -192,3 +192,10 @@ class PurchaseOrderInh(models.Model):
     _inherit = 'purchase.order'
 
     bellona_shipments = fields.Many2many('bellona.shipments', string='Bellona Shipments')
+    code = fields.Char(string='Code',compute="compute_the_code")
+
+
+
+    def compute_the_code(self):
+        for k in self:
+            k.code=str(''.join([n for n in k.name if n.isdigit()]))

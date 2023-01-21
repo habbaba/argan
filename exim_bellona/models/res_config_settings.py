@@ -355,7 +355,7 @@ class BeloonaShiment(models.Model):
 
     def compute_the_purchase_id(self):
         for i in self:
-            po = self.env['purchase.order'].search([("name", 'ilike', i.customerbarcode)], limit=1)
+            po = self.env['purchase.order'].search([("name", '=', i.customerbarcode)], limit=1)
             i.purchase_id=po.id
 
 
@@ -364,7 +364,7 @@ class BeloonaShiment(models.Model):
 
     def confirm_purchase_receipt(self):
         for i in self:
-            po=self.env['purchase.order'].search([("name",'ilike',i.customerbarcode)],limit=1)
+            po=self.env['purchase.order'].search([("name",'=',i.customerbarcode)],limit=1)
             for k in po.picking_ids:
                 if k.state not in ['cancel','done']:
                     k.button_validate()
