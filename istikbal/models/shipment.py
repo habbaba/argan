@@ -92,6 +92,16 @@ class ShipmentDetails(models.Model):
 
     qr_image = fields.Binary("QR Code", compute='_generate_qr_code')
 
+    purchase_id = fields.Many2one('purchase.order',compute="compute_the_purchase_id")
+
+
+    def compute_the_purchase_id(self):
+        for i in self:
+            po = self.env['purchase.order'].search([("name", '=', i.customerItemCode)], limit=1)
+            i.purchase_id=po.id
+
+
+
 
     def _generate_qr_code(self):
         qr = qrcode.QRCode(
@@ -107,6 +117,14 @@ class ShipmentDetails(models.Model):
         img.save(temp, format="PNG")
         qr_img = base64.b64encode(temp.getvalue())
         self.qr_image=qr_img
+
+
+    def confirm_purchase_receipt(self):
+        for i in self:
+            po=self.env['purchase.order'].search([("name",'=',i.customerItemCode)],limit=1)
+            for k in po.picking_ids:
+                if k.state not in ['cancel','done']:
+                    k.button_validate()
 
 class SalesOrderAnalysis(models.Model):
     _name = 'istikbal.sales.order.analysis'

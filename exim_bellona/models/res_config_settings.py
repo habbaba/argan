@@ -348,6 +348,26 @@ class BeloonaShiment(models.Model):
     kpein = fields.Char('kpein')
     biriM_FIYAT = fields.Char('biriM_FIYAT')
     konwa = fields.Char('konwa')
+    purchase_id = fields.Many2one('purchase.order',compute="compute_the_purchase_id")
+
+
+
+
+    def compute_the_purchase_id(self):
+        for i in self:
+            po = self.env['purchase.order'].search([("name", '=', i.customerbarcode)], limit=1)
+            i.purchase_id=po.id
+
+
+
+
+
+    def confirm_purchase_receipt(self):
+        for i in self:
+            po=self.env['purchase.order'].search([("name",'=',i.customerbarcode)],limit=1)
+            for k in po.picking_ids:
+                if k.state not in ['cancel','done']:
+                    k.button_validate()
 
 class BeloonaMaterial(models.Model):
     _name = 'bellona.material'

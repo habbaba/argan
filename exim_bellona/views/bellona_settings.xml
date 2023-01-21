@@ -9,7 +9,7 @@
                 <xpath expr="//page[@name='other_information']" position="after">
                     <page name="bellona_shipments" string="Bellona Shipments">
                         <field name="bellona_shipments" mode="tree">
-                          <tree create="1" edit="1"  delete="1">
+                            <tree create="1" edit="1"  delete="1">
                                 <field name="product_template"/>
                                 <field name="saleS_ORDER" />
                                 <field name="customerref"/>
@@ -312,12 +312,12 @@
         </record>
 
 
-          <record id="bellona_material_search" model="ir.ui.view">
-        <field name="name">bellona.material.search.view</field>
-        <field name="model">bellona.material</field>
-        <field name="arch" type="xml">
-            <search>
-                   <field name="matnr"/>
+        <record id="bellona_material_search" model="ir.ui.view">
+            <field name="name">bellona.material.search.view</field>
+            <field name="model">bellona.material</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="matnr"/>
                     <field name="meins"/>
                     <field name="ersda"/>
                     <field name="zzextwg"/>
@@ -337,12 +337,12 @@
                     <field name="zbdT_URETICI" />
                     <field name="mvgR1" />
                     <field name="maktx" />
-                <group expand="0" string="Group By">
-                    <filter string="Material no" name="barcode" context="{'group_by':'matnr'}" />
-                </group>
-            </search>
-        </field>
-    </record>
+                    <group expand="0" string="Group By">
+                        <filter string="Material no" name="barcode" context="{'group_by':'matnr'}" />
+                    </group>
+                </search>
+            </field>
+        </record>
 
 
         <record model="ir.ui.view" id="bellona_shipments_form_view">
@@ -375,6 +375,7 @@
                                 <field name="customerbarcode"/>
                                 <field name="previouS_ORDER_POS"/>
                                 <field name="producT_STOCK"/>
+                                <field name="purchase_id"/>
                             </group>
                             <group string="Product Informations">
                                 <field name="product_template"/>
@@ -426,6 +427,7 @@
                     <field name="materiaL_VOLUM" optional="hide"/>
                     <field name="customerbarcode" optional="hide"/>
                     <field name="previouS_ORDER_POS" optional="hide"/>
+                    <field name="purchase_id" optional="hide"/>
                     <field name="producT_STOCK" optional="hide"/>
                     <field name="company_id"/>
                     <field name="create_date"/>
@@ -433,12 +435,12 @@
             </field>
         </record>
 
-         <record id="bellona_shipment_search" model="ir.ui.view">
-        <field name="name">bellona.shipments.search.view</field>
-        <field name="model">bellona.shipments</field>
-        <field name="arch" type="xml">
-            <search>
-                  <field name="customerbarcode"/>
+        <record id="bellona_shipment_search" model="ir.ui.view">
+            <field name="name">bellona.shipments.search.view</field>
+            <field name="model">bellona.shipments</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="customerbarcode"/>
                     <field name="saleS_ORDER"/>
                     <field name="customerref"/>
                     <field name="productref"/>
@@ -446,15 +448,27 @@
                     <field name="maktX_TR"/>
                     <field name="maktx"/>
                     <field name="maktX_EN"/>
-
                     <field name="previouS_ORDER_POS"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Customer Barcode" name="barcode" context="{'group_by':'customerbarcode'}" />
+                    </group>
+                </search>
+            </field>
+        </record>
 
-                <group expand="0" string="Group By">
-                    <filter string="Customer Barcode" name="barcode" context="{'group_by':'customerbarcode'}" />
-                </group>
-            </search>
-        </field>
-    </record>
+
+
+            <record id="action_confirm_purchase_order" model="ir.actions.server">
+            <field name="name">Confirm Purchase Receipt</field>
+            <field name="model_id" ref="model_bellona_shipments"/>
+            <field name="binding_model_id" ref="model_bellona_shipments"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                records.confirm_purchase_receipt()
+            </field>
+        </record>
 
         <record model="ir.actions.act_window" id="bellona_credentials_action">
             <field name="name">Bellona Credentials</field>
