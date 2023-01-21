@@ -378,6 +378,7 @@
                                 <field name="previouS_ORDER"/>
                                 <field name="materiaL_VOLUM"/>
                                 <field name="customerbarcode"/>
+                                <field name="code"/>
                                 <field name="previouS_ORDER_POS"/>
                                 <field name="producT_STOCK"/>
                                 <field name="purchase_id"/>
