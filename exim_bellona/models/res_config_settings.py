@@ -355,7 +355,7 @@ class BeloonaShiment(models.Model):
         for k in self:
             code = str(''.join([n for n in k.customerbarcode if n.isdigit()]))
             k.code = code
-            po = self.env['purchase.order'].search([("code", '=', k.code)], limit=1)
+            po = self.env['purchase.order'].search([("code", '=',code)], limit=1)
             k.purchase_id = po.id
 
 
@@ -363,7 +363,7 @@ class BeloonaShiment(models.Model):
 
     def confirm_purchase_receipt(self):
         for i in self:
-            po=self.env['purchase.order'].search([("code",'=',i.code)],limit=1)
+            po=self.env['purchase.order'].search([("code",'=',code)],limit=1)
             for k in po.picking_ids:
                 if k.state not in ['cancel','done']:
                     k.button_validate()
