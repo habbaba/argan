@@ -363,7 +363,7 @@ class BeloonaShiment(models.Model):
 
     def confirm_purchase_receipt(self):
         for i in self:
-            po=self.env['purchase.order'].search([("code",'=',code)],limit=1)
+            po=self.env['purchase.order'].search([("code",'=',i.code)],limit=1)
             for k in po.picking_ids:
                 if k.state not in ['cancel','done']:
                     k.button_validate()
