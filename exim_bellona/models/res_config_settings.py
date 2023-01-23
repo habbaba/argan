@@ -355,7 +355,7 @@ class BeloonaShiment(models.Model):
         for k in self:
             code = str(''.join([n for n in k.customerbarcode if n.isdigit()]))
             k.code = code
-            po = self.env['purchase.order'].search([("code", '=',code)], limit=1)
+            po = self.env['purchase.order'].search([("code", '=',code)])
             k.purchase_id = po.id
 
 
