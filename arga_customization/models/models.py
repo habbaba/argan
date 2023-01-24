@@ -136,32 +136,32 @@ class StockPickingInh(models.Model):
             obj = self.env['calendar.event'].search([("picking_id", '=', i.id)]).unlink()
         return res
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        res_ids = super(StockPickingInh, self).create(vals_list)
-        res_ids._create_calander_envent()
-        return res_ids
+#     @api.model_create_multi
+#     def create(self, vals_list):
+#         res_ids = super(StockPickingInh, self).create(vals_list)
+#         res_ids._create_calander_envent()
+#         return res_ids
 
 
 
-    def _create_calander_envent(self):
+#     def _create_calander_envent(self):
 
-        sale_order=self.env['sale.order'].search([("name",'=',self.origin)],limit=1)
-        print(sale_order.user_id.partner_id.id)
-        obj = self.env['calendar.event'].search([("picking_id", '=', self.id)])
-        if not obj:
-            obj = self.env['calendar.event'].create({
-                'name': self.name,
-                'start': self.delivery_date,
-                'duration': 1,
-                'partner_ids': [(6, 0, sale_order.user_id.partner_id.ids)],
-                'privacy': 'confidential',
-                'stop': self.delivery_date + timedelta(hours=1),
-                'description': self.note,
-                'picking_id': self.id,
-                'user_id': sale_order.user_id.id,
-                'allday': False
-            })
+#         sale_order=self.env['sale.order'].search([("name",'=',self.origin)],limit=1)
+#         print(sale_order.user_id.partner_id.id)
+#         obj = self.env['calendar.event'].search([("picking_id", '=', self.id)])
+#         if not obj:
+#             obj = self.env['calendar.event'].create({
+#                 'name': self.name,
+#                 'start': self.delivery_date,
+#                 'duration': 1,
+#                 'partner_ids': [(6, 0, sale_order.user_id.partner_id.ids)],
+#                 'privacy': 'confidential',
+#                 'stop': self.delivery_date + timedelta(hours=1),
+#                 'description': self.note,
+#                 'picking_id': self.id,
+#                 'user_id': sale_order.user_id.id,
+#                 'allday': False
+#             })
 
 
 
