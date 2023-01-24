@@ -117,24 +117,24 @@ class StockPickingInh(models.Model):
             sale_order = self.env['sale.order'].search([("name", '=', self.origin)], limit=1)
             if sale_order and  sale_order.delivery_date!=self.delivery_date:
                 sale_order.delivery_date = self.delivery_date
-                obj = self.env['calendar.event'].search([("picking_id", '=', self.id)])
-                if obj:
-                    obj.sudo().write({
-                        'name': self.name,
-                        'start': self.delivery_date,
-                        'duration': 1,
-                        'privacy': 'confidential',
-                        'stop':self.delivery_date + timedelta(hours=1),
-                        'description': self.note,
-                    })
+#                 obj = self.env['calendar.event'].search([("picking_id", '=', self.id)])
+#                 if obj:
+#                     obj.sudo().write({
+#                         'name': self.name,
+#                         'start': self.delivery_date,
+#                         'duration': 1,
+#                         'privacy': 'confidential',
+#                         'stop':self.delivery_date + timedelta(hours=1),
+#                         'description': self.note,
+#                     })
         return res
 
 
-    def unlink(self):
-        res = super(StockPickingInh, self).unlink()
-        for i in self:
-            obj = self.env['calendar.event'].search([("picking_id", '=', i.id)]).unlink()
-        return res
+#     def unlink(self):
+#         res = super(StockPickingInh, self).unlink()
+#         for i in self:
+#             obj = self.env['calendar.event'].search([("picking_id", '=', i.id)]).unlink()
+#         return res
 
 #     @api.model_create_multi
 #     def create(self, vals_list):
