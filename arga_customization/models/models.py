@@ -5,6 +5,18 @@ import datetime
 from datetime import timedelta
 
 
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+    _name = _inherit
+
+    @api.model
+    def create(self, vals):
+
+        vals['ref'] = self.env['ir.sequence'].next_by_code('customer.number')
+
+        return super(ResPartner, self).create(vals)
+
+
 class SaleOrderInh(models.Model):
     _inherit = 'sale.order'
 

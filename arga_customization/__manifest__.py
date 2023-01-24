@@ -20,13 +20,14 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'sale', 'stock','calendar','account'],
+    'depends': ['base', 'sale', 'stock','calendar','account','purchase'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/report_delivery_order.xml',
+        "data/sequencer.xml"
     ],
 
 }
