@@ -18,11 +18,11 @@
                   </xpath>
 
                   <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
-                        <field name="available"  />
+                        <field name="available"  invisible="1"/>
                         <field name="remaining_qty"  invisible="1"/>
-                        <field name="qty_in"/>
-                        <field name="qty_out"/>
-                        <field name="free_qty"/>
+                        <field name="qty_in" invisible="1"/>
+                        <field name="qty_out" invisible="1"/>
+                        <field name="free_qty" invisible="1"/>
                   </xpath>
 
 
