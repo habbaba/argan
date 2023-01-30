@@ -57,6 +57,62 @@ class Shipments(models.Model):
     detail_ids = fields.One2many('istikbal.shipments.details', 'shipment_id', string='Shipment Details')
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
+    is_combined = fields.Boolean()
+
+    def get_combine_shipments(self):
+        shipments = self.env['istikbal.shipments.header'].search([('is_combined', '=', False)])
+        # for t in shipments:
+        #     t.is_combined = False
+        for rec in shipments:
+            if not rec.is_combined:
+                duplicates = self.env['istikbal.shipments.header'].search(
+                    [('disPactDate', '=', rec.disPactDate), ('truckPlate', '=', rec.truckPlate),
+                     ('is_combined', '=', False)])
+                detail_list = []
+                rec.is_combined = True
+                for r in duplicates:
+                    r.is_combined = True
+                    for s in r.detail_ids:
+                        detail_list.append((0, 0, {
+                            # 'shipment_id': s.shipment_id.id,
+                            'pakageEnum': s.pakageEnum,
+                            'shipMentNumber': s.shipMentNumber,
+                            'bdtCode': s.bdtCode,
+                            'productCode': s.productCode,
+                            'productPackage': s.productPackage,
+                            'quantity': s.quantity,
+                            'orderReference': s.orderReference,
+                            'bdtOrderNumber': s.bdtOrderNumber,
+                            'customerItemReference': s.customerItemReference,
+                            'customerItemCode': s.customerItemCode,
+                            'customerOrderReference': s.customerOrderReference,
+                            'productName': s.productName,
+                            'productNamePack': s.productNamePack,
+                            'productNameEN': s.productNameEN,
+                            'volum': s.volum,
+                            'vrkme': s.vrkme,
+                            'inhalt': s.inhalt,
+                            'mvgr3Desc': s.mvgr3Desc,
+                            'brgew': s.brgew,
+                            'gewei': s.gewei,
+                            'zzbdtAmount': s.zzbdtAmount,
+                            'voleh': s.voleh,
+                            # 'brgew': s.price_unit,
+                        }))
+                val = {
+                    'disPactDate': duplicates[0].disPactDate,
+                    'containerNumber': rec.containerNumber,
+                    'truckPlate': rec.truckPlate,
+                    'truckPlate2': rec.truckPlate2,
+                    'shipmentDate': rec.shipmentDate,
+                    'invoiceNumber': rec.invoiceNumber,
+                    'shipmentNumber': ','.join(duplicates.mapped('shipmentNumber')),
+                    'name': rec.name,
+                    'volum': rec.volum,
+                    'voleh': rec.voleh,
+                    'detail_ids': detail_list,
+                }
+                combine = self.env['istikbal.combine.shipments'].create(val)
 
 class ShipmentDetails(models.Model):
     _name = 'istikbal.shipments.details'
@@ -100,9 +156,6 @@ class ShipmentDetails(models.Model):
             code=str(''.join([n for n in i.customerItemCode if n.isdigit()]))
             po = self.env['purchase.order'].search([("code", '=', code)], limit=1)
             i.purchase_id=po.id
-
-
-
 
     def _generate_qr_code(self):
         qr = qrcode.QRCode(
