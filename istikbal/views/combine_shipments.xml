@@ -119,6 +119,6 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-    <menuitem id="istikbal_shiment_combine_menu" parent="istikbal.istikbal_root" name="Truck Shipments" action="istikbal_combine_shipments_action"/>
+    <menuitem id="istikbal_shiment_combine_menu" parent="istikbal.istikbal_root" name="Combine Shipments" action="istikbal_combine_shipments_action"/>
 
 </odoo>

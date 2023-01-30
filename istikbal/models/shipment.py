@@ -57,7 +57,7 @@ class Shipments(models.Model):
     detail_ids = fields.One2many('istikbal.shipments.details', 'shipment_id', string='Shipment Details')
     company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
                                  default=lambda self: self.env.company)
-    is_combined = fields.Boolean()
+    is_combined = fields.Boolean(copy=False)
 
     def get_combine_shipments(self):
         shipments = self.env['istikbal.shipments.header'].search([('is_combined', '=', False)])
@@ -65,54 +65,111 @@ class Shipments(models.Model):
         #     t.is_combined = False
         for rec in shipments:
             if not rec.is_combined:
-                duplicates = self.env['istikbal.shipments.header'].search(
-                    [('disPactDate', '=', rec.disPactDate), ('truckPlate', '=', rec.truckPlate),
-                     ('is_combined', '=', False)])
-                detail_list = []
-                rec.is_combined = True
-                for r in duplicates:
-                    r.is_combined = True
-                    for s in r.detail_ids:
-                        detail_list.append((0, 0, {
-                            # 'shipment_id': s.shipment_id.id,
-                            'pakageEnum': s.pakageEnum,
-                            'shipMentNumber': s.shipMentNumber,
-                            'bdtCode': s.bdtCode,
-                            'productCode': s.productCode,
-                            'productPackage': s.productPackage,
-                            'quantity': s.quantity,
-                            'orderReference': s.orderReference,
-                            'bdtOrderNumber': s.bdtOrderNumber,
-                            'customerItemReference': s.customerItemReference,
-                            'customerItemCode': s.customerItemCode,
-                            'customerOrderReference': s.customerOrderReference,
-                            'productName': s.productName,
-                            'productNamePack': s.productNamePack,
-                            'productNameEN': s.productNameEN,
-                            'volum': s.volum,
-                            'vrkme': s.vrkme,
-                            'inhalt': s.inhalt,
-                            'mvgr3Desc': s.mvgr3Desc,
-                            'brgew': s.brgew,
-                            'gewei': s.gewei,
-                            'zzbdtAmount': s.zzbdtAmount,
-                            'voleh': s.voleh,
-                            # 'brgew': s.price_unit,
-                        }))
-                val = {
-                    'disPactDate': duplicates[0].disPactDate,
-                    'containerNumber': rec.containerNumber,
-                    'truckPlate': rec.truckPlate,
-                    'truckPlate2': rec.truckPlate2,
-                    'shipmentDate': rec.shipmentDate,
-                    'invoiceNumber': rec.invoiceNumber,
-                    'shipmentNumber': ','.join(duplicates.mapped('shipmentNumber')),
-                    'name': rec.name,
-                    'volum': rec.volum,
-                    'voleh': rec.voleh,
-                    'detail_ids': detail_list,
-                }
-                combine = self.env['istikbal.combine.shipments'].create(val)
+                already_exist = self.env['istikbal.combine.shipments'].search([('disPactDate', '=', rec.disPactDate), ('truckPlate', '=', rec.truckPlate)])
+                if already_exist:
+                    self.update_combine(rec, already_exist)
+                else:
+                    self.create_combine(rec)
+
+    def update_combine(self, rec, existing):
+        duplicates = self.env['istikbal.shipments.header'].search(
+            [('disPactDate', '=', rec.disPactDate), ('truckPlate', '=', rec.truckPlate),
+             ('is_combined', '=', False)])
+        detail_list = []
+        rec.is_combined = True
+        ship_no = []
+        for r in duplicates:
+            r.is_combined = True
+            ship_no.append(r.shipmentNumber)
+            for s in r.detail_ids:
+                detail_list.append((0, 0, {
+                    # 'shipment_id': s.shipment_id.id,
+                    'pakageEnum': s.pakageEnum,
+                    'shipMentNumber': s.shipMentNumber,
+                    'bdtCode': s.bdtCode,
+                    'productCode': s.productCode,
+                    'productPackage': s.productPackage,
+                    'quantity': s.quantity,
+                    'orderReference': s.orderReference,
+                    'bdtOrderNumber': s.bdtOrderNumber,
+                    'customerItemReference': s.customerItemReference,
+                    'customerItemCode': s.customerItemCode,
+                    'customerOrderReference': s.customerOrderReference,
+                    'productName': s.productName,
+                    'productNamePack': s.productNamePack,
+                    'productNameEN': s.productNameEN,
+                    'volum': s.volum,
+                    'vrkme': s.vrkme,
+                    'inhalt': s.inhalt,
+                    'mvgr3Desc': s.mvgr3Desc,
+                    'brgew': s.brgew,
+                    'gewei': s.gewei,
+                    'zzbdtAmount': s.zzbdtAmount,
+                    'voleh': s.voleh,
+                    # 'brgew': s.price_unit,
+                }))
+        exist = existing.shipmentNumber.split(',')
+        ship_no = ship_no + exist
+        existing.write({
+            'detail_ids': detail_list,
+            'shipmentNumber': ','.join(ship_no)
+        })
+
+
+
+
+
+    def create_combine(self, rec):
+        duplicates = self.env['istikbal.shipments.header'].search(
+            [('disPactDate', '=', rec.disPactDate), ('truckPlate', '=', rec.truckPlate),
+             ('is_combined', '=', False)])
+        detail_list = []
+        rec.is_combined = True
+        for r in duplicates:
+            r.is_combined = True
+            for s in r.detail_ids:
+                detail_list.append((0, 0, {
+                    # 'shipment_id': s.shipment_id.id,
+                    'pakageEnum': s.pakageEnum,
+                    'shipMentNumber': s.shipMentNumber,
+                    'bdtCode': s.bdtCode,
+                    'productCode': s.productCode,
+                    'productPackage': s.productPackage,
+                    'quantity': s.quantity,
+                    'orderReference': s.orderReference,
+                    'bdtOrderNumber': s.bdtOrderNumber,
+                    'customerItemReference': s.customerItemReference,
+                    'customerItemCode': s.customerItemCode,
+                    'customerOrderReference': s.customerOrderReference,
+                    'productName': s.productName,
+                    'productNamePack': s.productNamePack,
+                    'productNameEN': s.productNameEN,
+                    'volum': s.volum,
+                    'vrkme': s.vrkme,
+                    'inhalt': s.inhalt,
+                    'mvgr3Desc': s.mvgr3Desc,
+                    'brgew': s.brgew,
+                    'gewei': s.gewei,
+                    'zzbdtAmount': s.zzbdtAmount,
+                    'voleh': s.voleh,
+                    # 'brgew': s.price_unit,
+                }))
+        val = {
+            'disPactDate': duplicates[0].disPactDate,
+            'containerNumber': rec.containerNumber,
+            'truckPlate': rec.truckPlate,
+            'truckPlate2': rec.truckPlate2,
+            'shipmentDate': rec.shipmentDate,
+            'invoiceNumber': rec.invoiceNumber,
+            'shipmentNumber': ','.join(duplicates.mapped('shipmentNumber')),
+            'name': rec.name,
+            'volum': rec.volum,
+            'voleh': rec.voleh,
+            'detail_ids': detail_list,
+        }
+        combine = self.env['istikbal.combine.shipments'].create(val)
+
+
 
 class ShipmentDetails(models.Model):
     _name = 'istikbal.shipments.details'
