@@ -75,7 +75,7 @@
         <field name="name">istikbal.combine.shipments.tree</field>
         <field name="model">istikbal.combine.shipments</field>
         <field name="arch" type="xml">
-            <tree default_order="create_date desc" >
+            <tree default_order="shipmentDate desc" >
                 <!-- <field name="shipmentNumber" /> -->
                 <field name="invoiceNumber" />
                 <field name="disPactDate" />
@@ -118,18 +118,6 @@
 
     <menuitem id="istikbal_shiment_combine_menu" parent="istikbal.istikbal_root" name="Truck Shipments" action="istikbal_combine_shipments_action"/>
 
-   
-    <record id="server_action_combine_header" model="ir.actions.server">
-        <field name="name">Combine Header Shipment</field>
-         <field name="model_id" ref="model_istikbal_combine_shipments" />        
-        <field name="binding_model_id" ref="model_istikbal_combine_shipments" />
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="code">
-            if records:
-                records.cron_merger_of_header()
-        </field>
-       
-    </record>
+
 
 </odoo>
