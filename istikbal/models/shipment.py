@@ -211,7 +211,7 @@ class ShipmentDetails(models.Model):
     def compute_the_purchase_id(self):
         for i in self:
             code=str(''.join([n for n in i.customerItemCode if n.isdigit()]))
-            po = self.env['purchase.order'].search([("code", '=', code)], limit=1)
+            po = self.env['purchase.order'].search([("name", '=', i.customerItemCode)], limit=1)
             i.purchase_id=po.id
 
     def _generate_qr_code(self):
@@ -233,7 +233,7 @@ class ShipmentDetails(models.Model):
     def confirm_purchase_receipt(self):
         for i in self:
             code=str(''.join([n for n in i.customerItemCode if n.isdigit()]))
-            po=self.env['purchase.order'].search([("code",'=',code)],limit=1)
+            po=self.env['purchase.order'].search([("name", '=', i.customerItemCode)], limit=1)
             for k in po.picking_ids:
                 if k.state not in ['cancel','done']:
                     k.button_validate()
