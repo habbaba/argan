@@ -210,7 +210,7 @@ class ShipmentDetails(models.Model):
 
     def compute_the_purchase_id(self):
         for i in self:
-            code=str(''.join([n for n in i.customerItemCode if n.isdigit()]))
+  
             po = self.env['purchase.order'].search([("name", '=', i.customerItemCode)], limit=1)
             i.purchase_id=po.id
 
