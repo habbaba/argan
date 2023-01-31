@@ -33,7 +33,7 @@ class IstikbalLogNotes(models.Model):
         recs = self.env['istikbal.shipments.header'].search([])
         combine_obj = self.env['istikbal.combine.shipments']
         for rec in recs:
-            combine_rec = self.search([('truckPlate','=', rec.truckPlate), ('disPactDate', '=', rec.disPactDate)])
+            combine_rec = self.search([('truckPlate','=', rec.truckPlate), ('shipmentDate', '=', rec.shipmentDate)])
             if combine_rec:
                 rec.detail_ids.write({'combine_id':combine_rec.id})
                 rec.combine_id = combine_rec
