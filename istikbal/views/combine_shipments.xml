@@ -1,36 +1,33 @@
 <odoo>
 
-    <record id="action_combine_shipments" model="ir.actions.server">
-            <field name="name">Create Combine Shipments</field>
-            <field name="model_id" ref="model_istikbal_shipments_header"/>
-            <field name="binding_model_id" ref="model_istikbal_shipments_header"/>
-            <field name="binding_view_types">list</field>
-            <field name="state">code</field>
-            <field name="code">
-                if records:
-                records.get_combine_shipments()
-            </field>
-        </record>
+    <record id="ir_cron_auto_merge_header_shipments" model="ir.cron">
+        <field name="name">Combine Header Shipment</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_istikbal_combine_shipments"/>
+        <field name="code">model.cron_merger_of_header()</field>
+        <field name="state">code</field>
+    </record>
+
 
     <record model="ir.ui.view" id="istikbal_shipments_combine_form_view">
             <field name="name">istikbal.combine.shipments.form</field>
             <field name="model">istikbal.combine.shipments</field>
             <field name="arch" type="xml">
                 <form>
-<!--                    <header>-->
-<!--                        <button string="Test" type="object" name="get_combine_shipments"/>-->
-<!--                    </header>-->
                     <sheet>
                         <group>
                             <group>
-                                <field name="shipmentNumber" />
-                                <field name="invoiceNumber" />
+                                <field name="truckPlate" />
+                                <field name="truckPlate2"/>                                
                                 <field name="disPactDate" />
+                                <field name="shipment_ids" widget="many2many_tags"/>
                                 <field name="containerNumber" />
+                                <field name="invoiceNumber" />
                             </group>
                             <group>
-                                <field name="truckPlate" />
-                                <field name="truckPlate2"/>
                                 <field name="shipmentDate" />
                                 <field name="volum"/>
                                 <field name="voleh" />
@@ -79,7 +76,7 @@
         <field name="model">istikbal.combine.shipments</field>
         <field name="arch" type="xml">
             <tree default_order="create_date desc" >
-                <field name="shipmentNumber" />
+                <!-- <field name="shipmentNumber" /> -->
                 <field name="invoiceNumber" />
                 <field name="disPactDate" />
                 <field name="containerNumber" />
@@ -100,7 +97,7 @@
             <field name="model">istikbal.combine.shipments</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="shipmentNumber" />
+                    <!-- <field name="shipmentNumber" /> -->
                     <field name="invoiceNumber" />
                     <field name="containerNumber" />
                     <field name="shipmentDate" />
@@ -119,6 +116,20 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-<!--     <menuitem id="istikbal_shiment_combine_menu" parent="istikbal.istikbal_root" name="Combine Shipments" action="istikbal_combine_shipments_action"/> -->
+    <menuitem id="istikbal_shiment_combine_menu" parent="istikbal.istikbal_root" name="Truck Shipments" action="istikbal_combine_shipments_action"/>
+
+   
+    <record id="server_action_combine_header" model="ir.actions.server">
+        <field name="name">Combine Header Shipment</field>
+         <field name="model_id" ref="model_istikbal_combine_shipments" />        
+        <field name="binding_model_id" ref="model_istikbal_combine_shipments" />
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                records.cron_merger_of_header()
+        </field>
+       
+    </record>
 
 </odoo>

@@ -13,6 +13,7 @@ import base64
 import time
 from datetime import datetime, timedelta
 
+
 class InheritPT(models.Model):
     _inherit = 'product.template'
 
