@@ -170,6 +170,7 @@
                                 <field name="mvgr3Desc" />
                                 <field name="inhalt" />
                                 <field name="customerItemCode" />
+                                  <field name="purchase_id" />
                                 <field name="inhalt" />
                                 <field name="customerOrderReference" />
                                 <field name="productName" />
