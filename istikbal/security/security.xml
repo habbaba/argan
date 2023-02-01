@@ -40,7 +40,7 @@
             <field name="perm_unlink" eval="True"/>
         </record>
       <record id="istikbal_shipment_details_company_wise_rule" model="ir.rule">
-            <field name="name">istikbal_company_wise_shipments/field>
+            <field name="name">istikbal_company_wise_shipments</field>
             <field name="model_id" ref="istikbal.model_istikbal_combine_shipments"/>
             <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
             <field name="perm_read" eval="True"/>
