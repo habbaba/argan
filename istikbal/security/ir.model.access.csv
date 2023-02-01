@@ -7,4 +7,3 @@ access_istikbal_incoming_shipments,access.istikbal.incoming.shipments,model_isti
 access_istikbal_sales_order_analysis,access.istikbal_sales_order_analysis,model_istikbal_sales_order_analysis,base.group_user,1,1,1,1
 access_istikbal_log_notes,istikbal_log_notes_istikbal_log_notes,model_istikbal_log_notes,base.group_user,1,1,1,1
 access_istikbal_combine_shipments,access.istikbal.combine.shipments,model_istikbal_combine_shipments,base.group_user,1,1,1,1
-access_istikbal_combineshipments_details,access.istikbal.combineshipments.details,model_istikbal_combineshipments_details,base.group_user,1,1,1,1

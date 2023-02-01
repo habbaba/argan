@@ -48,6 +48,7 @@
                                         <field name="orderReference" />
                                         <field name="bdtOrderNumber" optional="hide"/>
                                         <field name="customerItemReference" />
+                                        <field name="purchase_id" optional="show"/>
                                         <field name="company_id" optional="hide"/>
                                         <field name="voleh" optional="hide"/>
                                         <field name="zzbdtAmount" optional="hide"/>
@@ -62,6 +63,8 @@
                                         <field name="productNameEN" optional="hide"/>
                                         <field name="volum" optional="hide"/>
                                         <field name="vrkme" optional="hide"/>
+                                        <field name="is_received" invisible="1"/>
+                                        <button name="confirm_purchase_receipt" string="Receive PO" type="object"    attrs="{'invisible': [('is_received', '=', 'True')]}"/>
                                     </tree>
                                 </field>
                             </page>
@@ -75,7 +78,7 @@
         <field name="name">istikbal.combine.shipments.tree</field>
         <field name="model">istikbal.combine.shipments</field>
         <field name="arch" type="xml">
-            <tree default_order="shipmentDate desc" >
+            <tree default_order="create_date desc" >
                 <!-- <field name="shipmentNumber" /> -->
                 <field name="invoiceNumber" />
                 <field name="disPactDate" />
@@ -118,6 +121,18 @@
 
     <menuitem id="istikbal_shiment_combine_menu" parent="istikbal.istikbal_root" name="Truck Shipments" action="istikbal_combine_shipments_action"/>
 
-
+   
+    <record id="server_action_combine_header" model="ir.actions.server">
+        <field name="name">Combine Header Shipment</field>
+         <field name="model_id" ref="model_istikbal_combine_shipments" />        
+        <field name="binding_model_id" ref="model_istikbal_combine_shipments" />
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                records.cron_merger_of_header()
+        </field>
+       
+    </record>
 
 </odoo>
