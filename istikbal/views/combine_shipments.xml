@@ -78,7 +78,7 @@
         <field name="name">istikbal.combine.shipments.tree</field>
         <field name="model">istikbal.combine.shipments</field>
         <field name="arch" type="xml">
-            <tree default_order="create_date desc" >
+            <tree default_order="shipmentDate desc" >
                 <!-- <field name="shipmentNumber" /> -->
                 <field name="invoiceNumber" />
                 <field name="disPactDate" />
