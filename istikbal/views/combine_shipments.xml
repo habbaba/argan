@@ -121,18 +121,5 @@
 
     <menuitem id="istikbal_shiment_combine_menu" parent="istikbal.istikbal_root" name="Truck Shipments" action="istikbal_combine_shipments_action"/>
 
-   
-    <record id="server_action_combine_header" model="ir.actions.server">
-        <field name="name">Combine Header Shipment</field>
-         <field name="model_id" ref="model_istikbal_combine_shipments" />        
-        <field name="binding_model_id" ref="model_istikbal_combine_shipments" />
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="code">
-            if records:
-                records.cron_merger_of_header()
-        </field>
-       
-    </record>
 
 </odoo>
