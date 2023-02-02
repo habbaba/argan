@@ -37,7 +37,7 @@ class SaleOrderInh(models.Model):
 
     def compute_tags(self):
         for rec in self:
-            purchase_order_ids = self._get_purchase_orders()
+            purchase_order_ids = self._get_purchase_orders()[0]
             select = ''
             if purchase_order_ids.state == 'draft':
                 select = 'ANGEBOT'
