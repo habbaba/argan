@@ -37,32 +37,33 @@ class SaleOrderInh(models.Model):
 
     def compute_tags(self):
         for rec in self:
-            purchase_order_ids = self._get_purchase_orders()[0]
-            select = ''
-            if purchase_order_ids.state == 'draft':
-                select = 'ANGEBOT'
-            if purchase_order_ids.state == 'purchase':
-                select = 'AUFTRAG'
-            if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
-                select = 'BESTELLT'
-            if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids and purchase_order_ids.state == 'purchase':
-                select = 'BESTÄTIGT'
-            if purchase_order_ids.order_line.mapped('product_id').ids != rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
-                select = 'TEIL_BESTELLT'
-            if not rec.delivery_date:
-                select = 'LIEFERBEREIT'
-            if rec.delivery_date:
-                select = 'TERMINIERT'
-            if rec.state == 'sale' and all(line.state == 'done' for line in rec.picking_ids):
-                select = '9_GG'
-            if rec.state == 'sale' and any(line.state != 'done' for line in rec.picking_ids):
-                select = 'TEIL_lIEFERUNG'
+            select = 'ANGEBOT'
+#             purchase_order_ids = self._get_purchase_orders()
+#             select = ''
+#             if any(purchase_order_ids).state == 'draft':
+#                 select = 'ANGEBOT'
+#             if any(purchase_order_ids).state == 'purchase':
+#                 select = 'AUFTRAG'
+#             if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
+#                 select = 'BESTELLT'
+#             if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids and purchase_order_ids.state == 'purchase':
+#                 select = 'BESTÄTIGT'
+#             if purchase_order_ids.order_line.mapped('product_id').ids != rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
+#                 select = 'TEIL_BESTELLT'
+#             if not rec.delivery_date:
+#                 select = 'LIEFERBEREIT'
+#             if rec.delivery_date:
+#                 select = 'TERMINIERT'
+#             if rec.state == 'sale' and all(line.state == 'done' for line in rec.picking_ids):
+#                 select = '9_GG'
+#             if rec.state == 'sale' and any(line.state != 'done' for line in rec.picking_ids):
+#                 select = 'TEIL_lIEFERUNG'
 
-            if rec.istikbal_shipments or rec.bellona_shipments:
-                if not rec.istikbal_shp_details:
-                    select = 'PRODUKTION'
-            if rec.istikbal_shipments and rec.istikbal_shp_details:
-                    select = 'truck'
+#             if rec.istikbal_shipments or rec.bellona_shipments:
+#                 if not rec.istikbal_shp_details:
+#                     select = 'PRODUKTION'
+#             if rec.istikbal_shipments and rec.istikbal_shp_details:
+#                     select = 'truck'
 
             rec.delivery_tags = select
 
