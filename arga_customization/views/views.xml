@@ -1,12 +1,15 @@
 <odoo>
-  <data>
+    <data>
 
-     <record id="sale_order_inherit_arga" model="ir.ui.view">
+        <record id="sale_order_inherit_arga" model="ir.ui.view">
             <field name="name">sale order</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                 <xpath expr="//group[@name='note_group']" position="before">
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="delivery_tags"/>
+                </xpath>
+                <xpath expr="//group[@name='note_group']" position="before">
                     <group>
                         <field name="total_invoice_paid" readonly="1"/>
                         <field name="total_invoice_amount" readonly="1" invisible="1"/>
@@ -14,35 +17,34 @@
                     </group>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']" position="after">
-                        <field name="number" width=".3"/>
-                  </xpath>
+                    <field name="number" width=".3"/>
+                </xpath>
 
-                  <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
-                        <field name="available"  invisible="1"/>
-                        <field name="remaining_qty"  invisible="1"/>
-                        <field name="qty_in" invisible="1"/>
-                        <field name="qty_out" invisible="1"/>
-                        <field name="free_qty" invisible="1"/>
-                  </xpath>
-
+                <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
+                    <field name="available"  invisible="1"/>
+                    <field name="remaining_qty"  invisible="1"/>
+                    <field name="qty_in" invisible="1"/>
+                    <field name="qty_out" invisible="1"/>
+                    <field name="free_qty" invisible="1"/>
+                </xpath>
 
                 <xpath expr="//field[@name='order_line']" position="after">
                     <group>
-                    <group>
-                    <field name="total_qty"/>
-                    <field name="remaining_qty"/>
-                    </group>
+                        <group>
+                            <field name="total_qty"/>
+                            <field name="remaining_qty"/>
+                        </group>
                     </group>
                 </xpath>
 
-                        <xpath expr="//field[@name='date_order']" position="after">
-                        <field name="delivery_date"/>
-                  </xpath>
+                <xpath expr="//field[@name='date_order']" position="after">
+                    <field name="delivery_date"/>
+                </xpath>
             </field>
         </record>
 
 
-      <record id="stock_picking_inherit_arga" model="ir.ui.view">
+        <record id="stock_picking_inherit_arga" model="ir.ui.view">
             <field name="name">stock picking</field>
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
@@ -50,24 +52,24 @@
                 <xpath expr="//field[@name='date_deadline']" position="after">
                     <field name="delivery_date"/>
                 </xpath>
-                 <xpath expr="//field[@name='origin']" position="after">
+                <xpath expr="//field[@name='origin']" position="after">
                     <field name="invoice_total"/>
                     <field name="remaining_amt"/>
                 </xpath>
             </field>
         </record>
-    
-    
-    <record id="purchase_order_form_inherit" model="ir.ui.view">
-    <field name="name">purchase.order.form.inherit</field>
-    <field name="model">purchase.order</field>
-    <field name="inherit_id" ref="purchase.purchase_order_form"/>
-    <field name="arch" type="xml">
-    <field name="partner_ref" position="after">
-    <field name="sale_order"/>
-    </field>
-    </field>
-  </record>
 
-  </data>
+
+        <record id="purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_ref" position="after">
+                    <field name="sale_order"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
 </odoo>

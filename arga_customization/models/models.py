@@ -11,21 +11,64 @@ class ResPartner(models.Model):
 
     @api.model
     def create(self, vals):
-
         vals['ref'] = self.env['ir.sequence'].next_by_code('customer.number')
-
         return super(ResPartner, self).create(vals)
 
 
 class SaleOrderInh(models.Model):
     _inherit = 'sale.order'
 
-    delivery_date = fields.Date(string='Delivery Date', default=fields.Date.context_today, copy=False)
+    delivery_date = fields.Datetime(string='Delivery Date', copy=False)
     total_invoice_paid = fields.Float(compute='compute_invoices_amount')
     total_invoice_amount = fields.Float(compute='compute_invoices_amount')
     total_open_amount = fields.Float(compute='compute_invoices_amount')
     total_qty = fields.Float('Total Storable Qty', compute='_compute_total_qty')
     remaining_qty = fields.Float('Not Available Qty', compute='_compute_total_qty')
+
+    delivery_tags = fields.Selection([
+        ('ANGEBOT', 'ANGEBOT'),
+        ('BESTELLT', 'BESTELLT'), ('BESTÄTIGT', 'BESTÄTIGT'),('TERMINIERT', 'TERMINIERT'),('PRODUKTION', 'PRODUKTION'),('truck', 'On Truck'),
+        ('TEIL_BESTELLT', 'TEIL BESTELLT'),
+        ('AUFTRAG', 'AUFTRAG'),
+        ('LIEFERBEREIT', 'LIEFERBEREIT'),
+        ('9_GG', '9_GG'),
+        ('TEIL_lIEFERUNG', 'TEIL lIEFERUNG'),
+    ], string='Delivery Tags', compute='compute_tags',inverse='_set_delivery_tags')
+
+    def compute_tags(self):
+        for rec in self:
+            purchase_order_ids = self._get_purchase_orders()
+            select = ''
+            if purchase_order_ids.state == 'draft':
+                select = 'ANGEBOT'
+            if purchase_order_ids.state == 'purchase':
+                select = 'AUFTRAG'
+            if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
+                select = 'BESTELLT'
+            if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids and purchase_order_ids.state == 'purchase':
+                select = 'BESTÄTIGT'
+            if purchase_order_ids.order_line.mapped('product_id').ids != rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
+                select = 'TEIL_BESTELLT'
+            if not rec.delivery_date:
+                select = 'LIEFERBEREIT'
+            if rec.delivery_date:
+                select = 'TERMINIERT'
+            if rec.state == 'sale' and all(line.state == 'done' for line in rec.picking_ids):
+                select = '9_GG'
+            if rec.state == 'sale' and any(line.state != 'done' for line in rec.picking_ids):
+                select = 'TEIL_lIEFERUNG'
+
+            if rec.istikbal_shipments or rec.bellona_shipments:
+                if not rec.istikbal_shp_details:
+                    select = 'PRODUKTION'
+            if rec.istikbal_shipments and rec.istikbal_shp_details:
+                    select = 'truck'
+
+            rec.delivery_tags = select
+
+    def _set_delivery_tags(self):
+
+        return True
 
     @api.depends('invoice_ids', 'invoice_ids.amount_total', 'invoice_ids.amount_residual',
                  'invoice_ids.amount_residual_signed')
