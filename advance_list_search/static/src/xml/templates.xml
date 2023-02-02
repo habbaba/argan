@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+    <t t-name="advanced_text_simple_field" owl="1">
+        <div class="advanced_search_text_field">
+            <div class="advanced_search_field_input_block">
+                <input type="text" t-ref="input" t-att-value="searchQuery"
+                       t-on-keydown="onKeydownInput"
+                       t-on-input="onInput"/>
+                <span t-att-class="{ 'd-none': !state.showClearBtn }"
+                      t-on-click="onClickClearBtn">
+                    <i class="fa fa-close"/>
+                </span>
+            </div>
+            <button class="advanced_search_field_btn"
+                    t-on-click="onClickSearchButton">
+                <i class="fa fa-search"/>
+            </button>
+        </div>
+    </t>
+
+    <t t-name="advanced_search_numeric_field" owl="1">
+        <div class="advanced_search_numeric_field"
+             t-on-mouseenter="onMouseenterWidget"
+             t-on-mouseleave="onMouseleaveWidget">
+            <div class="advanced_search_inputs_block">
+                <t t-if="state.rangeSearch">
+                    <AdvancedSearchNumericFieldInput value="searchQuery.from || ''"
+                                                     type="INPUT_TYPE.FROM"
+                                                     t-on-clear-input="onClearInput"
+                                                     t-on-input-focusin="onInputFocusin"
+                                                     t-on-input-focusout="onInputFocusout"
+                                                     t-on-input-enter-key="onPressEnterKey"/>
+                    <AdvancedSearchNumericFieldInput value="searchQuery.to || ''"
+                                                     type="INPUT_TYPE.TO"
+                                                     t-on-clear-input="onClearInput"
+                                                     t-on-input-focusin="onInputFocusin"
+                                                     t-on-input-focusout="onInputFocusout"
+                                                     t-on-input-enter-key="onPressEnterKey"/>
+                </t>
+                <t t-else="">
+                    <AdvancedSearchNumericFieldInput value="searchQuery || ''"
+                                                     type="INPUT_TYPE.SINGLE"
+                                                     t-on-clear-input="onClearInput"
+                                                     t-on-input-focusin="onInputFocusin"
+                                                     t-on-input-focusout="onInputFocusout"
+                                                     t-on-input-enter-key="onPressEnterKey"/>
+                </t>
+            </div>
+            <button class="advanced_search_field_btn"
+                    t-on-click="onClickSearchButton">
+                <i class="fa fa-search"/>
+            </button>
+            <t t-call="options_panel"/>
+        </div>
+    </t>
+    
+    <t t-name="advanced_search_numeric_field_input" owl="1">
+        <div class="advanced_search_field_input_block">
+            <input type="number" t-ref="input" t-att-value="props.value"
+                   t-on-keydown="onKeydownInput"
+                   t-on-input="onInput"
+                   t-on-change="onInputChange"
+                   t-on-focusin="onInputFocusin"
+                   t-on-focusout="onInputFocusout"/>
+            <span t-att-class="{ 'd-none': !state.showClearBtn }"
+                  t-on-click="onClickClearBtn">
+                <i class="fa fa-close"/>
+            </span>
+        </div>
+    </t>
+
+    <t t-name="advanced_search_selection_field" owl="1">
+        <div class="advanced_search_selection_field">
+            <div class="advanced_search_field_input_block advanced_search_selection_field_input_block"
+                 t-on-click="onClickInputBlock">
+                <t t-foreach="searchQueries" t-as="query">
+                    <div class="advanced_search_selection_query_item">
+                        <t t-esc="getQueryLabel(query)"/>
+                        <i class="fa fa-close" t-on-click="onClickRemoveQuery(query.filterId)"/>
+                    </div>
+                </t>
+                <div class="advanced_search_selection_input">
+                    <input type="text" t-ref="input"
+                           t-on-keydown="onKeydownInput"
+                           t-on-input="onInput"
+                           t-on-focusin="onFocusinInput"
+                           t-on-focusout="onFocusoutInput"/>
+                    <div t-if="state.showLoadingSpinner" class="advanced_search_spinner_container">
+                        <div class="advanced_search_spinner"/>
+                    </div>
+                </div>
+            </div>
+            <button class="advanced_search_field_btn"
+                    t-on-click="onClickRemoveAll">
+                <i class="fa fa-close"/>
+            </button>
+            <div t-if="state.showAutocomplete"
+                 t-ref="autocomplete"
+                 class="advanced_search_selection_autocomplete_list advanced_search_scroll" tabindex="0"
+                 t-on-focusout="onFocusoutAutocomplete">
+                <t t-if="state.autocompleteList.length">
+                    <t t-foreach="state.autocompleteList" t-as="item" t-key="item[0]">
+                        <div class="advanced_search_selection_autocomplete_list_item"
+                             t-att-data-item-index="item_index"
+                             tabindex="0"
+                             t-on-mouseenter="onMouseenterAutocompleteItem"
+                             t-on-keydown="onKeydownAutocompleteItem(item[0])"
+                             t-on-click="onClickAutocompleteItem(item[0])">
+                            <t t-esc="item[1]"/>
+                        </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="advanced_search_selection_autocomplete_list_empty">Not find</div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="advanced_search_datetime_field" owl="1">
+        <div class="advanced_search_datetime_field"
+             t-on-mouseenter="onMouseenterWidget"
+             t-on-mouseleave="onMouseleaveWidget">
+            <div class="advanced_search_inputs_block">
+                <t t-if="state.rangeSearch">
+                    <AdvancedSearchDatetimeFieldInput value="searchQuery.from || ''"
+                                                      type="INPUT_TYPE.FROM"
+                                                      isDatetime="isDatetime"
+                                                      datetimeAsDate="state.datetimeAsDate"
+                                                      t-on-clear-input="onClearInput"
+                                                      t-on-input-focusin="onInputFocusin"
+                                                      t-on-input-focusout="onInputFocusout"/>
+                    <AdvancedSearchDatetimeFieldInput value="searchQuery.to || ''"
+                                                      type="INPUT_TYPE.TO"
+                                                      isDatetime="isDatetime"
+                                                      datetimeAsDate="state.datetimeAsDate"
+                                                      t-on-clear-input="onClearInput"
+                                                      t-on-input-focusin="onInputFocusin"
+                                                      t-on-input-focusout="onInputFocusout"/>
+                </t>
+                <t t-else="">
+                    <AdvancedSearchDatetimeFieldInput value="state.datetimeAsDate ? (searchQuery.from || '') : (searchQuery || '')"
+                                                      type="INPUT_TYPE.SINGLE"
+                                                      isDatetime="isDatetime"
+                                                      datetimeAsDate="state.datetimeAsDate"
+                                                      t-on-clear-input="onClearInput"
+                                                      t-on-input-focusin="onInputFocusin"
+                                                      t-on-input-focusout="onInputFocusout"/>
+                </t>
+            </div>
+            <button class="advanced_search_field_btn"
+                    t-on-click="onClickSearchButton">
+                <i class="fa fa-search"/>
+            </button>
+            <t t-call="options_panel"/>
+        </div>
+    </t>
+    <t t-name="options_panel" owl="1">
+        <div t-if="state.showOptionsPanel"
+             class="advanced_search_options_panel"
+             t-attf-style="height: {{optionsPanelHeight}}px;"
+             t-on-focusin="onFocusinOptionsPanel">
+            <div>
+                <button class="advanced_search_field_btn"
+                        t-att-class="{ 'advanced_search_field_btn_selected': state.rangeSearch }"
+                        t-att-title="state.rangeSearch ? 'To single mode' : 'To range mode'"
+                        t-on-click="onClickToggleRangeBtn">
+                    <i class="fa fa-arrows-h"/>
+                </button>
+                <button t-if="isDatetime"
+                        class="advanced_search_field_btn"
+                        t-att-class="{ 'advanced_search_field_btn_selected': state.datetimeAsDate }"
+                        t-att-title="state.datetimeAsDate ? 'To datetime' : 'To datetime as date'"
+                        t-on-click="onClickToggleDatetimeAsDateBtn">
+                    <i class="fa fa-calendar"/>
+                </button>
+                <button t-if="state.rangeSearch"
+                        class="advanced_search_field_btn"
+                        title="Clear range"
+                        t-on-click="onClickClearRangeBtn">
+                    <i class="fa fa-remove"/>
+                </button>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="advanced_search_datetime_field_input" owl="1">
+        <div class="advanced_search_field_input_block">
+            <div class="" t-ref="datepicker_wrapper"/>
+            <span t-att-class="{ 'd-none': !state.showClearBtn }"
+                  t-on-click="onClickClearBtn">
+                <i class="fa fa-close"/>
+            </span>
+        </div>
+    </t>
+
+    <t t-inherit="web.legacy.FilterMenu" t-inherit-mode="extension" owl="1">
+        <xpath expr="//CustomFilterItem" position="after">
+            <t t-if="!advancedSearchByCode and env.view.type === 'list'">
+                <div class="dropdown-divider" role="separator"/>
+                <DropdownItem class="o_menu_item"
+                              t-att-class="{ selected: state.advancedSearchByUser }"
+                              payload="{ itemId: 'toggleAdvancedListSearch' }"
+                              parentClosingMode="'none'"
+                              t-esc="'Advanced Search'"
+                />
+            </t>
+        </xpath>
+    </t>
+
+</templates>
