@@ -94,13 +94,7 @@ class SaleOrderInh(models.Model):
                 k.total_qty=total
                 k.remaining_qty = remain_total
 
-    def write(self, vals):
-        res = super(SaleOrderInh, self).write(vals)
-        print(vals,self.delivery_date)
-        if vals.get('delivery_date'):
-            for k in self.picking_ids:
-                k.delivery_date=self.delivery_date
-        return res
+   
 
 
 class SaleOrderLineInh(models.Model):
@@ -155,23 +149,6 @@ class StockPickingInh(models.Model):
             i.invoice_total=sale_order.amount_total
             i.remaining_amt=sale_order.total_open_amount
 
-    def write(self, vals):
-        res = super(StockPickingInh, self).write(vals)
-        if vals.get('delivery_date'):
-            sale_order = self.env['sale.order'].search([("name", '=', self.origin)], limit=1)
-            if sale_order and  sale_order.delivery_date!=self.delivery_date:
-                sale_order.delivery_date = self.delivery_date
-#                 obj = self.env['calendar.event'].search([("picking_id", '=', self.id)])
-#                 if obj:
-#                     obj.sudo().write({
-#                         'name': self.name,
-#                         'start': self.delivery_date,
-#                         'duration': 1,
-#                         'privacy': 'confidential',
-#                         'stop':self.delivery_date + timedelta(hours=1),
-#                         'description': self.note,
-#                     })
-        return res
 
 
 #     def unlink(self):
