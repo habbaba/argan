@@ -17,6 +17,9 @@
             <field name="model">istikbal.combine.shipments</field>
             <field name="arch" type="xml">
                 <form>
+                      <header>
+                      <button name="confirm_purchase_receipt" string="Receive PO" type="object"  />
+                    </header>
                     <sheet>
                         <group>
                             <group>
@@ -64,7 +67,7 @@
                                         <field name="volum" optional="hide"/>
                                         <field name="vrkme" optional="hide"/>
                                         <field name="is_received" invisible="1"/>
-                                        <button name="confirm_purchase_receipt" string="Receive PO" type="object"    attrs="{'invisible': [('is_received', '=', 'True')]}"/>
+                                     
                                     </tree>
                                 </field>
                             </page>
