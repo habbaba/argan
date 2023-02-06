@@ -53,3 +53,19 @@ class IstikbalLogNotes(models.Model):
                 rec.detail_ids.write({'combine_id':combine_rec.id})
                 rec.combine_id = combine_rec
         return 
+    
+    
+    
+    
+    def confirm_purchase_receipt(self):
+        for i in self.detail_ids:
+            po = self.env['purchase.order'].search([("name", '=', i.customerItemCode)],limit=1)
+            if i.purchase_id and po:
+                for k in po.picking_ids:
+                    if k.state not in ['cancel','done']:
+                        for mv in k.move_ids_without_package or k.move_lines:
+                            mv.quantity_done = mv.product_uom_qty
+                        k.button_validate()
+                        for mv in k.move_ids_without_package or k.move_lines:
+                            mv._action_done()
+                            i.is_received=True
