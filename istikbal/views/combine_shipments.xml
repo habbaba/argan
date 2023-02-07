@@ -17,7 +17,9 @@
             <field name="model">istikbal.combine.shipments</field>
             <field name="arch" type="xml">
                 <form>
-                   
+                    <header>
+                        <button string="Receive PO" type="object" name="action_receive_po"/>
+                    </header>
                     <sheet>
                         <group>
                             <group>
@@ -34,6 +36,8 @@
                                 <field name="voleh" />
                                 <field name="company_id" />
                                 <field name="create_date" />
+                                <field name="total_lines" />
+                                <field name="total_value" readonly="1" />
                             </group>
                         </group>
                         <notebook>
@@ -46,6 +50,9 @@
                                         <field name="productCode" />
                                         <field name="productPackage" optional="hide"/>
                                         <field name="quantity" />
+                                        <field name="price" />
+                                        <field name="subtotal" />
+                                        <field name="picking_id" />
                                         <field name="orderReference" />
                                         <field name="bdtOrderNumber" optional="hide"/>
                                         <field name="customerItemReference" />
@@ -65,7 +72,7 @@
                                         <field name="volum" optional="hide"/>
                                         <field name="vrkme" optional="hide"/>
                                         <field name="is_received" invisible="1"/>
-                                     
+<!--                                     <button string="Receive PO" type="object" name="action_receive_po"/>-->
                                     </tree>
                                 </field>
                             </page>

@@ -62,9 +62,6 @@ class Shipments(models.Model):
 
 
 
-    
-
-
 class ShipmentDetails(models.Model):
     _name = 'istikbal.shipments.details'
     _description = "Istikbal Shipment Details"
@@ -101,7 +98,24 @@ class ShipmentDetails(models.Model):
     purchase_id = fields.Many2one('purchase.order',compute="_generate_qr_code")
     combine_id = fields.Many2one('istikbal.combine.shipments')
     is_received = fields.Boolean('Received')
+    # is_processed = fields.Boolean('Received')
+    price = fields.Float()
+    picking_id = fields.Many2one('stock.picking')
+    subtotal = fields.Float(compute='compute_subtotal')
 
+    @api.depends('price', 'quantity')
+    def compute_subtotal(self):
+        for rec in self:
+            rec.subtotal = rec.price * rec.quantity
+
+    # def action_receive_po(self):
+    #     lines = self.purchase_id.order_line.filtered(lambda i:i.product_id.default_code == self.productCode)
+    #     for move in lines.move_ids:
+    #         move.quantity_done = move.product_uom_qty
+    #
+    #     action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
+    #     backorder_wizard = self.env['stock.backorder.confirmation'].with_context(action_data['context'])
+    #     backorder_wizard.process()
 
     def _generate_qr_code(self):
         for i in self:
@@ -121,19 +135,19 @@ class ShipmentDetails(models.Model):
             qr_img = base64.b64encode(temp.getvalue())
             i.qr_image=qr_img
 
+    # def confirm_purchase_receipt(self):
+    #     for i in self:
+    #         po = self.env['purchase.order'].search([("name", '=', i.customerItemCode)],limit=1)
+    #         if i.purchase_id and po:
+    #             for k in po.picking_ids:
+    #                 if k.state not in ['cancel','done']:
+    #                     for mv in k.move_ids_without_package or k.move_lines:
+    #                         mv.quantity_done = mv.product_uom_qty
+    #                     k.button_validate()
+    #                     for mv in k.move_ids_without_package or k.move_lines:
+    #                         mv._action_done()
+    #                         i.is_received=True
 
-    def confirm_purchase_receipt(self):
-        for i in self:
-            po = self.env['purchase.order'].search([("name", '=', i.customerItemCode)],limit=1)
-            if i.purchase_id and po:
-                for k in po.picking_ids:
-                    if k.state not in ['cancel','done']:
-                        for mv in k.move_ids_without_package or k.move_lines:
-                            mv.quantity_done = mv.product_uom_qty
-                        k.button_validate()
-                        for mv in k.move_ids_without_package or k.move_lines:
-                            mv._action_done()
-                            i.is_received=True
 
 class SalesOrderAnalysis(models.Model):
     _name = 'istikbal.sales.order.analysis'
