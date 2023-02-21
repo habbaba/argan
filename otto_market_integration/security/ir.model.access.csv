@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_message_wizard,access.message.wizard,model_message_wizard,base.group_user,1,1,1,1
+access_otto_credentials,access.otto.credentials,model_otto_credentials,base.group_user,1,1,1,1
+access_otto_brand,access.otto.brand,model_otto_brand,base.group_user,1,1,1,1
+access_otto_category_group,access.otto.category.group,model_otto_category_group,base.group_user,1,1,1,1

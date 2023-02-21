@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.actions.act_window" id="otto_category_group_action">
+            <field name="name">Otto Market Category Group</field>
+            <field name="res_model">otto.category.group</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <record model="ir.ui.view" id="otto_category_group_tree_view">
+            <field name="name">Otto Market Category Group</field>
+            <field name="model">otto.category.group</field>
+            <field name="arch" type="xml">
+                <tree editable="top" create="1" delete="1" multi_edit="1" string="Otto Brands">
+                    <field name="otto_name" />
+                </tree>
+            </field>
+        </record>
+
+
+        <menuitem id="otto_category_group_action_menu" parent="stock.menu_product_in_config_stock" name="Product Category Group" action="otto_category_group_action"/>
+
+    </data>
+</odoo>

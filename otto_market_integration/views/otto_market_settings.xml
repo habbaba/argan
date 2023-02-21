@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.actions.act_window" id="otto_credentials_action">
+            <field name="name">Otto Market Credentials</field>
+            <field name="res_model">otto.credentials</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <record model="ir.ui.view" id="otto_credentials_tree_view">
+            <field name="name">Otto Market Credentials</field>
+            <field name="model">otto.credentials</field>
+            <field name="arch" type="xml">
+                <tree editable="top" create="1" delete="1" multi_edit="1" string="Otto Credentials">
+                    <field name="otto_username" />
+                    <field name="otto_password" password="1"/>
+                    <field name="otto_credentials_type" />
+                    <button string="Generate Token" name="otto_generate_token" type="object" />
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <menuitem id="otto_root" web_icon="otto_market_integration,static/description/icon.png" name="Otto Market"/>
+
+        <menuitem id="otto_credentials_action_menu" parent="otto_root" name="Credentials" action="otto_credentials_action"/>
+
+    </data>
+</odoo>
