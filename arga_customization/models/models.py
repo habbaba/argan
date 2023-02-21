@@ -58,11 +58,11 @@ class SaleOrderInh(models.Model):
                 select = '9_GG'
             if rec.state == 'sale' and any(line.state != 'done' for line in rec.picking_ids):
                 select = 'TEIL_lIEFERUNG'
-            # if rec.istikbal_shipments or rec.bellona_shipments:
-            #     if not rec.istikbal_shp_details:
-            #         select = 'PRODUKTION'
-            # if rec.istikbal_shipments and rec.istikbal_shp_details:
-            #         select = 'truck'
+            if rec.istikbal_shipments or rec.bellona_shipments:
+                if not rec.istikbal_shp_details:
+                    select = 'PRODUKTION'
+            if rec.istikbal_shipments and rec.istikbal_shp_details:
+                    select = 'truck'
             rec.delivery_tags = select
 
     def _set_delivery_tags(self):
