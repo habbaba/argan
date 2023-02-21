@@ -37,34 +37,32 @@ class SaleOrderInh(models.Model):
 
     def compute_tags(self):
         for rec in self:
-            select = 'ANGEBOT'
-#             purchase_order_ids = self._get_purchase_orders()
-#             select = ''
-#             if any(purchase_order_ids).state == 'draft':
-#                 select = 'ANGEBOT'
-#             if any(purchase_order_ids).state == 'purchase':
-#                 select = 'AUFTRAG'
-#             if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
-#                 select = 'BESTELLT'
-#             if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids and purchase_order_ids.state == 'purchase':
-#                 select = 'BESTÄTIGT'
-#             if purchase_order_ids.order_line.mapped('product_id').ids != rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
-#                 select = 'TEIL_BESTELLT'
-#             if not rec.delivery_date:
-#                 select = 'LIEFERBEREIT'
-#             if rec.delivery_date:
-#                 select = 'TERMINIERT'
-#             if rec.state == 'sale' and all(line.state == 'done' for line in rec.picking_ids):
-#                 select = '9_GG'
-#             if rec.state == 'sale' and any(line.state != 'done' for line in rec.picking_ids):
-#                 select = 'TEIL_lIEFERUNG'
-
-#             if rec.istikbal_shipments or rec.bellona_shipments:
-#                 if not rec.istikbal_shp_details:
-#                     select = 'PRODUKTION'
-#             if rec.istikbal_shipments and rec.istikbal_shp_details:
-#                     select = 'truck'
-
+            purchase_order_ids = self._get_purchase_orders()
+            select = ''
+            if all(line.state == 'draft' for line in purchase_order_ids):
+                select = 'ANGEBOT'
+            if all(line.state == 'purchase' for line in purchase_order_ids):
+                select = 'AUFTRAG'
+            # print(purchase_order_ids.order_line.mapped('product_id').ids)
+            if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
+                select = 'BESTELLT'
+            if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids and all(line.state == 'purchase' for line in purchase_order_ids):
+                select = 'BESTÄTIGT'
+            if purchase_order_ids.order_line.mapped('product_id').ids != rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
+                select = 'TEIL_BESTELLT'
+            if not rec.delivery_date:
+                select = 'LIEFERBEREIT'
+            if rec.delivery_date:
+                select = 'TERMINIERT'
+            if rec.state == 'sale' and all(line.state == 'done' for line in rec.picking_ids):
+                select = '9_GG'
+            if rec.state == 'sale' and any(line.state != 'done' for line in rec.picking_ids):
+                select = 'TEIL_lIEFERUNG'
+            # if rec.istikbal_shipments or rec.bellona_shipments:
+            #     if not rec.istikbal_shp_details:
+            #         select = 'PRODUKTION'
+            # if rec.istikbal_shipments and rec.istikbal_shp_details:
+            #         select = 'truck'
             rec.delivery_tags = select
 
     def _set_delivery_tags(self):
@@ -94,7 +92,13 @@ class SaleOrderInh(models.Model):
                 k.total_qty=total
                 k.remaining_qty = remain_total
 
-   
+    def write(self, vals):
+        res = super(SaleOrderInh, self).write(vals)
+        if vals.get('delivery_date'):
+            for k in self.picking_ids:
+                if k.state not in ['done','cancel']:
+                    k.delivery_date=self.delivery_date
+        return res
 
 
 class SaleOrderLineInh(models.Model):
@@ -140,7 +144,7 @@ class StockPickingInh(models.Model):
 
     invoice_total = fields.Float('Order Total', compute='_compute_total_amt')
     remaining_amt = fields.Float('Open Amount', compute='_compute_total_amt')
-    delivery_date = fields.Date(string='Delivery Date', default=fields.Date.context_today, copy=False)
+    delivery_date = fields.Datetime(string='Delivery Date', copy=False)
 
 
     def _compute_total_amt(self):
@@ -149,6 +153,23 @@ class StockPickingInh(models.Model):
             i.invoice_total=sale_order.amount_total
             i.remaining_amt=sale_order.total_open_amount
 
+    def write(self, vals):
+        res = super(StockPickingInh, self).write(vals)
+        if vals.get('delivery_date'):
+            sale_order = self.env['sale.order'].search([("name", '=', self.origin)], limit=1)
+            if sale_order and sale_order.delivery_date!=self.delivery_date:
+                sale_order.delivery_date = self.delivery_date
+#                 obj = self.env['calendar.event'].search([("picking_id", '=', self.id)])
+#                 if obj:
+#                     obj.sudo().write({
+#                         'name': self.name,
+#                         'start': self.delivery_date,
+#                         'duration': 1,
+#                         'privacy': 'confidential',
+#                         'stop':self.delivery_date + timedelta(hours=1),
+#                         'description': self.note,
+#                     })
+        return res
 
 
 #     def unlink(self):
