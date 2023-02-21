@@ -30,22 +30,25 @@ class IstikbalLogNotes(models.Model):
     def action_receive_po(self):
         purchase_order = self.detail_ids.mapped('purchase_id')
         for po in purchase_order:
-            products_codes = self.detail_ids.filtered(lambda j: j.purchase_id.id == po.id and not j.is_received).mapped(
-                'productCode')
-            lines = po.order_line.filtered(lambda i: i.product_id.default_code in products_codes)
-            # print(lines)
-            if lines:
-                for move in lines.move_ids:
-                    move.quantity_done = move.product_uom_qty
-                action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
-                backorder_wizard = self.env['stock.backorder.confirmation'].with_context(action_data['context'])
-                backorder_wizard.process()
-                # for k in self
-                for r in self.detail_ids:
-                    if r.purchase_id.id == po.id:
-                        r.is_received = True
-                    if r.productCode in products_codes:
-                        r.picking_id = lines.move_ids.picking_id
+            if po.state == 'purchase':
+                products_codes = self.detail_ids.filtered(lambda j: j.purchase_id.id == po.id and not j.is_received).mapped(
+                    'productCode')
+                lines = po.order_line.filtered(lambda i: i.product_id.default_code in products_codes)
+                if lines:
+                    for move in lines.move_ids:
+                        move.quantity_done = move.product_uom_qty
+                    if len(lines.move_ids) > 1:
+                        action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
+                        backorder_wizard = self.env['stock.backorder.confirmation'].with_context(action_data['context'])
+                        backorder_wizard.process()
+                    else:
+                        action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
+                    # for k in self
+                    for r in self.detail_ids:
+                        if r.purchase_id.id == po.id:
+                            r.is_received = True
+                        if r.productCode in products_codes:
+                            r.picking_id = lines.move_ids.picking_id
 
     def compute_line(self):
         self.total_lines = len(self.detail_ids)
