@@ -53,7 +53,7 @@ class IstikbalLogNotes(models.Model):
                             if r.productCode in products_codes:
                                 r.picking_id = lines.move_ids.picking_id
         except Exception as e:
-           raise ValidationError(_str(e))
+           raise ValidationError str(e)
 
     def compute_line(self):
         self.total_lines = len(self.detail_ids)
