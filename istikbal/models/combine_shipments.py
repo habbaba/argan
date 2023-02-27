@@ -29,6 +29,7 @@ class IstikbalLogNotes(models.Model):
     total_value = fields.Integer(compute='compute_line')
 
     def action_receive_po(self):
+        a=""
         try:
             purchase_order = self.detail_ids.mapped('purchase_id')
             for po in purchase_order:
@@ -41,6 +42,7 @@ class IstikbalLogNotes(models.Model):
                             move.quantity_done = move.product_uom_qty
                         if len(lines.move_ids) > 1:
                             action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
+                            a=action_data
                             if action_data:
                                 backorder_wizard = self.env['stock.backorder.confirmation'].with_context(action_data['context'])
                                 backorder_wizard.process()
@@ -53,7 +55,7 @@ class IstikbalLogNotes(models.Model):
                             if r.productCode in products_codes:
                                 r.picking_id = lines.move_ids.picking_id
         except Exception as e:
-           raise UserError(_("Your request could not be executed: %s", e))
+           raise UserError(_("Your request could not be executed: %s", a))
 
     def compute_line(self):
         self.total_lines = len(self.detail_ids)
