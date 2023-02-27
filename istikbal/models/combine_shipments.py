@@ -4,7 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 
 import qrcode
 
-from odoo import fields, models
+from odoo import fields, models,_
 
 
 class IstikbalLogNotes(models.Model):
