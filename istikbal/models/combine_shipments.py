@@ -40,13 +40,13 @@ class IstikbalLogNotes(models.Model):
                     if lines:
                         for move in lines.move_ids:
                             move.quantity_done = move.product_uom_qty
-                        if len(lines.move_ids) > 1:
-                            action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
-                            a=action_data
-                            if action_data:
-                                backorder_wizard = self.env['stock.backorder.confirmation'].with_context(action_data['context'])
-                                backorder_wizard.process()
-                        else:
+#                         if len(lines.move_ids) > 1:
+#                             action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
+#                             a=action_data
+#                             if action_data:
+#                                 backorder_wizard = self.env['stock.backorder.confirmation'].with_context(action_data['context'])
+#                                 backorder_wizard.process()
+#                         else:
                             action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
                         # for k in self
                         for r in self.detail_ids:
