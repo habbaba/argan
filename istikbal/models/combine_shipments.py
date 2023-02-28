@@ -40,7 +40,8 @@ class IstikbalLogNotes(models.Model):
                     if lines:
                         print(po.name)
                         for move in lines.move_ids:
-                            move.quantity_done = move.product_uom_qty
+                            if move.state not in ['done', 'cancel']:
+                                move.quantity_done = move.product_uom_qty
                         if len(lines.move_ids) > 1:
                             action_data = lines.move_ids.filtered(
                                 lambda h: h.state not in ['done', 'cancel']).picking_id.with_context(
@@ -60,7 +61,6 @@ class IstikbalLogNotes(models.Model):
                                 r.picking_id = lines.move_ids.filtered(lambda n:n.product_id.default_code == r.productCode).picking_id
                             # if all(line.state == 'done' for line in r.purchase_id.picking_ids):
                             #     r.picking_id = r.purchase_id
-
                     self.env.cr.commit()
         except Exception as e:
             raise Warning(str(e))
