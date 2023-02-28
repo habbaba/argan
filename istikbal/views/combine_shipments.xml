@@ -42,8 +42,8 @@
                         </group>
                         <notebook>
                             <page name="istikbal_shipment_details" string="Details">
-                                <field name="detail_ids" mode="tree">
-                                    <tree delete="1">
+                                <field name="detail_ids" mode="tree" >
+                                    <tree delete="1" default_order="is_received">
                                         <field name="shipment_id" />
                                         <field name="pakageEnum" />
                                         <field name="bdtCode" optional="hide"/>
@@ -71,8 +71,8 @@
                                         <field name="productNameEN" optional="hide"/>
                                         <field name="volum" optional="hide"/>
                                         <field name="vrkme" optional="hide"/>
-                                        <field name="is_received" invisible="1"/>
-<!--                                     <button string="Receive PO" type="object" name="action_receive_po"/>-->
+                                        <field name="is_received" optional="show"/>
+
                                     </tree>
                                 </field>
                             </page>
