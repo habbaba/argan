@@ -1,10 +1,9 @@
 import base64
 from io import BytesIO
-from odoo.exceptions import UserError, ValidationError
 
 import qrcode
 
-from odoo import fields, models,_
+from odoo import fields, models
 
 
 class IstikbalLogNotes(models.Model):
@@ -28,7 +27,7 @@ class IstikbalLogNotes(models.Model):
     total_lines = fields.Integer(compute='compute_line')
     total_value = fields.Integer(compute='compute_line')
 
-      def action_receive_po(self):
+    def action_receive_po(self):
         try:
             purchase_order = self.detail_ids.filtered(lambda l:not l.is_received).mapped('purchase_id')
             print(purchase_order)
