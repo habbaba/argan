@@ -56,8 +56,7 @@ class IstikbalLogNotes(models.Model):
                     for r in self.detail_ids:
                         if r.purchase_id.id == po.id:
                             r.is_received = True
-                        if r.productCode in products_codes:
-                            r.picking_id = lines.move_ids.picking_id
+                    
                         # if all(line.state == 'done' for line in r.purchase_id.picking_ids):
                         #     r.picking_id = r.purchase_id
 
