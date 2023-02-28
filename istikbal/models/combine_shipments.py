@@ -29,33 +29,39 @@ class IstikbalLogNotes(models.Model):
     total_value = fields.Integer(compute='compute_line')
 
     def action_receive_po(self):
-        a=""
-        try:
-            purchase_order = self.detail_ids.mapped('purchase_id')
-            for po in purchase_order:
-                if po.state == 'purchase':
-                    products_codes = self.detail_ids.filtered(lambda j: j.purchase_id.id == po.id and not j.is_received).mapped(
-                        'productCode')
-                    lines = po.order_line.filtered(lambda i: i.product_id.default_code in products_codes)
-                    if lines:
-                        for move in lines.move_ids:
-                            move.quantity_done = move.product_uom_qty
-#                         if len(lines.move_ids) > 1:
-#                             action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
-#                             a=action_data
-#                             if action_data:
-#                                 backorder_wizard = self.env['stock.backorder.confirmation'].with_context(action_data['context'])
-#                                 backorder_wizard.process()
-#                         else:
-                            action_data = lines.move_ids.picking_id.with_context(skip_backorder=False).button_validate()
-                        # for k in self
-                        for r in self.detail_ids:
-                            if r.purchase_id.id == po.id:
-                                r.is_received = True
-                            if r.productCode in products_codes:
-                                r.picking_id = lines.move_ids.picking_id
-        except Exception as e:
-           raise UserError(_("Your request could not be executed: %s", a))
+        purchase_order = self.detail_ids.filtered(lambda l:not l.is_received).mapped('purchase_id')
+        print(purchase_order)
+        for po in purchase_order:
+            if po.state == 'purchase':
+                products_codes = self.detail_ids.filtered(
+                    lambda j: j.purchase_id.id == po.id and not j.is_received).mapped(
+                    'productCode')
+                lines = po.order_line.filtered(lambda i: i.product_id.default_code in products_codes)
+                if lines:
+                    print(po.name)
+                    for move in lines.move_ids:
+                        move.quantity_done = move.product_uom_qty
+                    if len(lines.move_ids) > 1:
+                        action_data = lines.move_ids.filtered(
+                            lambda h: h.state not in ['done', 'cancel']).picking_id.with_context(
+                            skip_backorder=False).button_validate()
+                        if 'context' in str(action_data):
+                            backorder_wizard = self.env['stock.backorder.confirmation'].with_context(
+                                action_data['context'])
+                            backorder_wizard.process()
+                    else:
+                        action_data = lines.move_ids.filtered(
+                            lambda h: h.state not in ['done', 'cancel']).picking_id.with_context(
+                            skip_backorder=False).button_validate()
+                    for r in self.detail_ids:
+                        if r.purchase_id.id == po.id:
+                            r.is_received = True
+                        if r.productCode in products_codes:
+                            r.picking_id = lines.move_ids.picking_id
+                        # if all(line.state == 'done' for line in r.purchase_id.picking_ids):
+                        #     r.picking_id = r.purchase_id
+
+                self.env.cr.commit()
 
     def compute_line(self):
         self.total_lines = len(self.detail_ids)
