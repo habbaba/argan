@@ -71,5 +71,34 @@
             </field>
         </record>
 
+
+            <record id="arga_view_sale_project_inherit_form" model="ir.ui.view">
+        <field name="name">project.task.view.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="delivery_date"  />
+            </xpath>
+        </field>
+    </record>
+
+
+          <record id="arga_view_task_kanban_inherited_progress" model="ir.ui.view">
+            <field name="name">project.task.timesheet.kanban.inherited.progress</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_kanban"/>
+            <field name="arch" type="xml">
+                <templates position="before">
+                    <field name="delivery_date" />
+                </templates>
+                <div class="oe_kanban_bottom_left" position="inside">
+                    <div t-attf-class="oe_kanban_align badge {{ badge }}" t-att-title="title">
+                        <field name="delivery_date" widget="timesheet_uom" />
+                    </div>
+                </div>
+             </field>
+         </record>
+
     </data>
 </odoo>

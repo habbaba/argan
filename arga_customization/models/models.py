@@ -4,6 +4,11 @@ from odoo import models, fields, api
 import datetime
 from datetime import timedelta
 
+class ProjectTaskInh(models.Model):
+    _inherit = 'project.task'
+
+    delivery_date = fields.Datetime(string='Delivery Date', copy=False)
+
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -95,6 +100,10 @@ class SaleOrderInh(models.Model):
     def write(self, vals):
         res = super(SaleOrderInh, self).write(vals)
         if vals.get('delivery_date'):
+            project_task = self.env['project.task'].search([("sale_line_id.order_id", '=', self.id)], limit=1)
+            project_task.delivery_date=self.delivery_date
+            project_task.planned_date_begin=self.delivery_date
+            project_task.date_deadline=self.delivery_date
             for k in self.picking_ids:
                 if k.state not in ['done','cancel']:
                     k.delivery_date=self.delivery_date
