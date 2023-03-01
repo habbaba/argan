@@ -33,8 +33,7 @@ class IstikbalLogNotes(models.Model):
             print(purchase_order)
             for po in purchase_order:
                 if po.state == 'purchase':
-                    products_codes = self.detail_ids.filtered(
-                        lambda j: j.purchase_id.id == po.id and not j.is_received).mapped(
+                    products_codes = self.detail_ids.filtered(lambda j: j.purchase_id.id == po.id).mapped(
                         'productCode')
                     lines = po.order_line.filtered(lambda i: i.product_id.default_code in products_codes)
                     if lines:
