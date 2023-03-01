@@ -30,7 +30,6 @@ class IstikbalLogNotes(models.Model):
     def action_receive_po(self):
         try:
             purchase_order = self.detail_ids.filtered(lambda l:not l.is_received).mapped('purchase_id')
-            print(purchase_order)
             for po in purchase_order:
                 if po.state == 'purchase':
                     products_codes = self.detail_ids.filtered(
@@ -38,7 +37,6 @@ class IstikbalLogNotes(models.Model):
                         'productCode')
                     lines = po.order_line.filtered(lambda i: i.product_id.default_code in products_codes)
                     if lines:
-                        print(po.name)
                         for move in lines.move_ids:
                             if move.state not in ['done', 'cancel']:
                                 move.quantity_done = move.product_uom_qty
@@ -55,15 +53,23 @@ class IstikbalLogNotes(models.Model):
                                 lambda h: h.state not in ['done', 'cancel']).picking_id.with_context(
                                 skip_backorder=False).button_validate()
                         for r in self.detail_ids:
-                            if r.purchase_id.id == po.id:
-                                r.is_received = True
-                            if r.productCode in products_codes:
-                                r.picking_id = lines.move_ids.filtered(lambda n:n.product_id.default_code == r.productCode).picking_id
+                            # if r.purchase_id.id == po.id:
+                            #     r.is_received = True
+                            # if r.productCode in products_codes:
+                            if not r.picking_id:
+                                r.picking_id = lines.move_ids.filtered(
+                                lambda h: h.product_id.default_code == r.productCode).picking_id.id
+                                if r.picking_id.state == 'done':
+                                    r.is_received = True
                             # if all(line.state == 'done' for line in r.purchase_id.picking_ids):
                             #     r.picking_id = r.purchase_id
+                            # lines.move_ids.filtered(
+                            #     lambda h: h.product_id.default_code == r.productCode).picking_id.id
                     self.env.cr.commit()
         except Exception as e:
             raise Warning(str(e))
+
+
 
     def compute_line(self):
         self.total_lines = len(self.detail_ids)
