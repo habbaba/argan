@@ -109,6 +109,11 @@ class ShipmentDetails(models.Model):
         if self.purchase_id.state == 'purchase':
             lines = self.purchase_id.order_line.filtered(lambda i: i.product_id.default_code == self.productCode)
             if lines:
+                if not self.picking_id:
+                        self.picking_id = lines.move_ids.filtered(
+                            lambda h: h.product_id.default_code == self.productCode).picking_id.id
+                        if self.picking_id.state == 'done':
+                            self.is_received = True
                 for move in lines.move_ids:
                     if move.state not in ['done', 'cancel']:
                         move.quantity_done = move.product_uom_qty
