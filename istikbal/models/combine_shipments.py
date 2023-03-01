@@ -29,7 +29,7 @@ class IstikbalLogNotes(models.Model):
 
     def action_receive_po(self):
         try:
-            purchase_order = self.detail_ids.filtered(lambda l:not l.is_received).mapped('purchase_id')
+            purchase_order = self.detail_ids
             print(purchase_order)
             for po in purchase_order:
                 if po.state == 'purchase':
