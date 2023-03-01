@@ -29,7 +29,7 @@ class IstikbalLogNotes(models.Model):
 
     def action_receive_po(self):
         try:
-            purchase_order = self.detail_ids
+            purchase_order = self.detail_ids.mapped('purchase_id')
             print(purchase_order)
             for po in purchase_order:
                 if po.state == 'purchase':
