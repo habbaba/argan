@@ -30,6 +30,7 @@ class IstikbalLogNotes(models.Model):
     def action_receive_po(self):
         try:
             purchase_order = self.detail_ids.filtered(lambda l:not l.is_received).mapped('purchase_id')
+            print(purchase_order)
             for po in purchase_order:
                 if po.state == 'purchase':
                     products_codes = self.detail_ids.filtered(
@@ -37,6 +38,7 @@ class IstikbalLogNotes(models.Model):
                         'productCode')
                     lines = po.order_line.filtered(lambda i: i.product_id.default_code in products_codes)
                     if lines:
+                        print(po.name)
                         for move in lines.move_ids:
                             if move.state not in ['done', 'cancel']:
                                 move.quantity_done = move.product_uom_qty
