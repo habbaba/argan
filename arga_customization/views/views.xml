@@ -67,7 +67,13 @@
             <field name="arch" type="xml">
                 <field name="partner_ref" position="after">
                     <field name="sale_order"/>
+                    <field name="total_lines"/>
                 </field>
+            
+
+<xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="before">
+<field name="number" string="Sr#"/>
+</xpath>
             </field>
         </record>
 
