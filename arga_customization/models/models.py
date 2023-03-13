@@ -234,6 +234,7 @@ class PurchaseOrderInh(models.Model):
 
 
     sale_order = fields.Many2one('sale.order', compute='_compute_sale_order')
+    # receipt_status = fields.Many2many('stock.picking', compute='_compute_sale_order')
 
 
     def _compute_sale_order(self):
