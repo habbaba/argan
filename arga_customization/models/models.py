@@ -52,28 +52,30 @@ class SaleOrderInh(models.Model):
             select = ''
             if all(line.state == 'draft' for line in purchase_order_ids):
                 select = 'ANGEBOT'
-            if all(line.state == 'purchase' for line in purchase_order_ids):
+            elif all(line.state == 'purchase' for line in purchase_order_ids):
                 select = 'AUFTRAG'
             # print(purchase_order_ids.order_line.mapped('product_id').ids)
-            if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
+            elif purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
                 select = 'BESTELLT'
-            if purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids and all(line.state == 'purchase' for line in purchase_order_ids):
+            elif purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids and all(line.state == 'purchase' for line in purchase_order_ids):
                 select = 'BESTÄTIGT'
-            if purchase_order_ids.order_line.mapped('product_id').ids != rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
+            elif purchase_order_ids.order_line.mapped('product_id').ids != rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
                 select = 'TEIL_BESTELLT'
-            if not rec.delivery_date:
+            elif not rec.delivery_date:
                 select = 'LIEFERBEREIT'
-            if rec.delivery_date:
+            elif rec.delivery_date:
                 select = 'TERMINIERT'
-            if rec.state == 'sale' and all(line.state == 'done' for line in rec.picking_ids):
+            elif rec.state == 'sale' and all(line.state == 'done' for line in rec.picking_ids):
                 select = '9_GG'
-            if rec.state == 'sale' and any(line.state != 'done' for line in rec.picking_ids):
+            elif rec.state == 'sale' and any(line.state != 'done' for line in rec.picking_ids):
                 select = 'TEIL_lIEFERUNG'
-            if rec.istikbal_shipments or rec.bellona_shipments:
+            elif rec.istikbal_shipments or rec.bellona_shipments:
                 if not rec.istikbal_shp_details:
                     select = 'PRODUKTION'
-            if rec.istikbal_shipments and rec.istikbal_shp_details:
+            elif rec.istikbal_shipments and rec.istikbal_shp_details:
                     select = 'truck'
+            else:
+                select = 'ANGEBOT'
             rec.delivery_tags = select
 
     def _set_delivery_tags(self):
@@ -121,24 +123,24 @@ class SaleOrderLineInh(models.Model):
 
     number = fields.Integer(string="Sr#",compute='_compute_get_number',default=1)
     available = fields.Float('Available Qty', related="product_id.qty_available")
-    remaining_qty = fields.Float('Not Available', compute='compute_in')
-    qty_in = fields.Float(compute='compute_in')
-    qty_out = fields.Float(compute='compute_in')
-    free_qty = fields.Float(compute='compute_in')
+    remaining_qty = fields.Float('Not Available')
+    qty_in = fields.Float()
+    qty_out = fields.Float()
+    free_qty = fields.Float()
 
-    @api.depends('product_id')
-    def compute_in(self):
-        for rec in self:
-            if rec.product_uom_qty > rec.available:
-                rec.remaining_qty = rec.product_uom_qty - rec.available
-            else:
-                rec.remaining_qty = 0
-            qty_in = rec.product_id.incoming_qty
-            qty_out = 0
-            rec.qty_in = qty_in
-            rec.qty_out = qty_out
-
-            rec.free_qty=(rec.available+rec.qty_in)-rec.qty_out
+    # @api.depends('product_id')
+    # def compute_in(self):
+    #     for rec in self:
+    #         if rec.product_uom_qty > rec.available:
+    #             rec.remaining_qty = rec.product_uom_qty - rec.available
+    #         else:
+    #             rec.remaining_qty = 0
+    #         qty_in = rec.product_id.incoming_qty
+    #         qty_out = 0
+    #         rec.qty_in = qty_in
+    #         rec.qty_out = qty_out
+    #
+    #         rec.free_qty=(rec.available+rec.qty_in)-rec.qty_out
 
 
     @api.depends('order_id')
@@ -234,25 +236,36 @@ class PurchaseOrderInh(models.Model):
 
 
     sale_order = fields.Many2one('sale.order', compute='_compute_sale_order')
-    # receipt_status = fields.Many2many('stock.picking', compute='_compute_sale_order')
-
-
-    def _compute_sale_order(self):
-        for rec in self:
-            sale_order=self.env['sale.order'].search([("name",'=',rec.origin)],limit=1).id
-            rec.sale_order=sale_order
-            
-            
-class PurchaseOrderInh(models.Model):
-    _inherit = 'purchase.order'
+    receipt_status = fields.Selection(selection=[
+        ('draft', 'Draft'), ('waiting', 'Waiting for another Operations'),
+        ('confirmed', 'Waiting'), ('assigned', 'Ready'),
+        ('done', 'Done'),  ('cancel', 'Cancelled')
+    ], string='Receipt Status', compute='_compute_sale_order', readonly=True, copy=False)
 
     total_lines = fields.Integer(compute='_compute_lines')
-    
 
     @api.depends('order_line')
     def _compute_lines(self):
         self.total_lines = len(self.order_line.mapped('id'))
 
+
+    def _compute_sale_order(self):
+        for rec in self:
+            rec.receipt_status = 'draft'
+            if rec.picking_ids:
+                if all(line.state == 'waiting' for line in rec.picking_ids):
+                    rec.receipt_status = 'waiting'
+                if all(line.state == 'confirmed' for line in rec.picking_ids):
+                    rec.receipt_status = 'confirmed'
+                if all(line.state == 'assigned' for line in rec.picking_ids):
+                    rec.receipt_status = 'assigned'
+                if all(line.state == 'done' for line in rec.picking_ids):
+                    rec.receipt_status = 'done'
+                if all(line.state == 'cancel' for line in rec.picking_ids):
+                    rec.receipt_status = 'cancel'
+            sale_order=self.env['sale.order'].search([("name",'=',rec.origin)],limit=1).id
+            rec.sale_order=sale_order
+            
 
 class PurchaseOrderLineInh(models.Model):
     _inherit = 'purchase.order.line'
