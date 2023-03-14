@@ -254,7 +254,7 @@ class PurchaseOrderInh(models.Model):
             rec.total_lines = len(rec.order_line.mapped('id'))
             rec.total_istikbal_lines = len(rec.istikbal_shp_details.mapped('id'))
             rec.total_bellona_lines = len(rec.bellona_shipments.mapped('id'))
-            rec.total_bellona_lines = moves
+            rec.total_received = moves
 
 
     def _compute_sale_order(self):
