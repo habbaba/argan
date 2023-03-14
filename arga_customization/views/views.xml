@@ -115,7 +115,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='state']" position="after">
                     <field name="picking_ids" optional="show" widget="many2many_tags" string="Receipts"/>
-                    <field name="receipt_status" optional="show" string="Receipts Status"  widget="badge"/>
+                    <field name="receipt_status" optional="show" string="Receipts Status"  string="Receipts"  decoration-info="receipt_status == 'draft'" decoration-success="receipt_status == 'done'" decoration-danger="receipt_status == 'waiting'" widget="badge"/>
                 </xpath>
             </field>
         </record>
@@ -127,7 +127,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='state']" position="after">
                     <field name="picking_ids" optional="show" widget="many2many_tags" string="Receipts"/>
-                    <field name="receipt_status" optional="show" string="Receipts"  widget="badge"/>
+                    <field name="receipt_status" optional="show" string="Receipts"  decoration-info="receipt_status == 'draft'" decoration-success="receipt_status == 'done'" decoration-danger="receipt_status == 'waiting'" widget="badge"/>
                 </xpath>
             </field>
         </record>
