@@ -243,10 +243,13 @@ class PurchaseOrderInh(models.Model):
     ], string='Receipt Status', compute='_compute_sale_order', readonly=True, copy=False)
 
     total_lines = fields.Integer(compute='_compute_lines')
+    total_istikbal_lines = fields.Integer(string="Istikbal Lines",compute='_compute_lines')
 
-    @api.depends('order_line')
+    @api.depends('order_line','istikbal_shp_details')
     def _compute_lines(self):
-        self.total_lines = len(self.order_line.mapped('id'))
+        for rec in self:
+            rec.total_lines = len(rec.order_line.mapped('id'))
+            rec.total_istikbal_lines = len(rec.istikbal_shp_details.mapped('id'))
 
 
     def _compute_sale_order(self):

@@ -116,6 +116,8 @@
                 <xpath expr="//field[@name='state']" position="after">
                     <field name="picking_ids" optional="show" widget="many2many_tags" string="Receipts"/>
                     <field name="receipt_status" optional="show" string="Receipts Status"  widget="badge" decoration-success="receipt_status == 'done'" decoration-info="receipt_status not in ('done', 'cancel', 'draft')" decoration-muted="receipt_status == 'draft'"/>
+                    <field name="total_lines" optional="show" />
+                    <field name="total_istikbal_lines" optional="show" />
                 </xpath>
             </field>
         </record>
@@ -128,7 +130,9 @@
                 <xpath expr="//field[@name='state']" position="after">
                     <field name="picking_ids" optional="show" widget="many2many_tags" string="Receipts"/>
                     <field name="receipt_status" optional="show" string="Receipts status"   widget="badge" decoration-success="receipt_status == 'done'" decoration-info="receipt_status not in ('done', 'cancel', 'draft')" decoration-muted="receipt_status == 'draft'"/>
-                           </xpath>
+                        <field name="total_lines" optional="show" />
+                       <field name="total_istikbal_lines" optional="show" />
+                </xpath>
             </field>
         </record>
 
