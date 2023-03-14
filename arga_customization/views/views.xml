@@ -119,6 +119,7 @@
                     <field name="total_lines" optional="show" />
                     <field name="total_istikbal_lines" optional="show" />
                        <field name="total_bellona_lines" optional="show" />
+                     <field name="total_received" optional="show" />
                 </xpath>
             </field>
         </record>
@@ -134,6 +135,7 @@
                         <field name="total_lines" optional="show" />
                        <field name="total_istikbal_lines" optional="show" />
                        <field name="total_bellona_lines" optional="show" />
+                       <field name="total_received" optional="show" />
                 </xpath>
             </field>
         </record>
