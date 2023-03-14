@@ -244,12 +244,14 @@ class PurchaseOrderInh(models.Model):
 
     total_lines = fields.Integer(compute='_compute_lines')
     total_istikbal_lines = fields.Integer(string="Istikbal Lines",compute='_compute_lines')
+    total_bellona_lines = fields.Integer(string="Bellona Lines",compute='_compute_lines')
 
-    @api.depends('order_line','istikbal_shp_details')
+    @api.depends('order_line','istikbal_shp_details','bellona_shipments')
     def _compute_lines(self):
         for rec in self:
             rec.total_lines = len(rec.order_line.mapped('id'))
             rec.total_istikbal_lines = len(rec.istikbal_shp_details.mapped('id'))
+            rec.total_bellona_lines = len(rec.bellona_shipments.mapped('id'))
 
 
     def _compute_sale_order(self):
