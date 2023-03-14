@@ -250,11 +250,11 @@ class PurchaseOrderInh(models.Model):
     @api.depends('order_line','istikbal_shp_details','bellona_shipments','picking_ids')
     def _compute_lines(self):
         for rec in self:
-            moves = len(self.env['stock.move.line'].search([("origin", '=', rec.name),("state", '=', 'done')]))
+            moves = len(self.env['stock.move.line'].search([("move_id.picking_id.purchase_id", '=', rec.id),("state", '=', 'done')]))
             rec.total_lines = len(rec.order_line.mapped('id'))
             rec.total_istikbal_lines = len(rec.istikbal_shp_details.mapped('id'))
             rec.total_bellona_lines = len(rec.bellona_shipments.mapped('id'))
-            rec.total_received = moves
+            rec.total_received = moves if moves else 0
 
 
     def _compute_sale_order(self):
