@@ -59,7 +59,7 @@ class IstikbalLogNotes(models.Model):
                             # if r.productCode in products_codes:
                             if not r.picking_id:
                                 r.picking_id = lines.move_ids.filtered(
-                                lambda h: h.product_id.default_code == r.productCode).picking_id.id
+                                lambda h: h.product_id.default_code == r.productCode).picking_id[0].id
                                 if r.picking_id.state == 'done':
                                     r.is_received = True
                             # if all(line.state == 'done' for line in r.purchase_id.picking_ids):
