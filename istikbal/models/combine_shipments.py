@@ -58,7 +58,7 @@ class IstikbalLogNotes(models.Model):
                             #     r.is_received = True
                             # if r.productCode in products_codes:
                             if not r.picking_id:
-                               stml = self.env['stock.move.line']search([('origin','=', rec.purchase_id.name)],limit=1)
+                               stml = self.env['stock.move.line'].search([('origin','=', rec.purchase_id.name)],limit=1)
                                 r.picking_id = stml.move_id.picking_id.id
                                 if r.picking_id.state == 'done':
                                     r.is_received = True
