@@ -87,7 +87,7 @@ class SaleOrderInh(models.Model):
             rec.bellona_qty=bellona_qty
             rec.received_qty=received_qty
             rec.total_qty=len(rec.order_line.filtered(lambda i: i.product_id.type == 'product').mapped('id'))
-            rec.do_qty=len(self.env['stock.move'].search([("origin","=",rec.name)]))
+            rec.do_qty=len(self.env['stock.move.line'].search([("origin","=",rec.name),("state","=",'done')]))
 
 
             if receipt:
