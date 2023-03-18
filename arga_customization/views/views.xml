@@ -15,9 +15,9 @@
                     <field name="bellona_qty" optional="show" />
 
 
-                    <field name="do_status" optional="show" />
-                    <field name="po_state" optional="show" />
-                    <field name="receipt_status" optional="show" />
+                    <field name="do_status" optional="show" widget="badge" decoration-success="do_status == 'done'" decoration-info="do_status not in ('done', 'cancel', 'draft')" decoration-muted="do_status == 'draft'"/>
+                    <field name="po_state" optional="show" decoration-success="po_state == 'done'" decoration-info="po_state not in ('done', 'cancel', 'draft')" decoration-muted="po_state == 'draft'"/>
+                    <field name="receipt_status" optional="show" decoration-success="receipt_status == 'done'" decoration-info="receipt_status not in ('done', 'cancel', 'draft')" decoration-muted="receipt_status == 'draft'"/>
                 </xpath>
             </field>
         </record>
