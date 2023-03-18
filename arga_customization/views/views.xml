@@ -1,14 +1,32 @@
 <odoo>
     <data>
 
+        <record id="sale_order_inherit_arga_tree" model="ir.ui.view">
+            <field name="name">sale order</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="total_qty" optional="show" />
+                    <field name="do_qty" optional="show" />
+                    <field name="po_qty" optional="show" />
+                    <field name="received_qty" optional="show" />
+                    <field name="istikabl_qty" optional="show" />
+                    <field name="bellona_qty" optional="show" />
+
+
+                    <field name="do_status" optional="show" />
+                    <field name="po_state" optional="show" />
+                    <field name="receipt_status" optional="show" />
+                </xpath>
+            </field>
+        </record>
+
         <record id="sale_order_inherit_arga" model="ir.ui.view">
             <field name="name">sale order</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='currency_id']" position="after">
-                    <field name="delivery_tags"/>
-                </xpath>
                 <xpath expr="//group[@name='note_group']" position="before">
                     <group>
                         <field name="total_invoice_paid" readonly="1"/>
@@ -20,19 +38,11 @@
                     <field name="number" width=".3" class="text-end"/>
                 </xpath>
 
-                <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
-                    <field name="available"  invisible="1"/>
-                    <field name="remaining_qty"  invisible="1"/>
-                    <field name="qty_in" invisible="1"/>
-                    <field name="qty_out" invisible="1"/>
-                    <field name="free_qty" invisible="1"/>
-                </xpath>
 
                 <xpath expr="//field[@name='order_line']" position="after">
                     <group>
                         <group>
                             <field name="total_qty"/>
-                            <field name="remaining_qty"/>
                         </group>
                     </group>
                 </xpath>
@@ -108,7 +118,7 @@
 
 
 
-         <record id="po_quotation_inherit_arga" model="ir.ui.view">
+        <record id="po_quotation_inherit_arga" model="ir.ui.view">
             <field name="name">purchase order</field>
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
@@ -118,24 +128,24 @@
                     <field name="receipt_status" optional="show" string="Receipts Status"  widget="badge" decoration-success="receipt_status == 'done'" decoration-info="receipt_status not in ('done', 'cancel', 'draft')" decoration-muted="receipt_status == 'draft'"/>
                     <field name="total_lines" optional="show" />
                     <field name="total_istikbal_lines" optional="show" />
-                       <field name="total_bellona_lines" optional="show" />
-                     <field name="total_received" optional="show" />
+                    <field name="total_bellona_lines" optional="show" />
+                    <field name="total_received" optional="show" />
                 </xpath>
             </field>
         </record>
-        
+
         <record id="purchase_order_inherit_arga" model="ir.ui.view">
             <field name="name">purchase order</field>
             <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>	
+            <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='state']" position="after">
                     <field name="picking_ids" optional="show" widget="many2many_tags" string="Receipts"/>
                     <field name="receipt_status" optional="show" string="Receipts status"   widget="badge" decoration-success="receipt_status == 'done'" decoration-info="receipt_status not in ('done', 'cancel', 'draft')" decoration-muted="receipt_status == 'draft'"/>
-                        <field name="total_lines" optional="show" />
-                       <field name="total_istikbal_lines" optional="show" />
-                       <field name="total_bellona_lines" optional="show" />
-                       <field name="total_received" optional="show" />
+                    <field name="total_lines" optional="show" />
+                    <field name="total_istikbal_lines" optional="show" />
+                    <field name="total_bellona_lines" optional="show" />
+                    <field name="total_received" optional="show" />
                 </xpath>
             </field>
         </record>

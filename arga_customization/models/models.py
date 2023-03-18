@@ -33,57 +33,34 @@ class SaleOrderInh(models.Model):
     total_invoice_paid = fields.Float(compute='compute_invoices_amount')
     total_invoice_amount = fields.Float(compute='compute_invoices_amount')
     total_open_amount = fields.Float(compute='compute_invoices_amount')
-    total_qty = fields.Float('Total Storable Qty', compute='_compute_total_qty')
-    remaining_qty = fields.Float('Not Available Qty', compute='_compute_total_qty')
+    total_qty = fields.Float('Total Lines', compute='_compute_total_qty')
+    istikabl_qty = fields.Float('Istikabal', compute='_compute_total_qty')
+    bellona_qty = fields.Float('Bellona', compute='_compute_total_qty')
+    po_qty = fields.Float('PO', compute='_compute_total_qty')
+    do_qty = fields.Float('DO', compute='_compute_total_qty')
+    received_qty = fields.Float('Received', compute='_compute_total_qty')
+    remaining_qty = fields.Float('Not Available Qty')
+    receipt_status = fields.Selection(selection=[
+        ('draft', 'Draft'), ('waiting', 'Waiting for another Operations'),
+        ('confirmed', 'Waiting'), ('assigned', 'Ready'),
+        ('done', 'Done'),  ('cancel', 'Cancelled'),('', '    ')
+    ], string='Receipt Status', compute='_compute_total_qty', readonly=True, copy=False)
+    do_status = fields.Selection(selection=[
+        ('draft', 'Draft'), ('waiting', 'Waiting for another Operations'),
+        ('confirmed', 'Waiting'), ('assigned', 'Ready'),
+        ('done', 'Done'), ('cancel', 'Cancelled')
+    ], string='DO Status', compute='_compute_total_qty', readonly=True, copy=False)
+    po_state = fields.Selection([
+        ('draft', 'Draft RFQ'),
+        ('sent', 'RFQ Sent'),
+        ('to approve', 'To Approve'),
+        ('purchase', 'Purchase Order'),
+        ('done', 'Done'),
+        ('cancel', 'Cancelled'),('', '    ')
+    ], 'PO Status', compute='_compute_total_qty', readonly=True)
 
-    delivery_tags = fields.Selection([
-        ('ANGEBOT', 'ANGEBOT'),
-        ('BESTELLT', 'BESTELLT'), ('BESTÄTIGT', 'BESTÄTIGT'),('TERMINIERT', 'TERMINIERT'),('PRODUKTION', 'PRODUKTION'),('truck', 'On Truck'),
-        ('TEIL_BESTELLT', 'TEIL BESTELLT'),
-        ('AUFTRAG', 'AUFTRAG'),
-        ('LIEFERBEREIT', 'LIEFERBEREIT'),
-        ('9_GG', '9_GG'),
-        ('TEIL_lIEFERUNG', 'TEIL lIEFERUNG'),
-    ], string='Delivery Tags', compute='compute_tags',inverse='_set_delivery_tags')
 
-    def compute_tags(self):
-        for rec in self:
-            purchase_order_ids = self._get_purchase_orders()
-            select = ''
-            if all(line.state == 'draft' for line in purchase_order_ids):
-                select = 'ANGEBOT'
-            elif all(line.state == 'purchase' for line in purchase_order_ids):
-                select = 'AUFTRAG'
-            # print(purchase_order_ids.order_line.mapped('product_id').ids)
-            elif purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
-                select = 'BESTELLT'
-            elif purchase_order_ids.order_line.mapped('product_id').ids == rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids and all(line.state == 'purchase' for line in purchase_order_ids):
-                select = 'BESTÄTIGT'
-            elif purchase_order_ids.order_line.mapped('product_id').ids != rec.order_line.filtered(lambda i:i.product_id.route_ids).mapped('product_id').ids:
-                select = 'TEIL_BESTELLT'
-            elif not rec.delivery_date:
-                select = 'LIEFERBEREIT'
-            elif rec.delivery_date:
-                select = 'TERMINIERT'
-            elif rec.state == 'sale' and all(line.state == 'done' for line in rec.picking_ids):
-                select = '9_GG'
-            elif rec.state == 'sale' and any(line.state != 'done' for line in rec.picking_ids):
-                select = 'TEIL_lIEFERUNG'
-            elif rec.istikbal_shipments or rec.bellona_shipments:
-                if not rec.istikbal_shp_details:
-                    select = 'PRODUKTION'
-            elif rec.istikbal_shipments and rec.istikbal_shp_details:
-                    select = 'truck'
-            else:
-                select = 'ANGEBOT'
-            rec.delivery_tags = select
-
-    def _set_delivery_tags(self):
-
-        return True
-
-    @api.depends('invoice_ids', 'invoice_ids.amount_total', 'invoice_ids.amount_residual',
-                 'invoice_ids.amount_residual_signed')
+    @api.depends('invoice_ids', 'invoice_ids.amount_total', 'invoice_ids.amount_residual','invoice_ids.amount_residual_signed')
     def compute_invoices_amount(self):
         for rec in self:
             amount = sum(rec.invoice_ids.mapped('amount_total'))
@@ -93,17 +70,46 @@ class SaleOrderInh(models.Model):
             rec.total_open_amount = rec.amount_total-rec.total_invoice_paid
 
     def _compute_total_qty(self):
-        for k in self:
-            total = 0
-            remain_total = 0
-            k.total_qty=total
-            k.remaining_qty = remain_total
-            for i in k.order_line:
-                if i.product_id.detailed_type=="product":
-                    remain_total=remain_total+i.remaining_qty
-                    total=total+i.product_uom_qty
-                k.total_qty=total
-                k.remaining_qty = remain_total
+        for rec in self:
+            purchase_order=self.env['purchase.order'].search([("origin","=",rec.name)])
+            receipt = self.env['purchase.order'].search([("origin", "=", rec.name)],limit=1)
+            po_qty=0
+            istikabl_qty=0
+            bellona_qty=0
+            received_qty=0
+            for po in purchase_order:
+                po_qty=po_qty+po.total_lines
+                istikabl_qty=istikabl_qty+po.total_istikbal_lines
+                bellona_qty= bellona_qty+po.total_bellona_lines
+                received_qty=received_qty+po.total_received
+            rec.po_qty=po_qty
+            rec.istikabl_qty=istikabl_qty
+            rec.bellona_qty=bellona_qty
+            rec.received_qty=received_qty
+            rec.total_qty=len(rec.order_line.filtered(lambda i: i.product_id.type == 'product').mapped('id'))
+            rec.do_qty=len(self.env['stock.move'].search([("origin","=",rec.name)]))
+
+
+            if receipt:
+                rec.receipt_status=receipt.receipt_status
+                rec.po_state=receipt.state
+            else:
+                rec.receipt_status = ''
+                rec.po_state = ''
+
+            rec.do_status = 'draft'
+            if rec.picking_ids:
+                if all(line.state == 'waiting' for line in rec.picking_ids):
+                    rec.do_status = 'waiting'
+                if all(line.state == 'confirmed' for line in rec.picking_ids):
+                    rec.do_status = 'confirmed'
+                if all(line.state == 'assigned' for line in rec.picking_ids):
+                    rec.do_status = 'assigned'
+                if all(line.state == 'done' for line in rec.picking_ids):
+                    rec.do_status = 'done'
+                if all(line.state == 'cancel' for line in rec.picking_ids):
+                    rec.do_status = 'cancel'
+
 
     def write(self, vals):
         res = super(SaleOrderInh, self).write(vals)
@@ -228,8 +234,7 @@ class CalendarEvent(models.Model):
     _inherit = "calendar.event"
 
     picking_id = fields.Many2one('stock.picking', "Picking")
-    
-    
+
 
 class PurchaseOrderInh(models.Model):
     _inherit = 'purchase.order'
